@@ -1,0 +1,14 @@
+{
+    "name": "kngell/appcore",
+    "description": "k'ngell framwork for applications",
+    "type": "librairie",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kngeell",
+            "email": "admin@kngell.com"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {}
+}
