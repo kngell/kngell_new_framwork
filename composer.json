@@ -1,14 +1,46 @@
 {
-    "name": "kngell/appcore",
-    "description": "k'ngell framwork for applications",
-    "type": "librairie",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "kngeell",
-            "email": "admin@kngell.com"
-        }
-    ],
-    "minimum-stability": "alpha",
-    "require": {}
+  "name": "kngell/appcore",
+  "description": "k'ngell framwork for applications",
+  "keywords": [
+    "framework",
+    "php",
+    "appcore"
+  ],
+  "type": "librairie",
+  "license": "MIT",
+  "readme": "",
+  "time": "",
+  "support": {
+    "issues": "https://github.com/kngell/kngell_new_framwork/issues",
+    "source": "https://github.com/kngell/kngell_new_framwork",
+    "wiki": "https://github.com/kngell/kngell_new_framwork/wiki"
+  },
+  "authors": [
+    {
+      "name": "kngeell",
+      "email": "admin@kngell.com",
+      "role": "manager"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": "^8.0",
+    "ext-mbstring": "*",
+    "ext-iconv": "*",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-intl": "*",
+    "ext-curl": "*",
+    "ext-simplexml": "*"
+  },
+  "autoload": {
+    "classmap": [
+      "app\\"
+    ]
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests"
+    ]
+  }
 }
