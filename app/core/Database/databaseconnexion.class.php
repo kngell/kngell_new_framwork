@@ -35,7 +35,7 @@ class DatabaseConnexion implements DatabaseConnexionInterface
     /**
      * @inheritDoc
      */
-    public function open():PDO
+    public function open() :PDO
     {
         // Set Options
         $options = [

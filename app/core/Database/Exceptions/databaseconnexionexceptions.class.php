@@ -6,6 +6,12 @@ class DatabaseConnexionExceptions extends PDOException
     protected $massage;
     protected $code;
 
+    /**
+     * Custom exception
+     * @param string $message
+     * @param int $code
+     * @return void
+     */
     public function __construct($message = null, $code = null)
     {
         $this->massage = $message;

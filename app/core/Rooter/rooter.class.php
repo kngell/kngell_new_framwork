@@ -52,13 +52,13 @@ class Rooter implements RooterInterface
                 if (\is_callable([$controllerObject, $method])) {
                     $controllerObject->$method;
                 } else {
-                    throw new Exception();
+                    throw new BadMethodCallException();
                 }
             } else {
-                throw new Exception();
+                throw new BadMethodCallException();
             }
         } else {
-            throw new Exception();
+            throw new BadMethodCallException();
         }
     }
 
