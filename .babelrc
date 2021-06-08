@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    ["polyfill-corejs3", { "method": "usage-global" }],
+    ["polyfill-regenerator", { "method": "usage-global" }],
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-syntax-dynamic-import"
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        // "useBuiltIns":"usage",
+        "debug": true
+        // "corejs":3
+      }
+    ]
+  ]
+}

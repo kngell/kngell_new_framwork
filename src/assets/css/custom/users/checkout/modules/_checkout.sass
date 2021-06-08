@@ -1,0 +1,297 @@
+@use "corecss/variables" as *
+@use "corecss/mixins" as *
+    
+#main-site
+    .page-content
+        min-height: calc(100vh - 140px)
+        padding: 2rem
+        position: relative
+        .navigation
+            position: relative
+            margin-bottom: 10px
+            padding: 1rem 0
+            border-radius: 10px
+            .header
+                .header-title
+                    padding: .8rem 0
+                .horizontal-line
+                    +horizontal-line($orange-in)
+                  
+            .nav
+                > .nav-item
+                    padding: .3125rem 1.875rem
+                    .nav-link
+                        font-size: 1.125rem
+                        color: rgba($gray-600,.664)
+                        text-transform: capitalize
+                        padding: 0px
+                        position: relative
+                        &:hover
+                            border-color: $purple-dark
+                    .nav-link.active
+                        border-bottom: 2px solid $color-primary
+                        color: $green-light
+            .progress-container
+                display: flex
+                justify-content: space-between
+                position: relative
+                margin-bottom: 30px
+                max-width: 100%
+                width: 90%
+                overflow: hidden
+                padding-left: 0
+                margin: 0 auto
+                z-index: 10
+                .progress
+                    background-color: $green-light
+                    position: absolute
+                    top: 35%
+                    left: 0
+                    transform: translateY(-50%)
+                    height: 4px
+                    width: 0%
+                    z-index: -1
+                    transition: .4s ease
+                .circle
+                    +dflex()
+                    background-color: $white-common
+                    color: $gray-common
+                    border-radius: 50%
+                    height: 50px
+                    width: 50px
+                    border: 3px solid $gray-dark
+                    margin: 0 auto
+                    transition: .4s ease
+                .circle.completed, .step-text
+                    border-color: $green-light
+                    color: $green-light
+                &::before
+                    content: ""
+                    background-color: $gray-dark
+                    position: absolute
+                    top: 35%
+                    left: 0
+                    transform: translateY(-50%)
+                    height: 4px
+                    width: 100%
+                    z-index: -1
+                    transition: .4s ease
+            .tab-control
+                .previous,.next
+                    position: absolute
+                    top: 48%
+                .previous
+                    left: 0px
+                .next
+                    right: 0px
+                button:disabled
+                    color: $gray-dark
+                    cursor: not-allowed
+        .tab-content
+            .tab-pane
+                padding: 10px
+                .order-summary
+                    .card-body
+                        padding-bottom: 2rem
+                        .header-title
+                            color: $gray-standard
+                        .order-resume
+                            .product-line
+                                .p-cell
+                                    vertical-align: middle
+                                .p-title
+                                    color: $gray-dark-in
+                                    font-size: .9rem
+                                .p-price
+                                    color: $dark-in
+                                    font-size: .9rem
+                                    font-weight: 600
+                        .total
+                            .sub-total
+                                font-size: 1rem
+                                font-weight: 600
+                                border-bottom: 1px dashed $purple-dark
+                            .res-tax-item
+                                font-style: normal
+                                font-size: .8rem
+                                td
+                                    padding-bottom: 0
+                            .total-ttc
+                                font-size: 1.1rem
+                                font-weight: 600
+                                color: $dark-color
+                                border-bottom: 1px solid $purple-dark
+                                padding-bottom: 1.5rem
+                        .code-achat
+                            display: flex
+                            justify-content: space-around
+                            vertical-align: middle
+                            line-height: .8rem
+                            +input(100%,2.5rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-bg,.8rem)
+                            &__btn
+                                +button($color-primary,$blue-dark,10px,lowercase)
+                                margin-left: .5rem
+                        .product-thumbnail-wrapper
+                            position: relative
+                            width: 60px
+                            .product-thumbnail-quantity
+                                font-size: 0.85em
+                                font-weight: 500
+                                line-height: 1.75em
+                                white-space: nowrap
+                                text-align: center
+                                border-radius: 1.75em
+                                background-color: rgba(114, 114, 114, 0.9)
+                                color: #fff
+                                box-sizing: border-box
+                                min-width: 21px
+                                height: 21px
+                                padding: 0 0.58em
+                                position: absolute
+                                right: 13px
+                                top: -8px
+                                z-index: 50
+                .order-details
+                    .card
+                        .card-body
+                            .card-sub-title
+                                font-size: 1.1rem
+                                margin-bottom: 1rem!important
+                                color: #777
+                            .info-resume
+                                font-size: .9rem
+                                table
+                                    .contact,.address,.method
+                                        color: $gray-standard
+                                        .value
+                                            font-style: normal
+                    .radio-check-group
+                        .radio-check
+                            display: flex
+                            justify-content: space-between
+                            align-items: center
+                            border-bottom: 1px solid $gray-300
+                            padding: 3px
+                            margin-right: 12px
+                            padding-bottom: 1rem
+                            width: 100%
+                            &__wrapper
+                                width: 100%
+                            .radio
+                                width: 100%
+                                display: inline-flex
+                                align-items: center
+                                cursor: pointer 
+                                &__input
+                                    display: none 
+                                    &:checked + .radio__radio::after
+                                        transform: scale(1)
+                                           
+                                &__radio
+                                    width: 1.2rem
+                                    height: 1.2rem
+                                    border: 2px solid $blue-light
+                                    border-radius: 50%
+                                    margin-right: 10px
+                                    margin-left: 10px
+                                    box-sizing: border-box
+                                    padding: 2px    
+                                    &::after
+                                        content: '' 
+                                        width: 100%
+                                        height: 100%
+                                        display: block  
+                                        background: $color-primary
+                                        border-radius: 50%
+                                        transform: scale(0)
+                                        transition: transform .2s ease-in
+                                &__text
+                                    font-size: .9rem
+                                    color: $gray-400
+            #order-information
+                .order-details
+                    .card
+                        .form-wrapper
+                            width: 100%
+                            height: auto
+                            margin: 0px auto
+                            background-color: $white-color
+                            border-radius: 5px
+                            +dflex()
+                            form
+                                width: 100%
+                                +input(100%,2.5rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-color)
+                                +custom_select2($white-color,$gray-300)
+                                .account-request
+                                    color: $gray-common
+                                .checkbox
+                                    +checkbox($gray-common,$color-primary,$color-primary,$gray-variant,$white-smoke)
+                                    margin-top: 1rem
+                                .return-to-cart
+                                    +button($dark-yellow,$dark-yellow-light)
+                                    text-decoration: none
+                                .next
+                                    +button($color-primary,$blue-dark)
+                                    text-decoration: none
+            #shipping-information
+                .order-details
+                    .button-group
+                        .previous
+                            +button($dark-yellow,$dark-yellow-light)
+                        .next
+                            +button($color-primary,$blue-dark)     
+            #payment-information
+                .order-details
+                    #order-payment
+                        .payment-gateway
+                            .payment-gateway-header
+                                .radio-check__wrapper
+                                    width: auto
+                                .brand-icons
+                                    .payment-icon 
+                                        border-radius: 0.22em
+                                        transition: all 0.2s ease-in-out
+                                        width: 38px
+                                        height: 24px
+                                        display: inline-block
+                                        &.payment-icon-visa
+                                            +background("img/visa.svg")
+                                        &.payment-icon-master 
+                                            +background("img/master.svg")
+                                        &.payment-icon-american-express 
+                                            +background("img/american_express.svg")
+                                        &.payment-icon-discover 
+                                            +background("img/discover.svg")
+                            .payment-gateway-content
+                                display: flex
+                                &.payment-gateway-content-credit-card
+                                    display: block
+                                .payment-gateway-outsite
+                                    display: block
+                                    width: 240px
+                                    height: 120px
+                                    +background("img/outsite.svg")
+                                form
+                                    +input(100%,2rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-bg)
+                    #order-billing-address
+                        .billing-address
+                            .billing-address-content
+                                form
+                                    +input(100%,2rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-color)
+                                    +custom_select2($white-color,$gray-300)
+                    .button-group
+                        .previous
+                            +button($dark-yellow,$dark-yellow-light)
+                        .complet-order
+                            +button($color-primary,$blue-dark) 
+.hidden
+    display: none
+.next,.previous
+    &:desabled:hover
+        opacity: .6
+        cursor: not-allowed
+        
+
+
+                                    
+                                    

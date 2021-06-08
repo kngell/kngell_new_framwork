@@ -1,0 +1,45 @@
+#main-site
+    .address-book-wrapper
+        .card
+            margin-bottom: 1rem
+            border-style: dashed
+            height: 90%
+            .card-body
+                .address-content
+                    font-size: .85rem
+                    .address-text
+                        padding-left: 0
+                        .name
+                            font-weight: 600
+                        .zip-city
+                            vertical-align: middle
+                            .zip_code
+                                margin-right: .25rem
+                .manage
+                    display: flex 
+                    flex-direction: row
+                    justify-content: start
+                    font-size: 0.75rem  
+                    .links
+                        .modify 
+                            margin-right: .5rem
+                            text-decoration: none
+                            &:hover
+                                text-decoration: underline
+                                cursor: pointer
+                                color: $orange-color
+                        .erase
+                            margin-left: .5rem
+                            text-decoration: none
+                            &:hover
+                                text-decoration: underline
+                                cursor: pointer
+                                color: $orange-color
+        .add-address
+            .ajouter
+                font-size: .75rem 
+                text-decoration: none
+                +btn-main(.3rem 1rem,5px,$gray-light,$dark-color,$gray-dark)
+                +box-shadow(0px 2px 3px rgba($dark-light, 0.6))
+                
+                

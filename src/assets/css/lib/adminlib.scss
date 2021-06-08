@@ -1,0 +1,17 @@
+// Reset
+@import "css-reset-and-normalize/scss/reset-and-normalize";
+@import "css-reset-and-normalize/scss/button-reset";
+@import "css-reset-and-normalize/scss/link-reset";
+// Bootstrap
+@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900 !default";
+@import "~bootstrap/scss/bootstrap";
+@import "plugins/flexadmin/scss/app.scss";
+// Fontawesome
+//fontawesome
+$fa-font-path: "fonts/fontawesome/webfonts";
+@import "fonts/fontawesome/scss/fontawesome";
+@import "fonts/fontawesome/scss/solid";
+@import "fonts/fontawesome/scss/regular";
+@import "fonts/fontawesome/scss/brands";
+@import "fonts/fontawesome/scss/light";
+@import "fonts/fontawesome/scss/duotone";

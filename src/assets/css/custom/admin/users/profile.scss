@@ -1,0 +1,10 @@
+.page-content {
+  & .card.card-solid {
+    & .card-body {
+      & .p-image {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+}

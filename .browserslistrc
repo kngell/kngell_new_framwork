@@ -1,0 +1,6 @@
+last 4 versions,
+>0.2%,
+ie >= 9,
+chrome >= 30,
+iOS >= 8,
+Android >= 4

@@ -1,0 +1,110 @@
+import Cropper from 'cropperjs'
+
+class DemoCropImage {
+    constructor() { }
+
+    init() {
+        let image = document.getElementById('demo-crop-image');
+        if (!image) return false;
+        let options = {
+            crop: function(event) {
+                document.getElementById('dataX').value = Math.round(event.detail.x);
+                document.getElementById('dataY').value = Math.round(event.detail.y);
+                document.getElementById('dataWidth').value = Math.round(event.detail.width);
+                document.getElementById('dataHeight').value = Math.round(event.detail.height);
+                document.getElementById('dataRotate').value = event.detail.rotate;
+                document.getElementById('dataScaleX').value = event.detail.scaleX;
+                document.getElementById('dataScaleY').value = event.detail.scaleY;
+
+                let lg = document.getElementById('preview-lg');
+                lg.innerHTML = '';
+                lg.appendChild(cropper.getCroppedCanvas({ width: 256, height: 160 }));
+
+                let md = document.getElementById('preview-md');
+                md.innerHTML = '';
+                md.appendChild(cropper.getCroppedCanvas({ width: 128, height: 80 }));
+
+                let sm = document.getElementById('preview-sm');
+                sm.innerHTML = '';
+                sm.appendChild(cropper.getCroppedCanvas({ width: 64, height: 40 }));
+
+                let xs = document.getElementById('preview-xs');
+                xs.innerHTML = '';
+                xs.appendChild(cropper.getCroppedCanvas({ width: 32, height: 20 }));
+            },
+        };
+
+        let cropper = new Cropper(image, options);
+
+        let buttons = document.getElementById('cropper-buttons');
+        let methods = buttons.querySelectorAll('[data-method]');
+        methods.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                let method = button.getAttribute('data-method');
+                let option = button.getAttribute('data-option');
+                let option2 = button.getAttribute('data-second-option');
+
+                try {
+                    option = JSON.parse(option);
+                } catch (e) {}
+
+                let result;
+                if (!option2) {
+                    result = cropper[method](option, option2);
+                } else if (option) {
+                    result = cropper[method](option);
+                } else {
+                    result = cropper[method]();
+                }
+
+                if (method === 'getCroppedCanvas') {
+                    let modal = document.getElementById('getCroppedCanvasModal');
+                    let modalBody = modal.querySelector('.modal-body');
+                    modalBody.innerHTML = '';
+                    modalBody.appendChild(result);
+                }
+
+                let input = document.querySelector('#putData');
+                try {
+                    input.value = JSON.stringify(result);
+                } catch (e) {
+                    if (!result) {
+                        input.value = result;
+                    }
+                }
+            });
+        });
+
+        // set aspect ratio option buttons
+        let radioOptions = document.getElementById('setAspectRatio').querySelectorAll('[name="aspectRatio"]');
+        radioOptions.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                cropper.setAspectRatio(e.target.value);
+            });
+        });
+
+        // set view mode
+        let viewModeOptions = document.getElementById('viewMode').querySelectorAll('[name="viewMode"]');
+        viewModeOptions.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                cropper.destroy();
+                cropper = new Cropper(image, Object.assign({}, options, { viewMode: e.target.value }));
+            });
+        });
+
+        let toggleoptions = document.getElementById('toggleOptionButtons').querySelectorAll('[type="checkbox"]');
+        toggleoptions.forEach(function(checkbox) {
+            checkbox.addEventListener('click', function(e) {
+                let appendOption = {};
+                appendOption[e.target.getAttribute('name')] = e.target.checked;
+                options = Object.assign({}, options, appendOption);
+                cropper.destroy();
+                cropper = new Cropper(image, options);
+            })
+        })
+
+    }
+}
+
+export default DemoCropImage;
+new DemoCropImage().init();

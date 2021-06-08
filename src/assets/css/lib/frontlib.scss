@@ -1,0 +1,17 @@
+// Reset
+
+@import "css-reset-and-normalize/scss/reset-and-normalize";
+@import "css-reset-and-normalize/scss/button-reset";
+@import "css-reset-and-normalize/scss/link-reset";
+
+// Bootstrap
+@import "~bootstrap/scss/bootstrap";
+
+//fontawesome
+$fa-font-path: "fonts/fontawesome/webfonts";
+@import "fonts/fontawesome/scss/fontawesome";
+@import "fonts/fontawesome/scss/solid";
+@import "fonts/fontawesome/scss/regular";
+@import "fonts/fontawesome/scss/brands";
+@import "fonts/fontawesome/scss/light";
+@import "fonts/fontawesome/scss/duotone";

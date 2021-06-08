@@ -31,11 +31,15 @@
     "ext-json": "*",
     "ext-intl": "*",
     "ext-curl": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "twig/twig": "^3.3",
+    "symfony/http-foundation": "^5.3",
+    "symfony/yaml": "^5.3",
+    "symfony/var-dumper": "^5.3"
   },
   "autoload": {
     "classmap": [
-      "app\\"
+      "App\\"
     ]
   },
   "autoload-dev": {

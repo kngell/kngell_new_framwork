@@ -1,0 +1,55 @@
+@use "corecss/variables" as *
+@use "corecss/mixins" as *
+
+#main-site
+    .container
+        position: relative
+        top: 20%
+        .login-wrapper
+            width: 80%
+            margin: 0 auto
+            text-align: center
+            +dflex()
+            margin-top: 2.5rem
+            .login-frm
+                width: 360px
+                background-color: $gray-150
+                border-radius: 10px
+                padding: .6rem 1rem
+                +input(100%,2.5rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$gray-150)
+                box-shadow: 2px 7px 15px rgba(0,0,0,.15)
+                margin: 1.5rem
+                input
+                    display: block
+                    position: relative
+                    padding: .5rem 1rem
+                    &::placeholder
+                        font-size: .875rem
+                .horizontal-line
+                    +horizontal-line($purple) 
+                    width: 30%
+                    margin: 0 auto
+                    margin-bottom: 2.5rem
+                h2
+                    font-size: 2.5rem
+                    text-transform: capitalize
+                button
+                    height: 2.5rem
+                    +button($white-light,$dark-hover,.225rem,uppercase,0.125rem 1rem,#000)
+                    margin: 0 auto
+                    vertical-align: middle
+                    width: 100%
+                    text-align: center
+                    margin: 2rem 0
+                .options 
+                    a
+                        color: #006400
+                        transition: .1s ease-in
+                        &:hover
+                            color: $dark-in
+                            text-decoration: none
+                            font-weight: 500
+                .checkbox
+                    width: 100%
+                    +checkbox($gray-common,$color-primary,$color-primary,$gray-variant,$white-smoke)
+                            
