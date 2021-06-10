@@ -10,6 +10,7 @@ class RooterFactory
     * @var string $dispatchedUrl
     */
     protected string $dispatchedUrl;
+
     /**
      * @var array $routes
      */
@@ -53,21 +54,8 @@ class RooterFactory
      */
     public function buildRoutes()
     {
-        // $router = new Rooter();
-        // $routes = YamlConfig::file('routes');
-        if (is_array($this->routes) && !empty($this->routes)) {
-            $arg = [];
-            foreach ($this->routes as $key => $route) {
-                if (isset($route['namespace']) && $route['namespace'] != '') {
-                    $arg = ['namespace' => $route['namespace']];
-                } elseif (isset($route['controller']) && $route['controller'] != '') {
-                    $arg = ['controller' => $route['controller'], 'method' => $route['method']];
-                }
-                if (isset($key)) {
-                    $this->router->add($key, $arg);
-                }
-            }
-            $this->router->dispatch($this->dispatchedUrl);
-        }
+        if ($this->router->IsvalidController($this->router->parseUrl())) {
+            $this->router->dispatch();
+        };
     }
 }

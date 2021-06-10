@@ -6,7 +6,7 @@ const common_plugins = require("./webpack.plugins");
 const devMode = process.env.NODE_ENV !== "production";
 const ASSET_PATH =
   process.env.ASSET_PATH ||
-  `${path.sep}kngell_ecommerce${path.sep}public${path.sep}assets${path.sep}`;
+  `${path.sep}kngell${path.sep}public${path.sep}assets${path.sep}`;
 
 const { merge } = require("webpack-merge");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");

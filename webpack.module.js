@@ -95,7 +95,7 @@ module.exports = {
           name: devMode ? "[name].[ext]" : "[name].[hash].[ext]",
           outputPath: "../../public/assets/img",
           publicPath: (url) => {
-            return "/kngell_ecommerce/public/assets/img/" + url;
+            return "/kngell/public/assets/img/" + url;
           },
         },
       },
@@ -112,7 +112,7 @@ module.exports = {
           options: {
             name: "[name].[ext]",
             outputPath: "fonts/",
-            publicPath: "/kngell_ecommerce/public/assets/fonts/",
+            publicPath: "/kngell/public/assets/fonts/",
           },
         },
       ],

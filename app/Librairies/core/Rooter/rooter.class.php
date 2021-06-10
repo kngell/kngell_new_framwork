@@ -17,89 +17,41 @@ class Rooter implements RooterInterface
      * add a suffix on the controller name
      * @var array
      */
-    protected string $controllerSuffix = 'controller';
-
-    //=======================================================================
-    //Add route to the rooting table
-    //=======================================================================
+    protected string $controllerSuffix = 'Controller';
+    protected string $controller = DEFAULT_CONTROLLER;
+    protected string $method = DEFAULT_METHOD;
 
     /**
-     * @inheritDoc
+     * Parse URL
+     * ====================================================================================================
+     * @return array
      */
-    public function add(string $route = '', array $params = []):void
+    public function parseUrl() : string
     {
-        // Convert the route to a regular expression: escape forward slashes
-        $route = preg_replace('/\//', '\\/', $route);
-        // Convert variables e.g. {controller}
-        $route = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[a-z-]+)', $route);
-
-        // Convert variables with custom regular expressions e.g. {id:\d+}
-        $route = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $route);
-
-        // Add start and end delimiters, and case insensitive flag
-        $route = '/^' . $route . '$/i';
-
-        $this->routes[$route] = $params;
-    }
-
-    //=======================================================================
-    //dispatch route and create
-    //=======================================================================
-
-    /**
-     * @inheritDoc
-     */
-    public function dispatch(string $url = ''):void
-    {
-        $url = $this->formatQueryString($url);
-        if ($this->match($url)) {
-            $controllerString = $this->params['controller'] . $this->controllerSuffix;
-            $controllerString = $this->transformUpperCamelCase($controllerString);
-            // $controllerString = $this->getNamespace($controllerString) . $controllerString;
-            if (class_exists($controllerString)) {
-                $controllerObject = new $controllerString($this->params);
-                $method = $this->params['method'];
-                $method = $this->transformCamelCade($method);
-
-                if (\is_callable([$controllerObject, $method])) {
-                    $controllerObject->$method();
-                } else {
-                    throw new BaseBadMethodCallException('Invalid method');
-                }
-            } else {
-                throw new BaseBadFunctionCallException('Controller class does not exist');
-            }
-        } else {
-            throw new BaseInvalidArgumentException('404 ERROR no page found');
+        $url = [];
+        if (isset($_GET['url'])) {
+            $url = explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
+            $controller_Name = isset($url[0]) ? ucfirst(strtolower($url[0])) : $this->controller;
+            $this->method = isset($url[1]) ? $url[1] : $this->method;
+            unset($url[0], $url[1]);
+            $this->params = count($url) > 0 ? array_values($url) : [];
+            return $controller_Name;
         }
-    }
-
-    public function transformUpperCamelCase(string $string) : string
-    {
-        return str_replace(' ', '', ucwords(str_replace('-', ' ', $string)));
-    }
-
-    public function transformCamelCade(string $string) : string
-    {
-        return \lcfirst($this->transformUpperCamelCase($string));
+        return $this->controller;
     }
 
     /**
-     *match the route to the routes in routing table and
-     * setting the params property if the route if found
-     * @param string $url
-     * @return bool
+     * Validate Controler
+     * ====================================================================================================
+     * @param string $controller
+     * @return boolean
      */
-    private function match(string $url):bool
+    public function IsvalidController(string $controller): bool
     {
-        foreach ($this->routes as $route => $params) {
-            if (preg_match($route, $url, $matches)) {
-                foreach ($matches as $key => $param) {
-                    if (is_string($key)) {
-                        $params[$key] = $param;
-                    }
-                }
-                $this->params = $params;
+        if (isset($controller) && !empty($controller)) {
+            $controller = $controller . $this->controllerSuffix;
+            if (file_exists(CONTROLLER . strtolower($controller) . '.class.php')) {
+                $this->controller = $controller;
                 return true;
             }
         }
@@ -107,42 +59,52 @@ class Rooter implements RooterInterface
     }
 
     /**
-     * Get the namespace for the controller, define within route parameters
-     * only if it was added
-     * @param string $str
-     * @return string
+     * dispatch Route
+     * =====================================================================================
+     * @inheritDoc
      */
-    public function getNamespace(string $str) : string
+    public function dispatch():void
     {
-        $namespace = 'App\Controller\\';
-        if (array_key_exists('namespace', $this->params)) {
-            $namespace .= $this->params['namespace'] . '\\';
-        }
-        return $namespace;
-        // $namespace = $str;
-        // if (array_key_exists('namespace', $this->params)) {
-        //     $namespace .= "App\Controller\\" . $this->params['namespace'] . '\\' . $namespace;
+        $storageObject = new NativeSessionStorage(YamlConfig::file('session'));
+        $session = (new Session('generic_session_name', $storageObject))->get('global_session');
+        $global = $GLOBALS;
+        // if (!GrantAccess::hasAccess($this->controller, $this->method)) {
+        //     $this->controller = ACCESS_RESTRICTED . 'Controller';
+        //     $this->method = 'index';
         // }
-        // return $namespace;
-    }
-
-    protected function formatQueryString($url)
-    {
-        if ($url != '') {
-            $parts = explode('&', $url, 2);
-
-            if (strpos($parts[0], '=') == false) {
-                $url = $parts[0];
+        $controllerString = $this->controller;
+        $method = $this->method;
+        if (class_exists($this->controller)) {
+            $controllerObject = new $controllerString($controllerString, $method);
+            if (\is_callable([$controllerObject, $method])) {
+                $controllerObject->$method($this->params);
             } else {
-                $url = '';
+                throw new BaseBadMethodCallException('Invalid method');
             }
+        } else {
+            throw new BaseBadFunctionCallException('Controller class does not exist');
         }
-
-        return rtrim($url, '/');
     }
 
-    public function getRoutes()
+    /**
+     * Redirect
+     * =====================================================================================
+     * @param string $location
+     * @return void
+     */
+    public static function redirect($location = '')
     {
-        return $this->routes;
+        if (!headers_sent()) {
+            header('location:' . PROOT . $location);
+            exit();
+        } else {
+            echo '<script type="text/javascript">';
+            echo 'window.location.href="' . PROOT . $location . '";';
+            echo '</script>';
+            echo '<noscript>';
+            echo '<meta http-equiv="refresh" content="0;url=' . $location . '" />';
+            echo '</noscript>';
+            exit();
+        }
     }
 }

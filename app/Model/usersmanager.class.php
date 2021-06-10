@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-class UsersManager extends AbstractBaseModel
+class UsersManager extends AbstractModel
 {
     protected const COLID = 'userID';
     protected const TABLE = 'users';

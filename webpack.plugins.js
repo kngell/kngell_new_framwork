@@ -45,7 +45,7 @@ module.exports = {
     new BrowserSyncPlugin({
       host: "localhost",
       port: 3003,
-      proxy: "localhost:80/kngell_ecommerce/home",
+      proxy: "localhost:80/kngell/home",
       browser: "chrome",
     }),
     // new CKEditorWebpackPlugin({ language: "fr" }),

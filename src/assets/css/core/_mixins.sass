@@ -1,3 +1,4 @@
+@use "sass:math"
 @use "./function" as *
 // =============================================================================
 //Font Face
@@ -162,7 +163,7 @@
         outline: 0
     &__submit
       width: 100%
-      font-size: ($size * 1.5) / 3.75
+      font-size: math.div($size * 1.5, 3.75)
       text-align: center
       border: 0
       background: transparent

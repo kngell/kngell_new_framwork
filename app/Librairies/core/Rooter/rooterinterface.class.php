@@ -3,24 +3,26 @@
 declare(strict_types=1);
 interface RooterInterface
 {
-    //=======================================================================
-    //Add route to the rooting table
-    //=======================================================================
-
     /**
-     * @param string $route
-     * @param array $params
+     * Dispatch Route
+     * --------------------------------------------------------------------------------------------------
+     * @param string $url
      * @return void
      */
-    public function add(string $route, array $params):void;
-
-    //=======================================================================
-    //dispatch route and create a controller object and execute default method
-    //=======================================================================
+    public function dispatch():void;
 
     /**
-    * @param string $url
-    * @return void
-    */
-    public function dispatch(string $url):void;
+     * UParse url and return ??
+     * --------------------------------------------------------------------------------------------------
+     * @return string
+     */
+    public function parseUrl() : string;
+
+    /**
+     * Validate Url
+     * --------------------------------------------------------------------------------------------------
+     * @param string $controller
+     * @return boolean
+     */
+    public function IsvalidController(string $controller) : bool;
 }

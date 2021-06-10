@@ -5,6 +5,8 @@ declare(strict_types=1);
 class Application
 {
     protected string $appRoot;
+    public Rooter $rooter;
+    public Session $session;
 
     /**
      * Main constructor
@@ -43,7 +45,7 @@ class Application
     {
         defined('DS') or define('DS', DIRECTORY_SEPARATOR);
         defined('APP_ROOT') or define('APP_ROOT', $this->appRoot);
-        defined('CONFIG_PATH') or define('CONFIG_PATH', APP_ROOT . DS . 'config');
+        defined('CONFIG_PATH') or define('CONFIG_PATH', APP_ROOT . DS . 'config' . DS . 'yaml');
         defined('TEMPLATE_PATH') or define('TEMPLATE_PATH', APP_ROOT . DS . 'App' . DS);
         defined('LOG_DIR') or define('LOG_DIR', APP_ROOT . DS . 'temp' . DS . 'log');
     }

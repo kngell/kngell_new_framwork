@@ -1,19 +1,8 @@
 <?php
+declare(strict_types=1);
 
-//start the session
-if (session_status() == PHP_SESSION_NONE || !session_id()) {
-    session_start();
-    if (!session_id()) {
-        session_regenerate_id();
-    }
-}
+defined('ROOT_DIR') or define('ROOT_DIR', realpath(dirname(__DIR__)));
+require_once ROOT_DIR . '/vendor/autoload.php';
 
-//autoload
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-
-// Token form
-if (empty($_SESSION[TOKEN_NAME])) {
-    (new Token())->generate(64);
-}
-//Rooter
-new Rooter();
+$app = new Application(ROOT_DIR);
+$app->run()->setSession()->setrouteHandler();

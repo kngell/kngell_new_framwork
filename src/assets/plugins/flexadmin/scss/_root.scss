@@ -1,9 +1,10 @@
+@use "./variables" as *;
 :root {
   --contrast-background: #{$default-contrast-background};
   --contrast-box-shadow: #{$default-contrast-box-shadow};
   --divider: #{$default-divider};
   --highlight: #{$default-highlight};
-  --highlight-100: rgba(var(--highlight), .2);
+  --highlight-100: rgba(var(--highlight), 0.2);
   --hover-overlay: $default-hover-overlay;
   --input-border: #{$default-input-border};
   --main-text: #{$default-main-text};
@@ -22,16 +23,14 @@
 // highlight theme colors
 body[data-theme-color="app-theme-anchor"] {
   --highlight: #{$anchor};
-  @each $color,
-  $value in $anchors {
+  @each $color, $value in $anchors {
     --highlight-#{$color}: #{$value};
   }
 }
 
 body[data-theme-color="app-theme-maroon"] {
   --highlight: #{$maroon};
-  @each $color,
-  $value in $maroons {
+  @each $color, $value in $maroons {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$maroon};
@@ -39,8 +38,7 @@ body[data-theme-color="app-theme-maroon"] {
 
 body[data-theme-color="app-theme-carrot"] {
   --highlight: #{$carrot};
-  @each $color,
-  $value in $carrots {
+  @each $color, $value in $carrots {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$carrot};
@@ -48,8 +46,7 @@ body[data-theme-color="app-theme-carrot"] {
 
 body[data-theme-color="app-theme-lollipop"] {
   --highlight: #{$lollipop};
-  @each $color,
-  $value in $lollipops {
+  @each $color, $value in $lollipops {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$lollipop};
@@ -57,8 +54,7 @@ body[data-theme-color="app-theme-lollipop"] {
 
 body[data-theme-color="app-theme-gold"] {
   --highlight: #{$gold};
-  @each $color,
-  $value in $golds {
+  @each $color, $value in $golds {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$gold};
@@ -66,8 +62,7 @@ body[data-theme-color="app-theme-gold"] {
 
 body[data-theme-color="app-theme-forest"] {
   --highlight: #{$forest};
-  @each $color,
-  $value in $forests {
+  @each $color, $value in $forests {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$forest};
@@ -75,8 +70,7 @@ body[data-theme-color="app-theme-forest"] {
 
 body[data-theme-color="app-theme-hoki"] {
   --highlight: #{$hoki};
-  @each $color,
-  $value in $hokis {
+  @each $color, $value in $hokis {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$hoki};
@@ -84,8 +78,7 @@ body[data-theme-color="app-theme-hoki"] {
 
 body[data-theme-color="app-theme-purple"] {
   --highlight: #{$purple};
-  @each $color,
-  $value in $purples {
+  @each $color, $value in $purples {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$purple};
@@ -93,8 +86,7 @@ body[data-theme-color="app-theme-purple"] {
 
 body[data-theme-color="app-theme-indigo"] {
   --highlight: #{$indigo};
-  @each $color,
-  $value in $indigos {
+  @each $color, $value in $indigos {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$indigo};
@@ -102,8 +94,7 @@ body[data-theme-color="app-theme-indigo"] {
 
 body[data-theme-color="app-theme-charcoal"] {
   --highlight: #{$charcoal};
-  @each $color,
-  $value in $charcoals {
+  @each $color, $value in $charcoals {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$charcoal};
@@ -111,8 +102,7 @@ body[data-theme-color="app-theme-charcoal"] {
 
 body[data-theme-color="app-theme-cafe"] {
   --highlight: #{$cafe};
-  @each $color,
-  $value in $cafes {
+  @each $color, $value in $cafes {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$cafe};
@@ -120,8 +110,7 @@ body[data-theme-color="app-theme-cafe"] {
 
 body[data-theme-color="app-theme-facebook"] {
   --highlight: #{$facebook};
-  @each $color,
-  $value in $facebooks {
+  @each $color, $value in $facebooks {
     --highlight-#{$color}: #{$value};
   }
   --nav-bar-highlight-background: #{$facebook};

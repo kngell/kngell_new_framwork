@@ -1,23 +1,23 @@
 //=======================================================================
 //Restricted
 //=======================================================================
-import "views/restricted/index.php";
+import "views/client/restricted/index.php";
 //=======================================================================
 //Admin Pages and Layouts
 //=======================================================================
 
 // Admin Layout
-import "views/layouts/include/admin/footer.php";
-import "views/layouts/include/admin/header.php";
-import "views/layouts/include/admin/nav.php";
-import "views/layouts/include/admin/side_nav.php";
-import "views/layouts/include/admin/modal.php";
-import "views/layouts/include/admin/script.php";
-import "views/layouts/include/adminlogin/header.php";
-import "views/layouts/include/adminlogin/footer.php";
+import "views/admin/layouts/inc/admin/footer.php";
+import "views/admin/layouts/inc/admin/header.php";
+import "views/admin/layouts/inc/admin/nav.php";
+import "views/admin/layouts/inc/admin/side_nav.php";
+import "views/admin/layouts/inc/admin/modal.php";
+import "views/admin/layouts/inc/admin/script.php";
+import "views/admin/layouts/inc/adminlogin/header.php";
+import "views/admin/layouts/inc/adminlogin/footer.php";
 
-import "views/layouts/admin.php";
-import "views/layouts/adminlogin.php";
+import "views/admin/layouts/admin.php";
+import "views/admin/layouts/adminlogin.php";
 
 // Admin Pages
 import "views/admin/index.php";
@@ -45,46 +45,48 @@ import "views/admin/company/partials/form.php";
 //Home Ecommerce Pages and Layouts
 //=======================================================================
 // Home Layout
-import "views/layouts/include/default/footer.php";
-import "views/layouts/include/default/header.php";
-import "views/layouts/include/default/nav.php";
-import "views/layouts/include/default/modal.php";
-import "views/layouts/default.php";
+import "views/client/layouts/inc/default/footer.php";
+import "views/client/layouts/inc/default/header.php";
+import "views/client/layouts/inc/default/nav.php";
+import "views/client/layouts/inc/default/modal.php";
+import "views/client/layouts/default.php";
 //home Pages ecommerce index
-import "views/home/index.php";
-import "views/home/partials/_banner_adds.php";
-import "views/home/partials/_banner_area.php";
-import "views/home/partials/_blog.php";
-import "views/home/partials/_empty_cart_template.php";
-import "views/home/partials/_new_products.php";
-import "views/home/partials/_special_price.php";
-import "views/home/partials/_top_sales.php";
+import "views/client/home/index.php";
+import "views/client/home/partials/_banner_adds.php";
+import "views/client/home/partials/_banner_area.php";
+import "views/client/home/partials/_blog.php";
+import "views/client/home/partials/_empty_cart_template.php";
+import "views/client/home/partials/_new_products.php";
+import "views/client/home/partials/_special_price.php";
+import "views/client/home/partials/_top_sales.php";
 
 //home Pages ecommerce product
-import "views/home/product/product.php";
-import "views/home/product/details.php";
-import "views/home/product/partials/_product_details.php";
-import "views/home/product/partials/_not_found_product.php";
+import "views/client/home/product/product.php";
+import "views/client/home/product/details.php";
+import "views/client/home/product/partials/_product_details.php";
+import "views/client/home/product/partials/_not_found_product.php";
 //home Pages ecommerce Cart
-import "views/home/cart/cart.php";
-import "views/home/cart/partials/_shopping_cart.php";
-import "views/home/cart/partials/_wishlist.php";
+import "views/client/home/cart/cart.php";
+import "views/client/home/cart/partials/_shopping_cart.php";
+import "views/client/home/cart/partials/_wishlist.php";
 // home pages ecommerce promotions
-import "views/home/promotions/promotions.php";
-import "views/home/sitemap/sitemap.php";
+import "views/client/home/promotions/promotions.php";
+import "views/client/home/sitemap/sitemap.php";
 // home pages ecommerce boutique
-import "views/home/boutique/boutique.php";
+import "views/client/home/boutique/boutique.php";
 //=======================================================================
 //Users Management pages
 //=======================================================================
 // Users pages ecommerce account
-import "views/users/account/account.php";
-import "views/users/account/partials/_login.php";
-import "views/users/account/partials/_register.php";
-import "views/users/account/login.php";
-import "views/users/account/emailverified.php";
-import "views/users/account/resetpassword.php";
+import "views/client/users/account/account.php";
+import "views/client/users/account/partials/_login.php";
+import "views/client/users/account/partials/_register.php";
+import "views/client/users/account/login.php";
+import "views/client/users/account/emailverified.php";
+import "views/client/users/account/resetpassword.php";
 
 // Users checkout
-import "views/users/checkout/payment.php";
-import "views/users/checkout/checkout.php";
+import "views/client/users/checkout/payment.php";
+import "views/client/users/checkout/checkout.php";
+
+import "views/client/test/index.php";

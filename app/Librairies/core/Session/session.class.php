@@ -4,16 +4,29 @@ declare(strict_types=1);
 
 class Session implements SessionInterface
 {
+    /** @var SessionStorageInterface */
     protected SessionStorageInterface $storage;
-    protected string $sessionName;
-    protected const SESSION_PATERN = '/^|[a-zA-Z0-9_\.]{1,64}$/';
 
-    public function __construct(string $sessionName, SessionStorageInterface $storage = null)
+    /** @var string */
+    protected string $sessionIdentifier;
+
+    /** @var const */
+    protected const SESSION_PATTERN = '/^[a-zA-Z0-9_\.]{1,64}$/';
+
+    /**
+     * Class constructor
+     *
+     * @param string $sessionIdentifier
+     * @param SessionStorageInterface $storage
+     * @throws SessionInvalidArgumentException
+     */
+    public function __construct(string $sessionIdentifier, SessionStorageInterface $storage = null)
     {
-        if ($this->isSessionKeyValid($sessionName) === false) {
-            throw new SessionInvalidArgument($sessionName . ' is not a valid Session name');
+        if ($this->isSessionKeyValid($sessionIdentifier) === false) {
+            throw new SessionStorageInvalidArgument($sessionIdentifier . ' is not a valid session name');
         }
-        $this->sessionName = $sessionName;
+
+        $this->sessionIdentifier = $sessionIdentifier;
         $this->storage = $storage;
     }
 
@@ -21,17 +34,23 @@ class Session implements SessionInterface
      * Set Session
      * =====================================================================
      * @param string $key
-     * @param [type] $value
+     * @param mixed $value
      * @return void
+     * @throws SessionException
      */
     public function set(string $key, $value): void
     {
         $this->ensureSessionKeyIsValid($key);
         try {
-            $this->storage->setSession($key, $value);
-        } catch (\Throwable $th) {
-            throw new SessionException('An exception as occured when retrieving the key from Session storage. ' . $th);
+            $this->storage->SetSession($key, $value);
+        } catch (Throwable $throwable) {
+            throw new SessionException('An exception was thrown in retrieving the key from the session storage. ' . $throwable);
         }
+    }
+
+    public function getStorage()
+    {
+        return $this->storage;
     }
 
     /**
@@ -135,7 +154,7 @@ class Session implements SessionInterface
      */
     protected function isSessionKeyValid(string $sessionName) : bool
     {
-        return preg_match(self::SESSION_PATERN, $sessionName) === 1;
+        return preg_match(self::SESSION_PATTERN, $sessionName) === 1;
     }
 
     protected function ensureSessionKeyIsValid(string $key) : void
