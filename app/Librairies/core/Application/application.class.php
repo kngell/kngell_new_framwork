@@ -79,7 +79,7 @@ class Application
 
     public function setrouteHandler(string $url = null, array $routes = []) :self
     {
-        $url = array_map('strip_tags', self::$container->load([Globals::class => []])->Globals->getGet())['url'];
+        $url = self::$container->load([Globals::class => []])->Globals->getGet('url') ?? null ;
         $factory = self::$container->load([RooterFactory::class => ['dispatchedUrl' => $url, 'routes' => $routes]])->RooterFactory;
         $factory->create(Rooter::class)->buildRoutes();
         $c = self::$container;
