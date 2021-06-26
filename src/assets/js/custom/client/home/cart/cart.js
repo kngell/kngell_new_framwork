@@ -9,11 +9,12 @@ const responsive = {
     items: 5,
   },
 };
-import { Call_controller, displayAllDetails } from "corejs/form_crud";
+import { Call_controller } from "corejs/form_crud";
 import user_cart from "corejs/user_cart";
 import OP from "corejs/operator";
 import { BASE_URL } from "corejs/config";
 import log_reg from "corejs/logregloader";
+import { each } from "jquery";
 class Cart {
   constructor(element) {
     this.element = element;
@@ -57,14 +58,7 @@ class Cart {
       dots: true,
       responsive: responsive,
     });
-    //=======================================================================
-    //Show wishlist section
-    //=======================================================================
-    if (phpPlugin.wrapper.find("#wishlist-items").children().length == 0) {
-      phpPlugin.wrapper.find("#wishlist").hide();
-    } else {
-      phpPlugin.wrapper.find("#wishlist").show();
-    }
+
     //=======================================================================
     //Qty section
     //=======================================================================
@@ -80,7 +74,7 @@ class Cart {
           frm: form,
           params: elt,
         };
-        displayAllDetails(data, display_product);
+        Call_controller(data, display_product);
         function display_product(response, elt) {
           if (response.result == "success") {
             // 1- updat product price
@@ -106,39 +100,43 @@ class Cart {
                       parseFloat(response.msg[0].p_regular_price)
                 );
               });
-            // 3- update Taxe line and tax for TTC TTC
+            //3-Update taxes and TTC
             if (response.msg[1].length != 0) {
+              // a)- update Taxe line values
               $.each(response.msg[1], function (key, val) {
-                console.log(key, val);
                 $("." + key + " .value").html(function (i, tax) {
-                  const old_tax = parseInt(val[0]);
-                  //update TTC
-                  phpPlugin.wrapper
-                    .find("#total-price")
-                    .html(function (i, t_price) {
-                      const old_price = operation._parseLocaleNumber(
-                        t_price,
-                        "de"
-                      );
-                      const old_tax = operation._parseLocaleNumber(tax, "de");
-                      console.log(old_price, old_tax, val[0]);
-                      return operation._currency.format(
-                        old_price - old_tax + val[0]
-                      );
-                    });
-
-                  return operation._currency.format(val[0]);
+                  const old_tax =
+                    (parseFloat(response.msg[0].p_regular_price) *
+                      parseFloat(response.msg[1][key][2]) *
+                      response.msg[2]) /
+                    100;
+                  const actual_tax =
+                    operation._parseLocaleNumber(tax, "de") - old_tax + val[0];
+                  return operation._currency.format(
+                    operation._parseLocaleNumber(tax, "de") - old_tax + val[0]
+                  );
                 });
               });
-              //4- Add new quantity of product
+              //b) Update total price ttc
               phpPlugin.wrapper
                 .find("#total-price")
                 .html(function (i, t_price) {
                   const old_price = operation._parseLocaleNumber(t_price, "de");
-                  console.log(old_price);
+                  let taxes = 0;
+                  $.each(response.msg[1], function (key, val) {
+                    const old_tax =
+                      (parseFloat(response.msg[0].p_regular_price) *
+                        parseFloat(response.msg[1][key][2]) *
+                        parseInt(response.msg[2])) /
+                      100;
+                    const actual_tax = val[0];
+                    taxes = taxes + (actual_tax - old_tax);
+                  });
                   return operation._currency.format(
-                    old_price -
-                      (response.msg[2] - parseInt(response.msg[0].item_qty)) *
+                    old_price +
+                      taxes +
+                      (parseInt(response.msg[0].item_qty) -
+                        parseInt(response.msg[2])) *
                         parseFloat(response.msg[0].p_regular_price)
                   );
                 });
@@ -195,48 +193,72 @@ class Cart {
         }
       });
     //=======================================================================
+    //Show wishlist section
+    //=======================================================================
+    // console.log(phpPlugin.wrapper.find("#wishlist-items").length);
+    show_wishlist();
+    function show_wishlist() {
+      if (phpPlugin.wrapper.find("#wishlist-items").children().length == 0) {
+        phpPlugin.wrapper.find("#wishlist").hide();
+      } else {
+        phpPlugin.wrapper.find("#wishlist").show();
+      }
+    }
+    //=======================================================================
     //Refresh deal price
     //=======================================================================
-    function refresh_subtotal(resp, wishlist) {
+    function refresh_subtotal(resp, qty) {
       const elmt = phpPlugin.wrapper.find("#sub_total");
+      console.log(qty);
       //1- update nb items
       elmt.find(".nb-item .cart_nb_elt").html(function (i, nb_items) {
-        return !wishlist ? parseInt(nb_items) - 1 : parseInt(nb_items);
+        return parseInt(nb_items) - 1;
       });
       //2- update deal price (ht)
       elmt.find("#deal-price").html(function (i, d_price) {
         const deal_price = operation._parseLocaleNumber(d_price, "de");
         const item_price = parseFloat(resp[0]);
-        return operation._currency.format(deal_price - item_price);
+        return operation._currency.format(deal_price - item_price * qty);
       });
       //3- update taxes
-      if (Object.getOwnPropertyNames(resp[1]).length > 0) {
-        $.each(resp[1], function (key, val) {
-          const tax_elmt = elmt.find("." + key + " .value");
-          tax_elmt.html(function (i, amount) {
-            const item_tax = (parseFloat(val) * parseFloat(resp[0])) / 100;
-            const cart_taxe = operation._parseLocaleNumber(amount, "de");
-            let new_cart_tax = operation._currency.format(cart_taxe - item_tax);
-            if (operation._parseLocaleNumber(new_cart_tax, "de") == 0) {
-              elmt.find("." + key).hide();
-            } else {
-              elmt.find("." + key).show();
-            }
-            return new_cart_tax;
+      if (!resp[1].hasOwnProperty("")) {
+        if (Object.getOwnPropertyNames(resp[1]).length >= 0) {
+          $.each(resp[1], function (key, val) {
+            const tax_elmt = elmt.find("." + key + " .value");
+            tax_elmt.html(function (i, amount) {
+              const item_tax =
+                (parseFloat(val) * qty * parseFloat(resp[0])) / 100;
+              const cart_taxe = operation._parseLocaleNumber(amount, "de");
+              let new_cart_tax = operation._currency.format(
+                cart_taxe - item_tax
+              );
+              if (operation._parseLocaleNumber(new_cart_tax, "de") == 0) {
+                elmt.find("." + key).hide();
+              } else {
+                elmt.find("." + key).show();
+              }
+              return new_cart_tax;
+            });
           });
-        });
+        }
       }
       //4- update ttc ttc - item price - taxes associées
       elmt.find("#total-price").html(function (i, t_price) {
         let total_price = operation._parseLocaleNumber(t_price, "de");
         //remove tax
-        if (Object.getOwnPropertyNames(resp[1]).length > 0) {
-          $.each(resp[1], function (key, val) {
-            const item_tax = (parseFloat(val) * parseFloat(resp[0])) / 100;
-            total_price = total_price - item_tax;
-          });
+        if (!resp[1].hasOwnProperty("")) {
+          if (Object.getOwnPropertyNames(resp[1]).length > 0) {
+            $.each(resp[1], function (key, val) {
+              const item_tax =
+                (parseFloat(val) * qty * parseFloat(resp[0])) / 100;
+              console.log(key, val, item_tax, t_price);
+              total_price = total_price - item_tax;
+            });
+          }
         }
-        return operation._currency.format(total_price - parseFloat(resp[0]));
+        return operation._currency.format(
+          total_price - parseFloat(resp[0] * qty)
+        );
       });
     }
     //=======================================================================
@@ -249,11 +271,13 @@ class Cart {
         e.preventDefault();
         $(this).html("Please wait...");
         let wishlist = false;
-        let remove_btn = "btn-success";
-        if ($(this).parents("#wishlist").length != 0) {
-          wishlist = true;
-          remove_btn = "btn-info";
+        let cart = false;
+        let qty = 1;
+        if ($(this).parents(".cart-row").parents("#cart_items").length != 0) {
+          cart = true;
+          qty = $(this).parents("form").prev().find(".qty_input").val();
         }
+        let remove_btn = "btn-success";
         var data = {
           url: "guests/delete",
           table: "cart",
@@ -266,7 +290,17 @@ class Cart {
         function manageResponse(response, elt) {
           if (response.result == "success") {
             elt.parents(".cart-row").remove();
-            refresh_subtotal(response.msg, wishlist);
+            if (
+              phpPlugin.wrapper.find("#wishlist-items").children().length != 0
+            ) {
+              wishlist = true;
+              remove_btn = "btn-info";
+            }
+            if (cart) {
+              refresh_subtotal(response.msg, qty);
+            }
+
+            show_wishlist();
             if (!wishlist) {
               phpPlugin.header.find(".cart_nb_elt").html(function () {
                 return (
@@ -278,7 +312,7 @@ class Cart {
               .find("#new-phones")
               .find(
                 ".add_to_cart_frm input[value='" +
-                  elt.parent().children(":first").val() +
+                  elt.parent().find("input[name='item_id']").val() +
                   "']"
               )
               .parent()
@@ -343,7 +377,7 @@ class Cart {
               .find("#new-phones")
               .find(
                 ".add_to_cart_frm input[value='" +
-                  elt.prev().children(":first").val() +
+                  elt.parents("form").find("input[name='item_id']").val() +
                   "']"
               )
               .parent()

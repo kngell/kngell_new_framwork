@@ -51,9 +51,9 @@ class QueryBuilder extends AbstractQueryBuilder
     {
         if ($this->isValidquerytype('insert')) {
             if (is_array($this->key['fields']) && count($this->key['fields']) > 0) {
-                $index = array_keys($this->key['fields']);
-                $values = [implode(', ', $index), ':' . implode(', :', $index)];
-                $this->sql = "INSERT INTO {$this->key['table']} ({$values[0]}) VALUES ({$values[1]})";
+                $keys = implode(', ', array_keys($this->key['fields']));
+                $values = ':' . implode(', :', array_keys($this->key['fields']));
+                $this->sql = 'INSERT INTO ' . $this->key['table'] . ' (' . $keys . ') VALUES (' . $values . ')';
                 return $this->sql;
             }
         }
@@ -69,7 +69,7 @@ class QueryBuilder extends AbstractQueryBuilder
     public function select():string
     {
         if ($this->isValidquerytype('select')) {
-            if (!$this->sql = $this->join($this->key['table'], $this->key['params'])) {
+            if (!$this->sql = $this->join($this->key['table_join'], $this->key['extras'])) {
                 if (strpos($this->key['table'], 'SELECT') !== false) {
                     $this->sql = $this->key['table'];
                 } else {
@@ -89,7 +89,20 @@ class QueryBuilder extends AbstractQueryBuilder
             $this->sql .= $this->orderByQuery();
             //Limits,Offset
             $this->sql .= $this->queryOffset();
-            return $this->sql;
+            return $this->sql . (isset($this->key['where']['bind_array']) ? '&' . serialize($this->key['where']['bind_array']) : '');
+        }
+        return false;
+    }
+
+    /**
+     * Show or get column from data base
+     *
+     * @return string
+     */
+    public function show() : string
+    {
+        if ($this->isValidquerytype('show')) {
+            return $this->sql = 'SHOW COLUMNS FROM ' . "{$this->key['table']}";
         }
         return false;
     }
@@ -104,20 +117,27 @@ class QueryBuilder extends AbstractQueryBuilder
     {
         if ($this->isValidquerytype('update')) {
             if (is_array($this->key['fields']) && count($this->key['fields']) > 0) {
-                foreach ($this->key['fields'] as $field) {
-                    $values = '';
-                    if ($field !== $this->key['primary_key']) {
-                        $values .= $field . '= :' . $field . ', ';
+                $keyValues = '';
+                //Fields
+                $i = 0;
+                foreach ($this->key['fields'] as $key => $val) {
+                    $add = ($i > 0) ? ', ' : '';
+                    $keyValues .= "$add" . "$key=:$key";
+                    $i++;
+                }
+                $whereCond = '';
+                //Where Conditiond
+                if (isset($this->key['where']) && count($this->key['where']) > 0) {
+                    $whereCond .= ' WHERE ';
+                    $i = 0;
+                    foreach ($this->key['where'] as $key => $val) {
+                        $add = ($i > 0) ? ' AND ' : '';
+                        $whereCond .= "$add" . "$key=:$key";
+                        $i++;
                     }
                 }
-                $values = substr_replace($values, '', -2);
-                if (count($this->key['fields']) > 0) {
-                    $this->sql = "UPDATE {$this->key['table']} SET {$values} WHERE {$this->key['primary_key']} = :{$this->key['primary_key']} LIMIT 1";
-                    if (isset($this->key['primary_key']) && $this->key['primary_key'] == 0) {
-                        unset($this->key['primary_key']);
-                        $this->sql = "UPDATE {$this->key['table']} SET {$values}";
-                    }
-                }
+                //Query
+                $this->sql = 'UPDATE ' . $this->key['table'] . ' SET ' . $keyValues . $whereCond;
                 return $this->sql;
             }
         }
@@ -134,15 +154,15 @@ class QueryBuilder extends AbstractQueryBuilder
     public function delete():string
     {
         if ($this->isValidquerytype('delete')) {
-            if (is_array($this->key['fields']) && count($this->key['fields']) > 0) {
-                $index = array_keys($this->key['conditions']);
-                $this->sql = "DELETE from {$this->key['table']} WHERE {$index[0]} = :{$index[0]} LIMIT 1";
-                $bulkdelete = array_values($this->key['fields']);
-                if (is_array($bulkdelete) && count($bulkdelete) > 1) {
-                    for ($i = 0; $i < count($bulkdelete); $i++) {
-                        $this->sql = "DELETE FROM {$this->key['table']} WHERE {$index[0]} = :{$index[0]}";
-                    }
+            if (is_array($this->key['conditions']) && count($this->key['conditions']) > 0) {
+                $whereCond = ' WHERE ';
+                $i = 0;
+                foreach ($this->key['conditions'] as $key => $val) {
+                    $add = ($i > 0) ? ' AND ' : '';
+                    $whereCond .= "$add" . "$key=:$key";
+                    $i++;
                 }
+                $this->sql = 'DELETE FROM ' . $this->key['table'] . $whereCond;
                 return $this->sql;
             }
         }

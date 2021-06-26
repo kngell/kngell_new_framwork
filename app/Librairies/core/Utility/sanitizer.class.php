@@ -6,13 +6,13 @@ class Sanitizer
     /**
      * Clean Data
      * ======================================================================================
-     * @param array $dirtydata
-     * @return array
+     * @param mixed $dirtydata
+     * @return mixed
      */
-    public static function clean(array $dirtydata) : array
+    public static function clean($dirtydata)
     {
-        $input = [];
-        if (count($dirtydata) > 0) {
+        if (is_array($dirtydata) && count($dirtydata) > 0) {
+            $input = [];
             foreach ($dirtydata as $key => $value) {
                 if (!isset($key)) {
                     throw new BaseInvalidArgumentException('Invalid Key');
@@ -25,6 +25,9 @@ class Sanitizer
             if (isset($input) && count($input) > 0) {
                 return $input;
             }
+        } else {
+            $input = htmlspecialchars(trim(stripslashes($dirtydata)), ENT_QUOTES, 'UTF-8');
+            return self::validate($input);
         }
     }
 

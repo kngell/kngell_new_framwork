@@ -142,30 +142,29 @@ class FH
                     $value = $source[$item];
                     if ($rule === 'required' && empty($value)) {
                         $requireMsg = ($item == 'terms') ? 'Please accept terms & conditions' : "{$display} is require";
-                        property_exists($obj, $item) ? $obj->runValidation(new Requirevalidator($obj, ['field' => $item, 'msg' => $requireMsg])) : '';
+                        property_exists($obj, $item) ? $obj->runValidation($obj->get_container()->load([Requirevalidator::class => ['model' => $obj, 'field' => $item, 'msg' => $requireMsg]])->Requirevalidator) : '';
                     } elseif (!empty($value)) {
                         switch ($rule) {
                         case 'min':
-                            $obj->runValidation(new Minvalidator($obj, ['field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a minimum of {$rule_value} characters"]));
+                            $obj->runValidation($obj->get_container()->load([Minvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a minimum of {$rule_value} characters"]])->Minvalidator);
                             break;
                         case 'max':
-                            $obj->runValidation(new Maxvalidator($obj, ['field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a maximum of {$rule_value} caracters"]));
+                            $obj->runValidation($obj->get_container()->load([Maxvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a maximum of {$rule_value} caracters"]])->Maxvalidator);
                             break;
                         case 'valid_email':
-                            $obj->runValidation(new ValidEmailvalidator($obj, ['field' => $item, 'rule' => $rule_value, 'msg' => "{$display} is not valid"]));
+                            $obj->runValidation($obj->get_container()->load([ValidEmailvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} is not valid"]])->ValidEmailvalidator);
                             break;
                         case 'is_numeric':
-                            $obj->runValidation(new Numericvalidator($obj, ['field' => $item, 'rule' => $rule_value, 'msg' => "{$display} has to be a number. Please use a numeric value"]));
-
+                            $obj->runValidation($obj->get_container()->load([Numericvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} has to be a number. Please use a numeric value"]])->Numericvalidator);
                             break;
                         case 'matches':
                             $mathdisplay = $items[$rule_value]['display'];
-                            $obj->runValidation(new MatchesValidator($obj, ['field' => $item, 'rule' => $obj->getConfirm(), 'msg' => "{$display} does not math {$mathdisplay}"]));
+                            $obj->runValidation($obj->get_container()->load([MatchesValidator::class => ['model' => $obj, 'field' => $item, 'rule' => $obj->getConfirm(), 'msg' => "{$display} does not math {$mathdisplay}"]])->MatchesValidator);
                             break;
                         case 'unique':
-                            $obj->runValidation(new UniqueValidator($obj, ['field' => $item, 'rule' => [$rule_value, $obj->get_colID()], 'msg' => "This {$item} already exist."]));
+                            $obj->runValidation($obj->get_container()->load([UniqueValidator::class => ['model' => $obj, 'field' => $item, 'rule' => [$rule_value, $obj->get_colID()], 'msg' => "This {$display} already exist."]])->UniqueValidator);
                             break;
-                    }
+                        }
                     }
                 }
             }
@@ -185,8 +184,11 @@ class FH
                         } elseif (isset($params['return_mode']) && $params['return_mode'] == 'index') {
                             return $model->getAllbyIndex($request->getAll('id'));
                         } else {
-                            return $model->getAllItem()->get_results();
+                            return $model->getAllItem(['return_mode' => 'class'])->get_results();
                         }
+                    break;
+                    case $params['data_type'] && $params['data_type'] == 'spcefics_values':
+                        return $model->getAll($params);
                     break;
                     case $params['data_type'] == 'template':
                         return $model->getHtmlData($params);

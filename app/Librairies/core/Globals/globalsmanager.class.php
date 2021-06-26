@@ -5,13 +5,13 @@ declare(strict_types=1);
 class GlobalsManager implements GlobalsManagerInterface
 {
     /**
-     * Set Globals
-     * =====================================================================
-     * @param string $key
-     * @param [type] $value
-     * @return void
-     */
-    public static function set(string $key, $value) :void
+      * @inheritdoc
+      *  =====================================================================
+      * @param string $key
+      * @param mixed $value
+      * @return void
+      */
+    public static function set(string $key, $value) : void
     {
         $GLOBALS[$key] = $value;
     }
@@ -23,7 +23,7 @@ class GlobalsManager implements GlobalsManagerInterface
      * @return void
      * @throws GlobalManagerInvalidException
      */
-    public static function get(string $key)
+    public static function get(string $key) :  SessionInterface
     {
         self::isglobalsValid($key);
         try {

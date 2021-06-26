@@ -18,19 +18,35 @@ class Rooter implements RooterInterface
      * @var array
      */
     protected string $controllerSuffix = 'Controller';
+    /**
+     * Default Controller
+     */
     protected string $controller = DEFAULT_CONTROLLER;
+    /**
+     * Default Method
+     */
     protected string $method = DEFAULT_METHOD;
+    /**
+     * File path client/admin to redirect To
+     */
+    protected string $filePath;
+    /**
+     * Container Class
+     *
+     * @var ContainerInterface
+     */
+    protected static ContainerInterface $container;
 
     /**
      * Parse URL
      * ====================================================================================================
      * @return array
      */
-    public function parseUrl() : string
+    public function parseUrl(string $urlroute = null) : string
     {
         $url = [];
-        if (isset($_GET['url'])) {
-            $url = explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
+        if (isset($urlroute) && !empty($urlroute)) {
+            $url = explode('/', filter_var(rtrim($urlroute, '/'), FILTER_SANITIZE_URL));
             $controller_Name = isset($url[0]) ? ucfirst(strtolower($url[0])) : $this->controller;
             $this->method = isset($url[1]) ? $url[1] : $this->method;
             unset($url[0], $url[1]);
@@ -50,7 +66,8 @@ class Rooter implements RooterInterface
     {
         if (isset($controller) && !empty($controller)) {
             $controller = $controller . $this->controllerSuffix;
-            if (file_exists(CONTROLLER . strtolower($controller) . '.class.php')) {
+            $this->filePath = AdminClientRedirectMiddleware::redirecTo($controller);
+            if ($this->filePath != '' && file_exists(CONTROLLER . $this->filePath . strtolower($controller) . '.class.php')) {
                 $this->controller = $controller;
                 return true;
             }
@@ -65,17 +82,20 @@ class Rooter implements RooterInterface
      */
     public function dispatch():void
     {
-        $storageObject = new NativeSessionStorage(YamlConfig::file('session'));
-        $session = (new Session('generic_session_name', $storageObject))->get('global_session');
-        $global = $GLOBALS;
-        // if (!GrantAccess::hasAccess($this->controller, $this->method)) {
-        //     $this->controller = ACCESS_RESTRICTED . 'Controller';
-        //     $this->method = 'index';
-        // }
+        GrantAccess::$container = self::$container;
+        if (!GrantAccess::hasAccess($this->controller, $this->method)) {
+            $this->controller = ACCESS_RESTRICTED . 'Controller';
+            $this->method = 'index';
+            $this->filePath = 'Client' . DS;
+        }
         $controllerString = $this->controller;
         $method = $this->method;
+        $this->set_redirect($controllerString, $method);
         if (class_exists($this->controller)) {
-            $controllerObject = new $controllerString($controllerString, $method);
+            $controllerObject = self::$container->load([$controllerString => [
+                'controller' => $controllerString,
+                'method' => $method,
+            ]])->$controllerString->set_path($this->filePath)->set_request()->set_session();
             if (\is_callable([$controllerObject, $method])) {
                 $controllerObject->$method($this->params);
             } else {
@@ -105,6 +125,22 @@ class Rooter implements RooterInterface
             echo '<meta http-equiv="refresh" content="0;url=' . $location . '" />';
             echo '</noscript>';
             exit();
+        }
+    }
+
+    public function set_redirect($controller, $method)
+    {
+        $session = GlobalsManager::get('global_session');
+        $redirect_file = file_get_contents(APP . 'redirect.json');
+        $redirect = json_decode($redirect_file, true);
+        if (!$session->exists(REDIRECT)) {
+            foreach ($redirect as $ctrl => $mth) {
+                if ($ctrl == $controller) {
+                    if (in_array($method, $redirect[$controller]) || in_array('*', $redirect[$controller])) {
+                        $session->set(REDIRECT, 'redirect');
+                    }
+                }
+            }
         }
     }
 }

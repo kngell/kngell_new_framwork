@@ -97,7 +97,8 @@ class Session implements SessionInterface
     {
         $this->ensureSessionKeyIsValid($key);
         try {
-            return $this->storage->deleteSession($key);
+            $this->storage->deleteSession($key);
+            return true;
         } catch (\Throwable $th) {
             throw new SessionException();
         }
@@ -162,5 +163,18 @@ class Session implements SessionInterface
         if ($this->isSessionKeyValid($key) === false) {
             throw new SessionInvalidArgument($key . ' is not a valid sesion Name.');
         }
+    }
+
+    /**
+     * Get User Agent client
+     *
+     * @return void
+     */
+    public static function uagent_no_version()
+    {
+        $uagent = $_SERVER['HTTP_USER_AGENT'];
+        $regx = '/\/[a-zA-z0-9.]+/';
+        $newString = preg_replace($regx, '', $uagent);
+        return $newString;
     }
 }

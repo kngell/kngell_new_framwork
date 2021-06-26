@@ -62,9 +62,10 @@ interface DataMapperInterface
     /**
      * --------------------------------------------------------------------------------------------------
      * Return all
-     * @return array
+     * @param array $options
+     * @return self
     */
-    public function results(): array;
+    public function results(array $options) : self;
 
     /**
      * --------------------------------------------------------------------------------------------------

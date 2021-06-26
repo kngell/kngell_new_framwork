@@ -9,20 +9,23 @@ export default class Upload {
   //=======================================================================
   _init = (params = {}) => {
     let plugin = this;
+    var data = {};
+    for (let [key, value] of Object.entries(params)) {
+      if (!(value instanceof Object)) {
+        if (key == "tbl_options") {
+          key = "table";
+        }
+        data[`${key}`] = `${value}`;
+      }
+    }
+    data["data_type"] = "select2";
     let select = params.element.select2({
       placeholder: "---" + params.placeholder + "---",
       maximumInputLength: 20,
       tags: true,
-      tokenSeparators: [",", " "],
+      tokenSeparators: [";", "\n", "\t"],
       allowClear: true,
-      ajax: select2AjaxParams({
-        url: "forms/showDetails",
-        table: params.tbl_options != "" ? params.tbl_options : "",
-        data_type: "select2",
-        parentID: plugin.params.hasOwnProperty("parentID")
-          ? plugin.params.parentID
-          : "",
-      }),
+      ajax: select2AjaxParams(data),
     });
     plugin.select = select;
     return plugin;

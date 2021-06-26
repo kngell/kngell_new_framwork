@@ -26,7 +26,7 @@ export default class Operator {
     const plugin = this;
     $.each(fields, function (key, value) {
       wrapper.find(value).html(function (i, amount) {
-        return plugin._currency.format(amount); //plugin._currency().format(parseInt(amount.match(/[0-9]+/g)[0]));
+        return plugin._currency.format(amount);
       });
     });
   };

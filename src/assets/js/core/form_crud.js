@@ -1,3 +1,4 @@
+import { param } from "jquery";
 import { BASE_URL, isIE } from "./config";
 
 //display all details
@@ -91,24 +92,45 @@ export function Add(data, gestion) {
     },
   });
 }
-//update
-export function Call_controller(data, gestion) {
-  var formData = new FormData(data.frm[0]);
+function get_formData(data) {
+  var formData = data.hasOwnProperty("frm")
+    ? new FormData(data.frm[0])
+    : new FormData();
   formData.append("frm_name", data.frm_name);
   formData.append("isIE", isIE());
   $.each(data, function (key, val) {
-    if (typeof val === "object") {
-      for (const [k, v] of Object.entries(val)) {
-        formData.append(k, JSON.stringify(v));
+    if (key != "frm") {
+      if (val instanceof Object) {
+        if (key == "select2") {
+          for (const [k, v] of Object.entries(val)) {
+            formData.append(k, JSON.stringify(v));
+          }
+          // formData.append(key, JSON.stringify(val));
+        } else if (key == "files") {
+          for (let i = 0; i < val.length; i++) {
+            formData.append(val[i].name, data.files[i]);
+          }
+        } else {
+          formData.append(key, JSON.stringify(val));
+        }
+      } else if (val instanceof Array) {
+        for (let i = 0; i < val.length; i++) {
+          formData.append(val[i].name, data.files[i]);
+        }
+      } else {
+        formData.append(key, val);
       }
-    } else if (val instanceof Array) {
-      for (let i = 0; i < val.length; i++) {
-        formData.append(val[i].name, data.files[i]);
-      }
-    } else {
-      formData.append(key, val);
     }
   });
+  return formData;
+}
+/**
+ *
+ * @param {*} data
+ * @param {*} gestion
+ */
+export function Call_controller(data, gestion) {
+  const formData = get_formData(data);
   $.ajax({
     url: BASE_URL + data.url,
     method: "POST",
@@ -165,7 +187,6 @@ function checkBeforeDelete(data) {
           resolve(result);
         });
     } else {
-      console.log(data);
       $.ajax({
         url: BASE_URL + data.url_check,
         method: "post",
@@ -228,28 +249,28 @@ export function addCategorrie(catField, alertID) {
   }
 }
 export function select2AjaxParams(data) {
+  var formData = get_formData(data);
   return {
     url: BASE_URL + data.url,
     type: "post",
-    dataType: "json",
     delay: 250,
+    processData: false,
+    contentType: false,
+    dataType: "json",
     data: function (params) {
-      return {
-        searchTerm: params.term, // search term
-        table: data.table != "" ? data.table : "",
-        data_type: data.data_type != "" ? data.data_type : "",
-        parentID: data.parentID != "" ? data.parentID : "",
-      };
+      formData.append("searchTerm", params.term);
+      return formData;
     },
     processResults: function (response) {
       if (response.result == "success") {
         return {
           results: $.map(response.msg, function (obj) {
-            if (obj.id != 0) {
-              return { id: obj.id, text: obj.text };
-            } else {
-              return { id: obj.id, text: obj.text };
-            }
+            return { id: obj.id, text: obj.text };
+            // if (obj.id != 0) {
+            //   return { id: obj.id, text: obj.text };
+            // } else {
+            //   return { id: obj.id, text: obj.text };
+            // }
           }),
         };
       }

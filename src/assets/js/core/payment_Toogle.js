@@ -13,12 +13,18 @@ export default class Payment_Toogle {
         $this
           .closest(".payment-gateway")
           .find(".payment-gateway-content")
-          .slideUp(0);
+          .slideUp("slow");
+      } else {
+        $this
+          .closest(".payment-gateway")
+          .find(".payment-gateway-content")
+          .slideToggle(0);
       }
+
       $this.on("change", function (e) {
         $(".payment-gateway-content").each(function () {
           if ($(".payment-gateway-content").is(":visible"));
-          $(this).slideUp(200);
+          $(this).slideUp("slow");
         });
 
         if (!$this.is(":checked")) {
@@ -26,13 +32,13 @@ export default class Payment_Toogle {
             .closest(".payment-gateway")
             .find(".payment-gateway-content")
             .stop()
-            .slideUp(200);
+            .slideUp("slow");
         } else {
           $this
             .closest(".payment-gateway")
             .find(".payment-gateway-content")
             .stop()
-            .slideDown(200);
+            .slideDown("slow");
         }
       });
     });

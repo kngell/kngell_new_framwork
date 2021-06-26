@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 class GrantAccess
 {
+    public static Container $container;
+
     public static function hasAccess($controller, $method = 'index')
     {
         $acl_file = file_get_contents(APP . 'acl.json');
@@ -8,9 +11,11 @@ class GrantAccess
 
         $current_user_acls = ['Guest'];
         $grantAccess = false;
-
-        if (Session::exists(CURRENT_USER_SESSION_NAME) && AuthManager::currentUser() != null) {
+        $session = GlobalsManager::get('global_session');
+        self::$container->load([AuthManager::class => ['user' => '']])->Auth;
+        if ($session->exists(CURRENT_USER_SESSION_NAME) && AuthManager::currentUser() != null) {
             $current_user_acls[] = 'LoggedIn';
+            AuthManager::currentUser()->set_container(self::$container);
             foreach (AuthManager::currentUser()->acls() as $a) {
                 $current_user_acls[] = $a;
             }

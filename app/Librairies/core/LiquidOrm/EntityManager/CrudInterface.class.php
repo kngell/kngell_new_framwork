@@ -29,9 +29,9 @@ interface CrudInterface
      * --------------------------------------------------------------------------------------------------
      * Insert in data base successfully or not
      * @param array $fields
-     * @return bool
+     * @return int
      */
-    public function create(array $fields):bool;
+    public function create(array $fields) : int;
 
     /**
      * --------------------------------------------------------------------------------------------------
@@ -40,34 +40,35 @@ interface CrudInterface
      * @param array $conditions
      * @param array $params
      * @param array $options
-     * @return array
+     * @return mixed
      */
-    public function read(array $selectors = [], array $conditions = [], array $params = [], array $options = []):array;
+    public function read(array $selectors = [], array $conditions = [], array $params = [], array $options = []);
 
     /**
      * --------------------------------------------------------------------------------------------------
      * Update data
      * @param array $fields
-     * @return bool
+     * @param array $conditions
+     * @return int|null
      */
-    public function update(array $fields = [], string $primary_key):bool;
+    public function update(array $fields = [], array $conditions = []) : ?int;
 
     /**
     * --------------------------------------------------------------------------------------------------
     * Delete data
     * @param array $conditions
-    * @return bool
+    * @return int|null
     */
-    public function delete(array $conditions = []):bool;
+    public function delete(array $conditions = []) :?int;
 
     /**
     * --------------------------------------------------------------------------------------------------
     * Search data
     * @param array $selectors
     * @param array $searchconditions
-    * @return array
+    * @return mixed
     */
-    public function search(array $selectors = [], array $searchconditions = []):array;
+    public function search(array $selectors = [], array $searchconditions = []);
 
     /**
     * --------------------------------------------------------------------------------------------------
@@ -105,4 +106,12 @@ interface CrudInterface
     * @return null|Object
     */
     public function get(array $selectors = [], array $conditions = []) : ?Object;
+
+    /**
+     * Get table columns
+     *
+     * @param array $options
+     * @return object
+     */
+    public function show(array $options) : object;
 }

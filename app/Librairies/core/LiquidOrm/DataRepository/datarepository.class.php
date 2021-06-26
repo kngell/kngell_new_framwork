@@ -9,12 +9,10 @@ class DataRepository implements DataRepositoryInterface
     protected EntityManagerInterface $em;
 
     /**
-      * =====================================================================
-      * Main constructor
-      * =====================================================================
-      * @param CrudInterface $crud
-      * @return void
-      */
+     * Main constructor
+     * ====================================================================
+     * @param EntityManagerInterface $em
+     */
     public function __construct(EntityManagerInterface $em = null)
     {
         $this->em = $em;
@@ -36,16 +34,55 @@ class DataRepository implements DataRepositoryInterface
     }
 
     /**
+     * Create new entrie
+     * ====================================================================
+     * @param array $fields
+     * @return integer|null
+     */
+    public function create(array $fields) :?int
+    {
+        try {
+            return $this->em->getCrud()->create($fields);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    /**
+     * Delete from data base
+     * ====================================================================
+     * @param array $conditions
+     * @return integer|null
+     */
+    public function delete(array $conditions) : ?int
+    {
+        try {
+            return $this->em->getCrud()->delete($conditions);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function update(array $fields, array $conditions) : ?int
+    {
+        try {
+            return $this->em->getCrud()->update($fields, $conditions);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    /**
      * Find by ID
-     *====================================================================
+     * ====================================================================
      * @param integer $id
      * @return array
      */
-    public function find(int $id): array
+    public function findByID(int $id): array
     {
         if ($this->isempty($id)) {
             try {
-                return $this->findOneBy([$this->em->getCrud()->getSchemaID() => $id]);
+                return $this->findOneBy([$this->em->getCrud()->getSchemaID() => $id], []);
             } catch (\Throwable $th) {
                 throw $th;
             }
@@ -56,13 +93,14 @@ class DataRepository implements DataRepositoryInterface
      * Find One element by
      *====================================================================
      * @param array $conditions
-     * @return array
+     * @param array $options
+     * @return mixed
      */
-    public function findOneBy(array $conditions): array
+    public function findOneBy(array $conditions, array $options) :mixed
     {
         $this->isArray($conditions);
         try {
-            return $this->em->getCrud()->read([], $conditions);
+            return $this->em->getCrud()->read([], $conditions, [], $options);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -70,7 +108,7 @@ class DataRepository implements DataRepositoryInterface
 
     /**
      * Get All
-     *====================================================================
+     * ====================================================================
      * @return array
      */
     public function findAll(): array
@@ -84,15 +122,15 @@ class DataRepository implements DataRepositoryInterface
     }
 
     /**
-     * Get All by
-     *====================================================================
+     * Get All By
+     * ====================================================================
      * @param array $selectors
      * @param array $conditions
      * @param array $parameters
      * @param array $options
-     * @return array
+     * @return mixed
      */
-    public function findBy(array $selectors = [], array $conditions = [], array $parameters = [], array $options = []): array
+    public function findBy(array $selectors = [], array $conditions = [], array $parameters = [], array $options = [])
     {
         try {
             return $this->em->getCrud()->read($selectors, $conditions, $parameters, $options);
@@ -140,7 +178,7 @@ class DataRepository implements DataRepositoryInterface
     {
         $this->isArray($conditions);
         try {
-            $result = $this->findOneBy($conditions);
+            $result = $this->findOneBy($conditions, []);
             if ($result != null && $result > 0) {
                 $delete = $this->em->getCrud()->delete($conditions);
                 if ($delete) {
@@ -163,7 +201,7 @@ class DataRepository implements DataRepositoryInterface
     {
         $this->isArray($fields);
         try {
-            $result = $id > 0 ? $this->findOneBy([$this->em->getCrud()->getSchemaID() => $id]) : null;
+            $result = $id > 0 ? $this->findOneBy([$this->em->getCrud()->getSchemaID() => $id], []) : null;
             if ($result != null && count($result) > 0) {
                 $param = (!empty($fields)) ? array_merge([$this->im->getCrud()->getSchemaID()->$id], $fields) : $fields;
                 $update = $this->em->getCrud()->update($param, $this->im->getCrud()->getSchemaID());
@@ -250,5 +288,14 @@ class DataRepository implements DataRepositoryInterface
     public function findAndReturn(int $id, array $selectors = []): DataRepositoryInterface
     {
         return $this;
+    }
+
+    public function get_tableColumn(array $options): object
+    {
+        try {
+            return $this->em->getCrud()->show($options);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

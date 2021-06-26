@@ -6,7 +6,7 @@
 // bootstrap variables
 //
 $input-btn-focus-width: 0;
-$white:    #fff;
+$white: #fff;
 $gray-100: #f8f9fa;
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
@@ -16,7 +16,7 @@ $gray-600: #6c757d;
 $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
-$black:    #000;
+$black: #000;
 
 // fusv-disable
 $grays: (
@@ -28,94 +28,93 @@ $grays: (
   "600": $gray-600,
   "700": $gray-700,
   "800": $gray-800,
-  "900": $gray-900
+  "900": $gray-900,
 );
 // fusv-enable
-$blue:    #0d6efd;
-$indigo:  #7976b3;
-$purple:  #886ab5;
-$pink:    #d63384;
-$red:     #dc3545;
-$orange:  #fd7e14;
-$yellow:  #ffb300;
-$green:   #7cb342;
-$teal:    #20c997;
-$cyan:    #17a2b8;
-$rose:    #d81b60;
+$blue: #0d6efd;
+$indigo: #7976b3;
+$purple: #886ab5;
+$pink: #d63384;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffb300;
+$green: #7cb342;
+$teal: #20c997;
+$cyan: #17a2b8;
+$rose: #d81b60;
 $success-dark: #508c0e;
 $rose-dark: #a00037;
-$yellow-dark:  #ce8d0a;
+$yellow-dark: #ce8d0a;
 
 //
 // scss-docs-start colors-map
 $colors: (
-  "blue":            $blue,
-  "indigo":          $indigo,
-  "purple":          $purple,
-  "pink":            $pink,
-  "red":             $red,
-  "orange":          $orange,
-  "yellow":          $yellow,
-  "green":           $green,
-  "teal":            $teal,
-  "cyan":            $cyan,
-  "white":           $white,
-  "gray":            $gray-600,
-  "gray-dark":       $gray-800,
-  "rose":            $rose,
-  "success-dark":    $success-dark,
-  "rose-dark":       $rose-dark,
-  "yellow-dark":     $yellow-dark
+  "blue": $blue,
+  "indigo": $indigo,
+  "purple": $purple,
+  "pink": $pink,
+  "red": $red,
+  "orange": $orange,
+  "yellow": $yellow,
+  "green": $green,
+  "teal": $teal,
+  "cyan": $cyan,
+  "white": $white,
+  "gray": $gray-600,
+  "gray-dark": $gray-800,
+  "rose": $rose,
+  "success-dark": $success-dark,
+  "rose-dark": $rose-dark,
+  "yellow-dark": $yellow-dark,
 );
 // scss-docs-end colors-map
-$primary:       $blue;
-$secondary:     $gray-600;
-$success:       $green;
-$info:          $cyan;
-$warning:       $yellow;
-$danger:        $red;
-$light:         $gray-100;
-$dark:          $gray-800;
+$primary: $blue;
+$secondary: $gray-600;
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+$light: $gray-100;
+$dark: $gray-800;
 
 $theme-colors: (
-  "primary":      $primary,
-  "secondary":    $secondary,
-  "success":      $success,
-  "info":         $info,
-  "warning":      $warning,
-  "danger":       $danger,
-  "light":        $light,
-  "dark":         $dark,
-  "purple":       $purple,
-  "gray-200":     $gray-200,
-  "rose":         $rose,
-  "rose-dark":    $rose-dark,
+  "primary": $primary,
+  "secondary": $secondary,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark,
+  "purple": $purple,
+  "gray-200": $gray-200,
+  "rose": $rose,
+  "rose-dark": $rose-dark,
   "warning-dark": $yellow-dark,
-  "success-dark": $success-dark
+  "success-dark": $success-dark,
 );
 
-$border-radius:               .25rem;
-$border-radius-sm:            .2rem;
-$border-radius-lg:            .4rem;
+$border-radius: 0.25rem;
+$border-radius-sm: 0.2rem;
+$border-radius-lg: 0.4rem;
 
 $link-decoration: none;
 
 //card
 $card-cap-padding-y: 0.8rem;
-$card-border-radius: .45rem;
+$card-border-radius: 0.45rem;
 
 //extend button size
 
-$btn-padding-y-xl:            0.9rem;
-$btn-padding-x-xl:            2rem;
-$btn-font-size-xl:            1rem;
-$btn-border-radius-xl:        $border-radius-lg;
+$btn-padding-y-xl: 0.9rem;
+$btn-padding-x-xl: 2rem;
+$btn-font-size-xl: 1rem;
+$btn-border-radius-xl: $border-radius-lg;
 
 $breadcrumb-bg: transparent;
 
 // $nav-tabs-link-active-border-color: $white;
 // $nav-tabs-border-color:             $white;
-
 
 //
 // custome variables
@@ -129,12 +128,12 @@ $font-size-lg: $font-size-base * 1.6;
 $font-size-xl: $font-size-base * 2.5;
 $font-size-xxl: $font-size-base * 3;
 
-$h1-font-size:                $font-size-xxl;
-$h2-font-size:                $font-size-xl;
-$h3-font-size:                $font-size-lg;
-$h4-font-size:                $font-size-md;
-$h5-font-size:                $font-size-sm;
-$h6-font-size:                $font-size-xs;
+$h1-font-size: $font-size-xxl;
+$h2-font-size: $font-size-xl;
+$h3-font-size: $font-size-lg;
+$h4-font-size: $font-size-md;
+$h5-font-size: $font-size-sm;
+$h6-font-size: $font-size-xs;
 
 $theme-font-sizes: (
   xs: $font-size-xs,
@@ -143,7 +142,7 @@ $theme-font-sizes: (
   base: $font-size-base,
   lg: $font-size-lg,
   xl: $font-size-xl,
-  xxl: $font-size-xxl
+  xxl: $font-size-xxl,
 );
 
 $theme-font-weights: (
@@ -151,8 +150,8 @@ $theme-font-weights: (
   "400": 400,
   "500": 500,
   "700": 700,
-  "900": 900
-); 
+  "900": 900,
+);
 
 $text-truncate-sizes: (
   xs: 10rem,
@@ -160,7 +159,7 @@ $text-truncate-sizes: (
   md: 30rem,
   lg: 40rem,
   xl: 50rem,
-  xxl: 60rem
+  xxl: 60rem,
 );
 
 $user-avatar-sizes: (
@@ -169,7 +168,7 @@ $user-avatar-sizes: (
   md: 7rem,
   lg: 9rem,
   xl: 11rem,
-  xxl: 15rem
+  xxl: 15rem,
 );
 
 $user-avatar-status-bottoms: (
@@ -178,7 +177,7 @@ $user-avatar-status-bottoms: (
   md: 12px,
   lg: 24px,
   xl: 34px,
-  xxl: 58px
+  xxl: 58px,
 );
 
 //general
@@ -235,8 +234,8 @@ $cafe: #31271e;
 $charcoal: #364150;
 
 $theme-highlight-colors: (
-  "highlight":          var(--highlight),
-  "highlight-100":      var(--highlight-100),
+  "highlight": var(--highlight),
+  "highlight-100": var(--highlight-100),
 );
 
 // default mode colors

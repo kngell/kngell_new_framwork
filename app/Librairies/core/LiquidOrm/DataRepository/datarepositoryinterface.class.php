@@ -5,38 +5,50 @@ declare(strict_types=1);
 interface DataRepositoryInterface
 {
     /**
-     *--------------------------------------------------------------------------------------------------
+    * Create or inert into a database
+    * --------------------------------------------------------------------------------------------------
+    * @param array $fields
+    * @return integer|null
+    */
+    public function create(array $fields) : ?int;
+
+    /**
+     * Delete from database
+     * --------------------------------------------------------------------------------------------------
+     * @param array $conditions
+     * @return int|null
+     */
+    public function delete(array $conditions) : ?int;
+
+    /**
+     * --------------------------------------------------------------------------------------------------
      * Find by ID
      * @param integer $id
      * @return array
      */
-    public function find(int $id) :array;
+    public function findByID(int $id) :array;
 
-    /*
-    *--------------------------------------------------------------------------------------------------
-    * Find All
-    * @return array
-    */
     public function findAll() :array;
 
     /**
-     * Find by
-     *--------------------------------------------------------------------------------------------------
+     * find By
+     * --------------------------------------------------------------------------------------------------
      * @param array $selectors
      * @param array $conditions
      * @param array $parameters
      * @param array $options
-     * @return array
+     * @return mixed
      */
-    public function findBy(array $selectors = [], array $conditions = [], array $parameters = [], array $options = []) : array;
+    public function findBy(array $selectors = [], array $conditions = [], array $parameters = [], array $options = []);
 
     /**
      * Find One by
      *--------------------------------------------------------------------------------------------------
      * @param array $conditions
-     * @return array
+     * @param array $options
+     * @return mixed
      */
-    public function findOneBy(array $conditions) : array;
+    public function findOneBy(array $conditions, array $options) : mixed;
 
     /**
      * Find Object
@@ -92,4 +104,12 @@ interface DataRepositoryInterface
      * @return self
      */
     public function findAndReturn(int $id, array $selectors = []) : self;
+
+    /**
+     * Get Table columns
+     *
+     * @param array $options
+     * @return object
+     */
+    public function get_tableColumn(array $options): object;
 }

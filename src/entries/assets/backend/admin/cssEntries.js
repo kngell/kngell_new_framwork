@@ -14,54 +14,69 @@ module.exports = {
       dependOn: "css/librairies/adminlib",
     },
 
-    // Admin dashboard
-    "css/custom/admin/dashboard": {
-      import: ["css/custom/admin/index.scss"],
+    // Admin dashboard Index
+    "css/custom/backend/admin/dashboard": {
+      import: ["css/custom/backend/admin/index.scss"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin caegories Management
-    "css/custom/admin/products/categories": {
-      import: ["css/custom/admin/products/categories.sass"],
+    "css/custom/backend/admin/products/categories": {
+      import: ["css/custom/backend/admin/products/categories.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin caegories Management
-    "css/custom/admin/products/allunits": {
-      import: ["css/custom/admin/products/allunits.sass"],
+    "css/custom/backend/admin/products/allunits": {
+      import: ["css/custom/backend/admin/products/allunits.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin all product
-    "css/custom/admin/products/allproducts": {
-      import: ["css/custom/admin/products/allproducts.sass"],
+    "css/custom/backend/admin/products/allproducts": {
+      import: ["css/custom/backend/admin/products/allproducts.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin product Details
-    "css/custom/admin/products/product_details": {
-      import: ["css/custom/admin/products/product_details.sass"],
+    "css/custom/backend/admin/products/product_details": {
+      import: ["css/custom/backend/admin/products/product_details.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin add new product
-    "css/custom/admin/products/new_product": {
-      import: ["css/custom/admin/products/new_product.sass"],
+    "css/custom/backend/admin/products/new_product": {
+      import: ["css/custom/backend/admin/products/new_product.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin users allusers
-    "css/custom/admin/users/allusers": {
-      import: ["css/custom/admin/users/allusers.sass"],
+    "css/custom/backend/admin/users/allusers": {
+      import: ["css/custom/backend/admin/users/allusers.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin users allusers
-    "css/custom/admin/users/profile": {
-      import: ["css/custom/admin/users/profile.scss"],
+    "css/custom/backend/admin/users/profile": {
+      import: ["css/custom/backend/admin/users/profile.scss"],
       dependOn: "css/librairies/adminlib",
     },
     //Admin users permissions
-    "css/custom/admin/users/permissions": {
-      import: ["css/custom/admin/users/permissions.sass"],
+    "css/custom/backend/admin/users/permissions": {
+      import: ["css/custom/backend/admin/users/permissions.sass"],
       dependOn: "css/librairies/adminlib",
     },
     //Company
-    "css/custom/admin/company/allcompanies": {
-      import: ["css/custom/admin/company/allcompanies.sass"],
+    "css/custom/backend/admin/company/allcompanies": {
+      import: ["css/custom/backend/admin/company/allcompanies.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
+    //Brand
+    "css/custom/backend/admin/products/brands": {
+      import: ["css/custom/backend/admin/products/brands.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
+    //Shipping
+    "css/custom/backend/admin/shipping/shipping": {
+      import: ["css/custom/backend/admin/shipping/shipping.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
+    //taxes
+    "css/custom/backend/admin/company/taxes": {
+      import: ["css/custom/backend/admin/company/taxes.sass"],
       dependOn: "css/librairies/adminlib",
     },
   },

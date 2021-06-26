@@ -1,7 +1,7 @@
 import { get_visitors_data, send_visitors_data } from "corejs/visitors";
 import log_reg from "corejs/logregloader";
 import "focus-within-polyfill";
-import { select2AjaxParams } from "corejs/form_crud";
+import select2 from "corejs/select2_manager";
 // import "smartWizard";
 // import { isIE } from "corejs/config";
 
@@ -56,37 +56,15 @@ class HomePlugin {
     //Ajax Select2
     //=======================================================================
     //Activate select2 box for contries
-    phpPlugin.wrapper.find(".select_country").select2({
-      placeholder: "",
-      // minimumInputLength: 1,
-      allowClear: true,
-      width: "100%",
-      ajax: select2AjaxParams({
-        url: "guests/get_countries",
-      }),
+    const select = new select2();
+    const csrftoken = document.querySelector('meta[name="csrftoken"]');
+    select._init({
+      element: phpPlugin.wrapper.find(".select_country"),
+      placeholder: "Sélectionnez un pays",
+      url: "guests/get_countries",
+      csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
+      frm_name: "all_product_page",
     });
-    //=======================================================================
-    //Tootgle checkout step by step
-    //=======================================================================
-    // $(".page-content").smartWizard();
-    // phpPlugin.navigation.on("click", ".tab-control .next-btn", function (e) {
-    //   e.preventDefault();
-    //   phpPlugin.navigation
-    //     .find(".nav-pills > .active")
-    //     .next("li")
-    //     .find("a")
-    //     .trigger("click");
-    //   console.log(phpPlugin.navigation.find(".nav-pills > .active"));
-    // });
-    // phpPlugin.wrapper.on("click", ".tab-control .previous-btn", () => {
-    //   e.preventDefault();
-    //   phpPlugin.wrapper
-    //     .find(".nav-pills .active")
-    //     .prev("li")
-    //     .find("a")
-    //     .trigger("click");
-    //   console.log($(this));
-    // });
   };
 }
 document.addEventListener("DOMContentLoaded", function () {

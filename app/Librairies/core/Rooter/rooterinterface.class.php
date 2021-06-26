@@ -6,7 +6,6 @@ interface RooterInterface
     /**
      * Dispatch Route
      * --------------------------------------------------------------------------------------------------
-     * @param string $url
      * @return void
      */
     public function dispatch():void;
@@ -14,9 +13,10 @@ interface RooterInterface
     /**
      * UParse url and return ??
      * --------------------------------------------------------------------------------------------------
+     * @param string $urlroute
      * @return string
      */
-    public function parseUrl() : string;
+    public function parseUrl(string $urlroute) : string;
 
     /**
      * Validate Url

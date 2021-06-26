@@ -46,6 +46,7 @@ export default class User_cart {
               .delay(500); // display Cart items
           });
         }
+
         if (response.msg[3]) {
           plugin.wrapper.find("#wishlist-items").html(function () {
             return response.msg[3]; // display wishlist

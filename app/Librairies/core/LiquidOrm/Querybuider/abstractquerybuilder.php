@@ -34,7 +34,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     /** @var array */
     // protected const QUERY_TYPE = ['insert', 'select', 'update', 'delete', 'custom'];
-    protected const QUERY_TYPES = ['insert', 'select', 'update', 'delete', 'custom', 'search', 'join'];
+    protected const QUERY_TYPES = ['insert', 'select', 'update', 'delete', 'custom', 'search', 'join', 'show', 'delete'];
 
     /**
      * Main class constructor
@@ -55,7 +55,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function join($tables, array $data = []) :string
     {
         $sql = '';
-        if (is_array($tables)) {
+        if (is_array($tables) && !empty($tables)) {
             $sql = 'SELECT ';
             $all_tables = array_keys($tables);
             foreach ($all_tables  as $table) {
@@ -107,7 +107,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function where()
     {
         $where = '';
-        $whereCond = is_array($this->key['where']) ? array_merge($this->key['conditions'], $this->key['where']) : $this->key['conditions'];
+        $whereCond = (is_array($this->key['where']) && !empty($this->key['where'])) ? array_merge($this->key['conditions'], $this->key['where']) : $this->key['conditions'];
         if (isset($whereCond) && !empty($whereCond)) {
             $where .= ' WHERE ';
             $i = 0;
@@ -118,15 +118,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     $tbl = isset($value['tbl']) ? $value['tbl'] . '.' : '';
                     switch (true) {
                           case isset($value['operator']) && in_array($value['operator'], ['NOT IN', 'IN']):
-                              $where .= "$add" . $tbl . $key . ' ' . $value['operator'] . ' (' . $this->arrayPrefixer($key, $value['value'], $arr) . ')';//":$key"
-                              $this->key['where']['bind_array'] = $arr;
-                              break;
+                            $arr = [];
+                            $where .= "$add" . $tbl . $key . ' ' . $value['operator'] . ' (' . $this->arrayPrefixer($key, $value['value'], $arr) . ')';//":$key"
+                            $this->key['where']['bind_array'] = $arr;
+                            break;
                           case isset($value['operator']) && in_array($value['operator'], ['!=', '>', '<', '>=', '<=']):
-                              $where .= "$add" . $tbl . $key . $value['operator'] . ":$key";
-                              break;
+                            $where .= "$add" . $tbl . $key . $value['operator'] . ":$key";
+                            break;
                           default:
-                              $where .= "$add" . $tbl . $key . '=' . ":$key";
-                              break;
+                            $where .= "$add" . $tbl . $key . '=' . ":$key";
+                            break;
                       }
                 } else {
                     $where .= "$add" . $key . '=' . ":$key";
@@ -166,25 +167,25 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function groupBy()
     {
         $groupBy = '';
-        if (array_key_exists('group_by', $this->key['params'])) {
+        if (isset($this->key['extras']) && array_key_exists('group_by', $this->key['extras'])) {
             $groupBy .= ' GROUP BY ';
             $i = 0;
-            $op = isset($this->key['params']['op']) ? $this->key['params']['op'] : ' AND ';
-            if (is_array($this->key['params']['group_by'])) {
-                foreach ($this->key['params']['group_by'] as $key => $value) {
+            $op = isset($this->key['extras']['op']) ? $this->key['params']['op'] : ' AND ';
+            if (is_array($this->key['extras']['group_by'])) {
+                foreach ($this->key['extras']['group_by'] as $key => $value) {
                     $add = ($i > 0) ? ' ' . $op . ' ' : '';
                     if (is_array($value)) {
                         $tbl = isset($value['tbl']) ? $value['tbl'] . '.' : '';
                         $groupBy .= "$add" . $tbl . $key;
                     } else {
-                        $groupBy .= "$add" . $this->key['params']['group_by'][$key];
+                        $groupBy .= "$add" . $this->key['extras']['group_by'][$key];
                     }
                     $i++;
                 }
             } else {
-                $groupBy .= $this->key['params']['group_by'];
+                $groupBy .= $this->key['extras']['group_by'];
             }
-            unset($this->key['params']['group_by']);
+            unset($this->key['extras']['group_by']);
         }
         return $groupBy;
     }

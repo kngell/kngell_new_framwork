@@ -1,19 +1,10 @@
-const { styles } = require("@ckeditor/ckeditor5-dev-utils");
-
-const ckeditorConfig = styles.getPostCssConfig({
-  themeImporter: {
-    themePath: require.resolve("@ckeditor/ckeditor5-theme-lark"),
-  },
-});
+// const ckeditorConfig = styles.getPostCssConfig({});
 const normalConfig = {
   parser: "postcss-scss",
   plugins: [
-    "postcss-custom-properties",
     "postcss-flexbugs-fixes",
-    "postcss-focus-within",
     [
       "postcss-grid-kiss",
-      "postcss-preset-env",
       {
         autoprefixer: {
           grid: true,
@@ -27,9 +18,9 @@ const normalConfig = {
   ],
 };
 module.exports = ({ file }) => {
-  if (/ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css$/.test(file)) {
-    return ckeditorConfig;
-  }
+  // if (/ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css$/.test(file)) {
+  //   return ckeditorConfig;
+  // }
   return normalConfig;
 };
 

@@ -1,4 +1,4 @@
-export const BASE_URL = /kngell_ecommerce/;
+export const BASE_URL = /kngell/;
 export const AVATAR = BASE_URL + "public/assets/img/users/avatar.png";
 export const IMG = BASE_URL + "public/assets/img/";
 

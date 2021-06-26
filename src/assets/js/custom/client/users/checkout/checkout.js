@@ -1,5 +1,6 @@
 import payment from "corejs/payment_Toogle";
 import OP from "corejs/operator";
+import { Call_controller } from "corejs/form_crud";
 class Checkout {
   constructor(element) {
     this.element = element;
@@ -19,14 +20,16 @@ class Checkout {
   _setupEvents = () => {
     var phpPlugin = this;
 
-    //=======================================================================
-    //Toogle Payment
-    //=======================================================================
+    /**
+     * Toogle Payment
+     * =======================================================================
+     */
     new payment().init();
 
-    //=======================================================================
-    //Currency format
-    //=======================================================================
+    /**
+     * Format Money
+     * =======================================================================
+     */
     const operation = new OP();
     operation._format_money({
       wrapper: phpPlugin.wrapper,
@@ -36,11 +39,27 @@ class Checkout {
         ".res-tax-item .amount",
         ".total-ttc .amount",
         ".total-ht",
+        ".price",
       ],
     });
-    //=======================================================================
-    //Tab navigation nex/ previous
-    //=======================================================================
+    phpPlugin.wrapper.on("submit", "#user-ckeckout-frm", function (e) {
+      e.preventDefault();
+      const data = {
+        url: "checkout/Add",
+        frm: $(this),
+        frm_name: $(this).attr("id"),
+      };
+      Call_controller(data, manageR);
+      function manageR(response) {
+        console.log(response);
+      }
+      console.log(phpPlugin.wrapper.find("input[type=radio]:checked"));
+    });
+
+    /**
+     * Navigation Next/Previous
+     * =======================================================================
+     */
     let currentCompleted = phpPlugin.navigation
       .find(".nav > .nav-item > .active")
       .parent()

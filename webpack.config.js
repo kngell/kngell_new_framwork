@@ -19,7 +19,7 @@ const adminEntries = require("./src/entries/assets/backend/admin/adminEntries");
 const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 const FileManagerPlugin = require("filemanager-plugin").WebpackFilemanager;
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+// const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -261,17 +261,17 @@ const productionConfig = {
   optimization: {
     minimize: true,
     minimizer: [
-      new CssMinimizerPlugin({
-        parallel: true,
-        minimizerOptions: {
-          preset: [
-            "default",
-            {
-              discardComments: { removeAll: true },
-            },
-          ],
-        },
-      }),
+      // new CssMinimizerPlugin({
+      //   parallel: true,
+      //   minimizerOptions: {
+      //     preset: [
+      //       "default",
+      //       {
+      //         discardComments: { removeAll: true },
+      //       },
+      //     ],
+      //   },
+      // }),
       new TerserPlugin({
         exclude: [path.resolve(__dirname, "node_modules")],
         terserOptions: {

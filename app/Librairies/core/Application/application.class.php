@@ -5,8 +5,7 @@ declare(strict_types=1);
 class Application
 {
     protected string $appRoot;
-    public Rooter $rooter;
-    public Session $session;
+    protected static Container $container;
 
     /**
      * Main constructor
@@ -50,6 +49,12 @@ class Application
         defined('LOG_DIR') or define('LOG_DIR', APP_ROOT . DS . 'temp' . DS . 'log');
     }
 
+    public function setSession() :self
+    {
+        SystemTrait::sessionInit(true);
+        return $this;
+    }
+
     /**
      * Environnement
      * ====================================================================================
@@ -72,17 +77,10 @@ class Application
         set_exception_handler('ErroHandling::exceptionHandler');
     }
 
-    public function setSession() :self
-    {
-        SystemTrait::sessionInit(true);
-        return $this;
-    }
-
     public function setrouteHandler(string $url = null, array $routes = []) :self
     {
-        $url = ($url) ? $url : $_SERVER['QUERY_STRING'];
-        $routes = ($routes) ? $routes : YamlConfig::file('routes');
-        $factory = new RooterFactory($url, $routes);
+        $url = $_GET['url'];
+        $factory = self::$container->load([RooterFactory::class => ['dispatchedUrl' => $url, 'routes' => $routes]])->RooterFactory;
         $factory->create(Rooter::class)->buildRoutes();
         return $this;
     }

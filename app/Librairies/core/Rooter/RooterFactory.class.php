@@ -9,37 +9,42 @@ class RooterFactory
     /**
     * @var string $dispatchedUrl
     */
-    protected string $dispatchedUrl;
+    protected ?string $dispatchedUrl;
+    /**
+     *
+     */
+    protected static ContainerInterface $container;
 
     /**
      * @var array $routes
      */
-    protected array $routes;
+    // protected array $routes;
+    // protected string $filePath;
 
     /**
      * Main constrctor
      * =============================================================================
      * @param string $dispatchedUrl
      * @param array $routes
+     * @param string $filePath
      */
     public function __construct(string $dispatchedUrl = null, array $routes = [])
     {
-        if (empty($routes)) {
-            throw new BaseNoValueException('There are on or more empty arguments! Please ensure your <code>routes.yaml</code> is define!');
-        }
+        // if (empty($dispatchedUrl)) {
+        //     throw new BaseNoValueException('Url is not define!');
+        // }
         $this->dispatchedUrl = $dispatchedUrl;
-        $this->routes = $routes;
     }
 
     /**
      * Create route
      * =============================================================================
-     * @param string $routeString
+     * @param string|null $routeString
      * @return self
      */
-    public function create(string $routeString) :self
+    public function create(?string $routeString) :self
     {
-        $this->router = new $routeString();
+        $this->router = self::$container->load([$routeString => []])->$routeString;
         if (!$this->router instanceof RooterInterface) {
             throw new BaseUnexpectedValueException($routeString . 'is not a valid router object!');
         }
@@ -54,7 +59,7 @@ class RooterFactory
      */
     public function buildRoutes()
     {
-        if ($this->router->IsvalidController($this->router->parseUrl())) {
+        if ($this->router->IsvalidController($this->router->parseUrl($this->dispatchedUrl))) {
             $this->router->dispatch();
         };
     }

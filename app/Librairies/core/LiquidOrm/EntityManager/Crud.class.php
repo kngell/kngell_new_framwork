@@ -33,11 +33,11 @@ class Crud implements CrudInterface
      * @param string $tableSchmaID
      *@return void
      */
-    public function __construct(DataMapper $datamapper = null, QueryBuilder $querybuilder = null, string $tableShema = '', string $tableSchmaID = '', ?array $options = [])
+    public function __construct(DataMapper $datamapper = null, QueryBuilder $querybuilder = null, string $tableSchema = '', string $tableSchmaID = '', ?array $options = [])
     {
         $this->datamapper = $datamapper;
         $this->querybuilder = $querybuilder;
-        $this->tableSchema = $tableShema;
+        $this->tableSchema = $tableSchema;
         $this->tableSchemaID = $tableSchmaID;
         $this->options = $options;
     }
@@ -81,14 +81,14 @@ class Crud implements CrudInterface
      * =====================================================================
      *@inheritDoc
      */
-    public function create(array $fields = []): bool
+    public function create(array $fields = []): int
     {
         try {
             $arg = ['table' => $this->getSchema(), 'type' => 'insert', 'fields' => $fields];
             $query = $this->querybuilder->buildQuery($arg)->insert();
             $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($fields));
             if ($this->datamapper->numrow() == 1) {
-                return true;
+                return $this->lastID();
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -101,21 +101,40 @@ class Crud implements CrudInterface
      * =====================================================================
      *@inheritDoc
      */
-    public function read(array $selectors = [], array $conditions = [], array $params = [], array $options = []): array
+    public function read(array $selectors = [], array $conditions = [], array $params = [], array $options = [])
     {
         try {
             $arg = [
                 'table' => $this->getSchema(),
                 'type' => 'select',
                 'selectors' => $selectors,
-                'where' => $conditions,
+                'where' => array_merge($conditions, isset($options['where']) ? $options['where'] : []),
                 'params' => $params,
-                'extras' => $options
+                'extras' => $options,
+                'table_join' => isset($options['table_join']) ? $options['table_join'] : []
             ];
             $query = $this->querybuilder->buildQuery($arg)->select();
-            $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($conditions, $params));
+            $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($arg['where'], $params));
             if ($this->datamapper->numrow() > 0) {
-                return $this->datamapper->results();
+                return $this->datamapper->results($options);
+            }
+            return -1;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function show(array $options) : object
+    {
+        try {
+            $arg = [
+                'table' => $this->getSchema(),
+                'type' => 'show',
+            ];
+            $query = $this->querybuilder->buildQuery($arg)->show();
+            $this->datamapper->persist($query, $this->datamapper->buildQueryParameters([], []));
+            if ($this->datamapper->numrow() > 0) {
+                return $this->datamapper->results($options);
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -123,37 +142,36 @@ class Crud implements CrudInterface
     }
 
     /**
-     * =====================================================================
      * Update data from data base
      * =====================================================================
      *@inheritDoc
      */
-    public function update(array $fields = [], string $primary_key): bool
+    public function update(array $fields = [], array $conditions = []): ?int
     {
         try {
             $arg = [
                 'table' => $this->getSchema(),
                 'type' => 'update',
                 'fields' => $fields,
-                'primary_key' => $primary_key
+                'where' => $conditions
             ];
             $query = $this->querybuilder->buildQuery($arg)->update();
-            $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($fields));
+            $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($fields, $conditions));
             if ($this->datamapper->numrow() == 1) {
-                return true;
+                return $this->datamapper->numrow();
             }
+            return 0;
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
     /**
-     * =====================================================================
      * Delete data from database
      * =====================================================================
      *@inheritDoc
      */
-    public function delete(array $conditions = []): bool
+    public function delete(array $conditions = []): ?int
     {
         try {
             $arg = [
@@ -164,8 +182,9 @@ class Crud implements CrudInterface
             $query = $this->querybuilder->buildQuery($arg)->delete();
             $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($conditions));
             if ($this->datamapper->numrow() == 1) {
-                return true;
+                return $this->datamapper->numrow();
             }
+            return 0;
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -177,7 +196,7 @@ class Crud implements CrudInterface
      * =====================================================================
      *@inheritDoc
      */
-    public function search(array $selectors = [], array $searchconditions = []): array
+    public function search(array $selectors = [], array $searchconditions = [])
     {
         try {
             $arg = [

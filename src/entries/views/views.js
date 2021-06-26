@@ -7,40 +7,45 @@ import "views/client/restricted/index.php";
 //=======================================================================
 
 // Admin Layout
-import "views/admin/layouts/inc/admin/footer.php";
-import "views/admin/layouts/inc/admin/header.php";
-import "views/admin/layouts/inc/admin/nav.php";
-import "views/admin/layouts/inc/admin/side_nav.php";
-import "views/admin/layouts/inc/admin/modal.php";
-import "views/admin/layouts/inc/admin/script.php";
-import "views/admin/layouts/inc/adminlogin/header.php";
-import "views/admin/layouts/inc/adminlogin/footer.php";
+import "views/backend/layouts/inc/admin/footer.php";
+import "views/backend/layouts/inc/admin/header.php";
+import "views/backend/layouts/inc/admin/nav.php";
+import "views/backend/layouts/inc/admin/side_nav.php";
+import "views/backend/layouts/inc/admin/modal.php";
+import "views/backend/layouts/inc/admin/script.php";
+import "views/backend/layouts/inc/adminlogin/header.php";
+import "views/backend/layouts/inc/adminlogin/footer.php";
 
-import "views/admin/layouts/admin.php";
-import "views/admin/layouts/adminlogin.php";
+import "views/backend/layouts/admin.php";
+import "views/backend/layouts/adminlogin.php";
 
 // Admin Pages
-import "views/admin/index.php";
-import "views/admin/analytics.php";
-import "views/admin/calendar.php";
+import "views/backend/admin/index.php";
+import "views/backend/admin/analytics.php";
+import "views/backend/admin/calendar.php";
 
 // Admin pages products
-import "views/admin/products/allcategories.php";
-import "views/admin/products/allproducts.php";
-import "views/admin/products/product_details.php";
-import "views/admin/products/new_product.php";
-import "views/admin/products/allunits.php";
+import "views/backend/admin/products/allcategories.php";
+import "views/backend/admin/products/allproducts.php";
+import "views/backend/admin/products/product_details.php";
+import "views/backend/admin/products/new_product.php";
+import "views/backend/admin/products/allunits.php";
+import "views/backend/admin/products/allbrands.php";
+
+//Admin pages Shipping
+import "views/backend/admin/shipping/shippingclass.php";
 
 //admin contact page
-import "views/admin/home/contact-us.php";
+import "views/backend/admin/home/contact-us.php";
 //admin users page
-import "views/admin/users/allusers.php";
-import "views/admin/users/profile.php";
-import "views/admin/users/permissions.php";
+import "views/backend/admin/users/allusers.php";
+import "views/backend/admin/users/profile.php";
+import "views/backend/admin/users/permissions.php";
 // Company
-import "views/admin/company/allcompanies.php";
-import "views/admin/company/company_details.php";
-import "views/admin/company/partials/form.php";
+import "views/backend/admin/company/allcompanies.php";
+import "views/backend/admin/company/alltaxes.php";
+import "views/backend/admin/company/company_details.php";
+import "views/backend/admin/company/partials/form.php";
 //=======================================================================
 //Home Ecommerce Pages and Layouts
 //=======================================================================
@@ -88,5 +93,3 @@ import "views/client/users/account/resetpassword.php";
 // Users checkout
 import "views/client/users/checkout/payment.php";
 import "views/client/users/checkout/checkout.php";
-
-import "views/client/test/index.php";

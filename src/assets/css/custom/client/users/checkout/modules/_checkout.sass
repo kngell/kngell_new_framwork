@@ -185,8 +185,7 @@
                                 &__input
                                     display: none 
                                     &:checked + .radio__radio::after
-                                        transform: scale(1)
-                                           
+                                        transform: scale(1)        
                                 &__radio
                                     width: 1.2rem
                                     height: 1.2rem
@@ -218,7 +217,7 @@
                             background-color: $white-color
                             border-radius: 5px
                             +dflex()
-                            form
+                            .user-prim-data
                                 width: 100%
                                 +input(100%,2.5rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-color)
                                 +custom_select2($white-color,$gray-300)
@@ -282,7 +281,7 @@
                     .button-group
                         .previous
                             +button($dark-yellow,$dark-yellow-light)
-                        .complet-order
+                        .complete-order
                             +button($color-primary,$blue-dark) 
 .hidden
     display: none

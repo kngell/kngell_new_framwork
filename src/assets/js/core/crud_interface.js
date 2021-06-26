@@ -1,11 +1,4 @@
-import {
-  displayAllItems,
-  Add,
-  Call_controller,
-  editForm,
-  Delete,
-} from "corejs/form_crud";
-
+import { Call_controller, Delete } from "corejs/form_crud";
 import { AVATAR, IMG } from "corejs/config";
 import input from "corejs/inputErrManager";
 import Swal from "sweetalert2";
@@ -32,15 +25,17 @@ export default class Cruds {
       url: "forms/showAll",
       table: this.table,
       user: "admin",
-      data_type: "values",
+      data_type: params.data_type,
+      csrftoken: params.csrftoken ? params.csrftoken : "",
+      frm_name: params.frm_name ? params.frm_name : "",
     };
-    displayAllItems(data, manageR);
+    Call_controller(data, manageR);
     function manageR(response) {
       if (response.result == "success") {
         wrapper.find("#showAll").html(response.msg);
         if (params.datatable) _loadDatatables();
       } else {
-        wrapper.find("#alertErr").html(response.msg);
+        wrapper.find("#globalErr").html(response.msg);
       }
     }
     async function _loadDatatables() {
@@ -90,7 +85,11 @@ export default class Cruds {
     });
     return select_data;
   };
-  //add or update
+  /**
+   * add or update
+   * @param {*} params
+   * =======================================================================
+   */
   _add_update = (params) => {
     let plugin = this;
     plugin.form.on("submit", function (e) {
@@ -102,21 +101,15 @@ export default class Cruds {
             ? "forms/Add"
             : "forms/update",
         frm: plugin.form,
-        frm_name: params.frm_name,
+        frm_name: $(this).attr("id"),
         table: plugin.table,
-        categorie: plugin._get_selected_categories(params.categorie),
+        categories: plugin._get_selected_categories(params.categorie),
         select2: params.hasOwnProperty("select")
           ? plugin._get_select2_data(params.select)
           : "",
       };
       switch (plugin.form.find("#operation").val()) {
         case "add":
-          if (params.hasOwnProperty("dropzone")) {
-            Add({ ...data, ...{ files: params.dropzone.files } }, manageR);
-          } else {
-            Add(data, manageR);
-          }
-          break;
         case "update":
           if (params.hasOwnProperty("dropzone")) {
             Call_controller(
@@ -130,7 +123,6 @@ export default class Cruds {
       }
       function manageR(response) {
         plugin.form.find("#submitBtn").val("Submit");
-        console.log(response);
         switch (response.result) {
           case "error-field":
             input.error(plugin.modal, response.msg);
@@ -141,7 +133,7 @@ export default class Cruds {
             if (params.swal) {
               Swal.fire("Success!", response.msg, "success").then(() => {
                 if (params.datatable == true) {
-                  plugin._displayAll({ datatable: params.datatable });
+                  plugin._displayAll(params);
                 } else {
                   location.reload();
                 }
@@ -157,8 +149,13 @@ export default class Cruds {
             }
             break;
           case "error-file":
-            params.dropzone._manageErrors(response.msg);
-            params.dropzone._removeErrMsg();
+            if (typeof params.dropzone != "undefined") {
+              params.dropzone._manageErrors(response.msg);
+              params.dropzone._removeErrMsg();
+            } else {
+              plugin.form.find("#alertErr").html(response.msg);
+              plugin.form.trigger("reset");
+            }
             break;
           default:
             plugin.form.find("#alertErr").html(response.msg);
@@ -192,41 +189,10 @@ export default class Cruds {
     return result;
   };
 
-  _get_delete_data = (selector, params) => {
-    let table = this.table;
-    let result;
-    let id;
-    switch (table) {
-      case "users":
-        id = selector.parent().find("input[name=userID]").val();
-        break;
-      default:
-        id = selector.attr("id");
-        break;
-    }
-    if (params["dataType"] && params.dataType != "frm") {
-      result = {
-        id: id,
-        table: table,
-        method: params.method != "" ? params.method : "",
-      };
-    } else {
-      result =
-        selector.parents("form").find("input[type=hidden]").serialize() +
-        "&" +
-        $.param({
-          id: id,
-          table: table,
-          frm_name: selector.parents("form").attr("id"),
-          method: params.method != "" ? params.method : "",
-        });
-    }
-    return result;
-  };
-
   //=======================================================================
   //Edit form
   //=======================================================================
+
   _edit = (params) => {
     let plugin = this;
     plugin.wrapper.on("click", ".editBtn", function (e) {
@@ -235,22 +201,19 @@ export default class Cruds {
       plugin.modal.find("#operation").val("update");
       var data = {
         url: "forms/edit",
-        formData:
-          plugin.modal
-            .find("#" + params.frm_name + " input[type=hidden]")
-            .serialize() +
-          "&" +
-          $.param({
-            id: plugin._get_Edit_id($(this), plugin.table),
-            table: plugin.table,
-            tbl_options: params.hasOwnProperty("tbl_options")
-              ? params.tbl_options
-              : "",
-            frm_name: params.frm_name,
-          }),
+        table: params.table,
+        frm: $(this).parents("form").length != 0 ? $(this).parents("form") : "",
+        frm_name: params.frm_name
+          ? params.frm_name
+          : $(this).parents("form").attr("id"),
+        tbl_options: params.hasOwnProperty("tbl_options")
+          ? params.tbl_options
+          : "",
         params: params.std_fields,
+        token: params.csrftoken ? params.csrftoken : "",
+        id: plugin._get_Edit_id($(this)),
       };
-      editForm(data, manageR);
+      Call_controller(data, manageR);
       function manageR(response, std_fields) {
         if (response.result === "success") {
           $(std_fields).each(function (i, field) {
@@ -333,7 +296,11 @@ export default class Cruds {
             }
           }
         } else {
-          plugin.form.find("#alertErr").html(response.msg);
+          if (plugin.form.find("#tbl-alertErr").length != 0) {
+            plugin.form.find("#tbl-alertErr").html(response.msg);
+          } else {
+            plugin.form.find("#alertErr").html(response.msg);
+          }
         }
       }
     });
@@ -342,10 +309,42 @@ export default class Cruds {
   //=======================================================================
   //Delete
   //=======================================================================
+  _get_delete_data = (selector, params) => {
+    let table = this.table;
+    let result;
+    let id;
+    switch (table) {
+      case "users":
+        id = selector.parent().find("input[name=userID]").val();
+        break;
+      default:
+        id = selector.attr("id");
+        break;
+    }
+    if (params["dataType"] && params.dataType != "frm") {
+      result = {
+        table: table,
+        frm_name: selector.attr("id"),
+        method: params.method != "" ? params.method : "",
+        id: id ? id : "",
+      };
+    } else {
+      result =
+        selector.find("input[type='hidden']").serialize() +
+        "&" +
+        $.param({
+          table: table,
+          frm_name: selector.attr("id"),
+          method: params.method != "" ? params.method : "",
+          id: id ? id : "",
+        });
+    }
+    return result;
+  };
 
   _delete = (params) => {
     let plugin = this;
-    plugin.wrapper.on("click", ".deleteBtn", function (e) {
+    plugin.wrapper.on("submit", params.delete_frm_class, function (e) {
       e.preventDefault();
       var data = {
         url: "forms/delete",
@@ -359,28 +358,36 @@ export default class Cruds {
           if (params.hasOwnProperty("swal") && params.swal) {
             Swal.fire("Deleted!", response.msg, "success").then(() => {
               if (params.hasOwnProperty("datatable") && params.datatable) {
-                plugin._displayAll({ datatable: params.datatable });
+                plugin._displayAll({
+                  datatable: params.datatable,
+                  csrftoken: params.csrftoken ? params.csrftoken : "",
+                  frm_name: params.frm_name ? params.frm_name : "",
+                });
               } else {
                 location.reload();
               }
             });
           }
         } else {
-          plugin.form.find("#alertErr").html(response.msg);
+          if (plugin.form.find("#alertErr").length == 0) {
+            plugin.form.find("#tbl-alertErr").html(response.msg);
+          } else {
+            plugin.form.find("#alertErr").html(response.msg);
+          }
         }
       }
     });
   };
 
   //=======================================================================
-  //Delete
+  //Restore
   //=======================================================================
 
   _restore = (params) => {
     let plugin = this;
-    plugin.wrapper.on("submit", params.resto_class, function (e) {
+    plugin.wrapper.on("submit", params.restore_frm_class, function (e) {
       e.preventDefault();
-      console.log($(this).parent());
+      console.log($(this).attr("id"), params.resto_class);
       var data = {
         url: "forms/delete",
         swal: Swal,
@@ -392,7 +399,7 @@ export default class Cruds {
       function manageR(response) {
         if (response.result === "success") {
           if (params.swal) {
-            Swal.fire("Deleted!", response.msg, "success").then(() => {
+            Swal.fire("Restore!", response.msg, "success").then(() => {
               if (params.datatable == true) {
                 plugin._displayAll({ datatable: params.datatable });
               } else {
@@ -418,13 +425,23 @@ export default class Cruds {
     //remove invalid input on input focus
     input.removeInvalidInput(modal);
     //clean form on hide
+
     bsElement.addEventListener("hide.bs.modal", function () {
       if (modal.find(".is-invalid").length != 0) {
         input.reset_invalid_input(modal);
       }
       form[0].reset();
-      select != "" ? modal.find(select).empty() : "";
-      select != "" ? modal.find(select).trigger("input") : "";
+      if (select != "") {
+        if (Array.isArray(select)) {
+          $(select).each(function (i, tag) {
+            modal.find(tag).empty();
+            modal.find(tag).trigger("input");
+          });
+        } else {
+          modal.find(select).empty();
+          modal.find(select).trigger("input");
+        }
+      }
       data.upload_img ? modal.find(data.upload_img).attr("src", AVATAR) : "";
       modal.find("input[type='checkbox']").empty();
       if (data.hasOwnProperty("dropzone")) {
@@ -445,17 +462,18 @@ export default class Cruds {
   // =======================================================================
   _active_inactive_elmt = (params) => {
     let wrapper = this.wrapper;
-    let form = this.form;
     wrapper.on("click", ".activateBtn", function (e) {
+      console.log("go");
       e.preventDefault();
       var data = {
         url: "tables/update",
         table: params.table,
-        frm: form,
-        id: $(this).attr("id"),
+        frm: $(this).parents("form"),
+        frm_name: $(this).parents("form").attr("id"),
         method: "updateStatus",
         params: $(this),
       };
+      console.log(data);
       Call_controller(data, Response);
       function Response(response, elmt) {
         if (response.result == "success") {
@@ -466,6 +484,12 @@ export default class Cruds {
             .children()
             .first()
             .attr("style", "color:" + response.msg);
+        } else {
+          if (wrapper.find("#tbl-alertErr").length != 0) {
+            wrapper.find("#tbl-alertErr").html(response.msg);
+          } else {
+            wrapper.find("#alertErr").html(response.msg);
+          }
         }
       }
     });

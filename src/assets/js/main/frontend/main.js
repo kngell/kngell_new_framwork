@@ -1,7 +1,6 @@
-import { Add } from "corejs/form_crud";
+import { Call_controller } from "corejs/form_crud";
 import owlCarousel from "owl.carousel";
 import "select2";
-// import user_cart from "corejs/user_cart";
 import OP from "corejs/operator";
 import favicon from "img/favicon.ico";
 import user_cart from "corejs/user_cart";
@@ -45,10 +44,10 @@ class Main {
         table: "cart",
         params: $(this).find("button[type=submit]"),
       };
-      Add(data, ManageR);
+      Call_controller(data, ManageR);
       function ManageR(response, button) {
         if (response.result == "success") {
-          if (document.location.pathname != "/kngell_ecommerce/home/cart") {
+          if (document.location.pathname != "/kngell/home/cart") {
             phpPlugin.header.find(".cart_nb_elt").html(function () {
               return (
                 response.msg[0] +
@@ -67,7 +66,7 @@ class Main {
               .addClass("btn-success")
               .html("In the cart");
           }
-          if (document.location.pathname == "/kngell_ecommerce/home/cart") {
+          if (document.location.pathname == "/kngell/home/cart") {
             new user_cart(phpPlugin.wrapper, phpPlugin.header)._display_cart();
           }
         }

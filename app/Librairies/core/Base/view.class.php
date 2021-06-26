@@ -17,6 +17,7 @@ class View
     protected $_layout = DEFAULT_LAYOUT;
     protected $view_file;
     protected $view_data;
+    protected $file_path;
     public $page_title;
 
     /**
@@ -24,12 +25,16 @@ class View
      * ======================================================================================
      * @param string $view_file
      * @param array $view_data
+     * @param string $file_path
+     * @param Object $ressources
      */
-    public function __construct($view_file = '', $view_data = [])
+    public function __construct(string $view_file = '', array $view_data = [], string $file_path = '')
     {
         $this->view_file = $view_file;
         $this->view_data = $view_data;
         $this->ressources = json_decode(file_get_contents(APP . 'assets.json'));
+        ;
+        $this->file_path = $file_path;
     }
 
     /**
@@ -38,7 +43,7 @@ class View
      */
     public function __destruct()
     {
-        include VIEW . 'client' . DS . 'layouts' . DS . $this->_layout . '.php';
+        include VIEW . strtolower($this->file_path) . 'layouts' . DS . $this->_layout . '.php';
         $this->ressources = null;
         $this->_head = null;
         $this->_body = null;
@@ -52,42 +57,6 @@ class View
     }
 
     /**
-     * Undocumented function
-     * ======================================================================================
-     * @param string $htmlTemplate
-     * @param array $context
-     * @return string
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     * @throws Exception
-     */
-    public function getTemplate(string $htmlTemplate, array $context = []) : string
-    {
-        // static $twig;
-        // if ($twig === null) {
-        //     $loader = new FilesystemLoader('Templates', TEMPLATE_PATH);
-        //     $twig = new Environment($loader, YamlConfig::file('twig'));
-        //     $twig->addExtension(new DebugExtension());
-        //     $twig->addExtension(new TwigExtension());
-        //     return $twig->render($htmlTemplate, $context);
-        // }
-        return '';
-    }
-
-    /**
-     * Twig render
-     * ======================================================================================
-     * @param string $htmlTemplate
-     * @param array $context
-     * @return void
-     */
-    public function twigRender(string $htmlTemplate, array $context = [])
-    {
-        echo $this->getTemplate($htmlTemplate, $context);
-    }
-
-    /**
      * Render View
      * ======================================================================================
      * @param string $viewname
@@ -98,8 +67,8 @@ class View
         if ($this->view_file != $viewname) {
             $this->view_file = preg_replace("/\s+/", '', $viewname);
         }
-        if (file_exists(VIEW . $this->view_file . '.php')) {
-            include VIEW . $this->view_file . '.php';
+        if (file_exists(VIEW . strtolower($this->file_path) . $this->view_file . '.php')) {
+            include VIEW . strtolower($this->file_path) . $this->view_file . '.php';
         } else {
             Rooter::redirect('restricted' . DS . 'index');
         }
@@ -232,7 +201,7 @@ class View
      * @param string $p_title
      * @return void
      */
-    public function get_pageTitle($p_title = '')
+    public function get_pageTitle()
     {
         return $this->page_title;
     }

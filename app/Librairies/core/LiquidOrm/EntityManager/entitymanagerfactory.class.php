@@ -13,6 +13,8 @@ class EntityManagerFactory
      */
     protected QueryBuilderInterface $querybuilder;
 
+    protected static ContainerInterface $container;
+
     /**
     * =====================================================================
     * Main constructor
@@ -40,10 +42,22 @@ class EntityManagerFactory
      */
     public function create(string $crudString = '', string $tableSchma = '', string $tableShameID = '', array $options = []) : EntityManagerInterface
     {
-        $crudObject = new $crudString($this->datamapper, $this->querybuilder, $tableSchma, $tableShameID, $options);
+        $crudObject = self::$container->load([$crudString => ['datamapper' => $this->datamapper, 'querybuilder' => $this->querybuilder, 'tableSchema' => $tableSchma, 'tableSchmaID' => $tableShameID, 'options' => $options]])->$crudString;
         if (!$crudObject instanceof CrudInterface) {
             throw new CrudExceptions($crudString . ' is not a valid crud object!');
         }
-        return new EntityManager($crudObject);
+        return self::$container->load([EntityManager::class => ['crud' => $crudObject]])->Entity;
+    }
+
+    /**
+     * set Container
+     * ========================================================================================
+     * @param ContainerInterface $container
+     * @return self
+     */
+    public function set_container(ContainerInterface $container) :self
+    {
+        $this->container = $container;
+        return $this;
     }
 }

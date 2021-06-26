@@ -68,6 +68,18 @@ class Home {
       center: true,
     });
 
+    function equal_height() {
+      var maxHeight = 0;
+
+      phpPlugin.wrapper.find(".grid-item").each(function () {
+        var thisH = $(this).height();
+        if (thisH > maxHeight) {
+          maxHeight = thisH;
+        }
+      });
+
+      phpPlugin.wrapper.find(".grid-item").height(maxHeight);
+    }
     //=======================================================================
     //Isotope Filter
     //=======================================================================
@@ -84,6 +96,7 @@ class Home {
                 masonry: {
                   columnWidth: 0,
                   isFitWidth: true,
+                  rowHeight: 150,
                 },
               })
             );
@@ -102,6 +115,7 @@ class Home {
               filter: filterValue,
             });
           });
+        equal_height();
       })
       .catch((e) => console.log(e));
   };

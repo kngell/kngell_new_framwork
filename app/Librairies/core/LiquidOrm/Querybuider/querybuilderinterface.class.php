@@ -45,4 +45,11 @@ interface QueryBuilderInterface
      * @return string
      */
     public function customQuery(): string;
+
+    /**
+     * Get Columns from database
+     *
+     * @return string
+     */
+    public function show() : string;
 }

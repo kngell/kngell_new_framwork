@@ -41,7 +41,7 @@
                         <div class="mini-profile-details">
                             <div class="single-details-item">
                                 <form class="remove-account-frm">
-                                    <?= FH::csrfInput('csrftoken', (new Token())->generate_token(8, 'remove-account-frm')); ?>
+                                    <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'remove-account-frm')); ?>
                                     <button class="single-details-item__button" type="submit">
                                         <span class="title"><i class="fal fa-user-times"></i></span>
                                         <span>Remove account
@@ -117,8 +117,8 @@
                                             commandes</h5>
                                         <p class="card-text">Suivre, Retourner ou Acheter à nouveau</p>
                                     </div>
-                                    <form class="user_form">
-                                        <?= FH::csrfInput('csrftoken', (new Token())->generate_token(8)); ?>
+                                    <form class="user_form" id="user_form">
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
                                         <input type="hidden" name="template" value="commandes">
@@ -137,7 +137,7 @@
                                             de passe</p>
                                     </div>
                                     <form class="user_form">
-                                        <?= FH::csrfInput('csrftoken', (new Token())->generate_token(8)); ?>
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
                                         <input type="hidden" name="template" value="users">
@@ -154,7 +154,7 @@
                                             facturation</p>
                                     </div>
                                     <form class="user_form">
-                                        <?= FH::csrfInput('csrftoken', (new Token())->generate_token(8)); ?>
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
                                         <input type="hidden" name="template" value="address_book">
@@ -172,7 +172,7 @@
                                             paiement</p>
                                     </div>
                                     <form class="user_form">
-                                        <?= FH::csrfInput('csrftoken', (new Token())->generate_token(8)); ?>
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
                                         <input type="hidden" name="template" value="payments_mode">
