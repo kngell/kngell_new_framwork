@@ -13,18 +13,19 @@ class Input
 
     public function exists($type)
     {
+        $global = self::$container->load([Globals::class => []])->Globals->getServer('REQUEST_METHOD');
         switch ($type) {
             case 'post':
-                return ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
+                return ($global == 'POST') ? true : false;
                 break;
             case 'get':
-                return ($_SERVER['REQUEST_METHOD'] == 'GET') ? true : false;
+                return ($global == 'GET') ? true : false;
                 break;
             case 'put':
-                return ($_SERVER['REQUEST_METHOD'] == 'PUT') ? true : false;
+                return ($global == 'PUT') ? true : false;
             break;
             case 'files':
-                return ($_SERVER['REQUEST_METHOD'] == 'FILE') ? true : false;
+                return ($global == 'FILE') ? true : false;
             break;
             default:
                 return false;

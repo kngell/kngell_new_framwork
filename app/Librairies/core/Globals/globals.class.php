@@ -11,11 +11,11 @@ class Globals extends GlobalsManager
      */
     public function getGet(string $key = null) : mixed
     {
-        $get = filter_input_array(INPUT_GET) ?? null;
+        $global = filter_input_array(INPUT_GET) ?? null;
         if (null != $key) {
-            return $get[$key] ?? null;
+            return $global[$key] ?? null;
         }
-        return array_map('strip_tags', $get ?? []);
+        return array_map('strip_tags', $global ?? []);
     }
 
     /**
@@ -26,11 +26,11 @@ class Globals extends GlobalsManager
      */
     public function getPost(string $key = null) : mixed
     {
-        $post = filter_input_array(INPUT_POST) ?? null;
+        $global = filter_input_array(INPUT_POST) ?? null;
         if (null != $key) {
             return $post[$key] ?? null;
         }
-        return array_map('strip_tags', $post ?? []);
+        return array_map('strip_tags', $global ?? []);
     }
 
     /**
@@ -41,10 +41,25 @@ class Globals extends GlobalsManager
      */
     public function getCookie(string $key = null) : mixed
     {
-        $cookie = filter_input_array(INPUT_COOKIE) ?? null;
+        $global = filter_input_array(INPUT_COOKIE) ?? null;
         if (null != $key) {
-            return $cookie[$key] ?? null;
+            return $global[$key] ?? null;
         }
-        return array_map('strip_tags', $cookie ?? []);
+        return array_map('strip_tags', $global ?? []);
+    }
+
+    /**
+         * Get $_Cookies
+         * =================================================================================
+         * @param string $key
+         * @return mixed
+         */
+    public function getServer(string $key = null) : mixed
+    {
+        $global = filter_input_array(INPUT_SERVER) ?? null;
+        if (null != $key) {
+            return $global[$key] ?? null;
+        }
+        return array_map('strip_tags', $global ?? []);
     }
 }
