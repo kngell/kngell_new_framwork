@@ -79,5 +79,10 @@ module.exports = {
       import: ["css/custom/backend/admin/company/taxes.sass"],
       dependOn: "css/librairies/adminlib",
     },
+    //order
+    "css/custom/backend/admin/orders/orders": {
+      import: ["css/custom/backend/admin/orders/orders.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
   },
 };

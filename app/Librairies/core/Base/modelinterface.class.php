@@ -62,4 +62,11 @@ interface ModelInterface
      * @return mixed
      */
     public function get_results() : mixed;
+
+    /**
+     * Get Container
+     * --------------------------------------------------------------------------------------------------
+     * @return ContainerInterface
+     */
+    public function get_container() : ContainerInterface;
 }

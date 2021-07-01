@@ -45,7 +45,7 @@ class GuestsController extends Controller
             if ($data['csrftoken'] && $token->validateToken($data['csrftoken'], $data['frm_name'])) {
                 $table = str_replace(' ', '', ucwords(str_replace('_', ' ', $data['table'])));
                 $this->model_instance = self::$container->load([$table . 'Manager'::class => []])->$table;
-                $file = H_upload::upload_files($_FILES, $this->model_instance, $this->container);
+                $file = H_upload::upload_files($_FILES, $this->model_instance, self::$container);
                 if ($file['success']) {
                     $this->model_instance->assign($data);
                     method_exists('Form_rules', $table) ? $this->model_instance->validator($data, Form_rules::$table()) : '';

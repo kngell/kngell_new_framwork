@@ -105,7 +105,7 @@
                         <form class="buy-frm">
                             <?=FH::csrfInput('csrftoken', $this->token->generate_token(8, 'buy-frm')); ?>
                             <button class="button buy-btn" type="button">Proceed to
-                                buy</button>
+                                checkout</button>
                         </form>
                     </div>
                 </div>

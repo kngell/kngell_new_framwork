@@ -108,7 +108,7 @@
                     <li class="sidebar-item">
                         <a href="#shippingManagement" data-bs-toggle="collapse" aria-expanded="false"
                             class="dropdown-toggle collapsed">
-                            <i class="fas fa-barcode-alt fa-lg"></i>
+                            <i class="far fa-shipping-fast fa-lg"></i>
                             <span>Shipping Management</span>
                         </a>
                         <ul class="sidebar-second-level collapse list-unstyled" id="shippingManagement"
@@ -149,7 +149,7 @@
                         </a>
                         <ul class="sidebar-second-level collapse list-unstyled" id="orders" data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allorders'?>">All
+                                <a href="<?=PROOT . 'admin' . US . 'orders'?>">All
                                     Orders</a>
                             </li>
 

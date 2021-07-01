@@ -1,6 +1,7 @@
 import payment from "corejs/payment_Toogle";
 import OP from "corejs/operator";
 import { Call_controller } from "corejs/form_crud";
+import input from "corejs/inputErrManager";
 class Checkout {
   constructor(element) {
     this.element = element;
@@ -42,18 +43,82 @@ class Checkout {
         ".price",
       ],
     });
+
+    phpPlugin.wrapper.on(
+      "click",
+      ".payment-gateway input[name='pm_name']",
+      function (e) {
+        if (
+          $(this).val() == 1 &&
+          $(this).parents(".payment-gateway").find("#cc_number").val() == ""
+        ) {
+          const csrftoken = document.querySelector('meta[name="csrftoken"]');
+          if (
+            $(this)
+              .parents(".radio-check__wrapper")
+              .next()
+              .find("span a")
+              .is(":hidden")
+          ) {
+            $(this)
+              .parents(".radio-check__wrapper")
+              .next()
+              .find("span a")
+              .show();
+          }
+          const data = {
+            url: "checkout/get_creditCard",
+            csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
+            frm_name: "all_product_page",
+            pmt_mode: $(this).val(),
+          };
+          Call_controller(data, manageR);
+          function manageR(response) {
+            if (response.result == "success") {
+              $.each(response.msg, function (key, val) {
+                if (phpPlugin.wrapper.find("#" + key).length != 0) {
+                  phpPlugin.wrapper.find("#" + key).val(val);
+                }
+              });
+            }
+          }
+        }
+      }
+    );
+
+    /**
+     * Reset Input on focus
+     * =======================================================================
+     */
+    input.removeInvalidInput(phpPlugin.wrapper);
+    /**
+     * Submit Checkout form
+     * =======================================================================
+     */
     phpPlugin.wrapper.on("submit", "#user-ckeckout-frm", function (e) {
       e.preventDefault();
       const data = {
-        url: "checkout/Add",
+        url: "checkout/checkout",
         frm: $(this),
         frm_name: $(this).attr("id"),
       };
       Call_controller(data, manageR);
       function manageR(response) {
-        console.log(response);
+        if (response.result == "success") {
+          console.log(
+            response,
+            phpPlugin.wrapper.find("#payment-information .proceed")
+          );
+          phpPlugin.wrapper.find("#payment-information .proceed").show();
+        } else {
+          if (response.result == "error-field") {
+            input.error(phpPlugin.wrapper, response.msg1);
+            phpPlugin.wrapper.find("#alertErr").html(response.msg2);
+          } else {
+            phpPlugin.wrapper.find("#alertErr").html(response.msg);
+          }
+        }
       }
-      console.log(phpPlugin.wrapper.find("input[type=radio]:checked"));
     });
 
     /**

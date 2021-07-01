@@ -33,7 +33,8 @@ class CartManager extends Model
             'join' => 'INNER JOIN', 'rel' => [['item_id', 'pdtID'], ['pdtID', 'pdtID'], ['catID', 'catID']],
             'where' => ['user_id' => ['value' => $cookie, 'tbl' => $this->_table]],
             'group_by' => ['pdtID' => ['tbl' => 'products']],
-            'return_mode' => 'class'];
+            'return_mode' => 'class'
+        ];
         if (!empty($id)) {
             $data['where'] = array_merge($data['where'], ['pdtID' => ['value' => $id, 'tbl' => 'products']]);
         }

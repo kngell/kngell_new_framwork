@@ -102,6 +102,16 @@ class FH
 
     public static function showMessage($type, $message)
     {
+        if (is_array($message)) {
+            $output = '<div class="align-self-center text-center alert alert-' . $type . ' alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"><span class="float-end"></span></button>
+            <strong class="text-center">';
+            foreach ($message as $msg) {
+                $output .= $msg;
+            }
+            $output .= '</strong></div>';
+            return $output;
+        }
         return '<div class="align-self-center text-center alert alert-' . $type . ' alert-dismissible">
                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span class="float-end"></span></button>
                     <strong class="text-center">' . $message . '</strong>
@@ -142,7 +152,7 @@ class FH
                     $value = $source[$item];
                     if ($rule === 'required' && empty($value)) {
                         $requireMsg = ($item == 'terms') ? 'Please accept terms & conditions' : "{$display} is require";
-                        property_exists($obj, $item) ? $obj->runValidation($obj->get_container()->load([Requirevalidator::class => ['model' => $obj, 'field' => $item, 'msg' => $requireMsg]])->Requirevalidator) : '';
+                        property_exists($obj, $item) ? $obj->runValidation($obj->get_container()->load([Requirevalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => $requireMsg]])->Requirevalidator) : '';
                     } elseif (!empty($value)) {
                         switch ($rule) {
                         case 'min':
@@ -172,17 +182,17 @@ class FH
     }
 
     //get showAll data refactor
-    public static function getShowAllData($model, $request, $params)
+    public static function getShowAllData($model, $params)
     {
         switch (true) {
                     case isset($params['data_type']) && $params['data_type'] == 'values': //values or html template
                         if (isset($params['return_mode']) && $params['return_mode'] == 'details') { // Detals or all
-                            return $model->getDetails($request->getAll('id'));
+                            return $model->getDetails($params['id']);
                         } elseif (isset($params['model_method']) && !empty($params['model_method'])) {
                             $method = $params['model_method'];
                             return $model->$method($params);
                         } elseif (isset($params['return_mode']) && $params['return_mode'] == 'index') {
-                            return $model->getAllbyIndex($request->getAll('id'));
+                            return $model->getAllbyIndex($params['id']);
                         } else {
                             return $model->getAllItem(['return_mode' => 'class'])->get_results();
                         }

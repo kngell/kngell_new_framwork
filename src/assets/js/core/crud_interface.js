@@ -3,6 +3,7 @@ import { AVATAR, IMG } from "corejs/config";
 import input from "corejs/inputErrManager";
 import Swal from "sweetalert2";
 import { Modal } from "bootstrap";
+import OP from "corejs/operator";
 export default class Cruds {
   constructor(data) {
     this.table = data.table;
@@ -34,6 +35,11 @@ export default class Cruds {
       if (response.result == "success") {
         wrapper.find("#showAll").html(response.msg);
         if (params.datatable) _loadDatatables();
+        const operation = new OP();
+        operation._format_money({
+          wrapper: wrapper,
+          fields: [".price"],
+        });
       } else {
         wrapper.find("#globalErr").html(response.msg);
       }

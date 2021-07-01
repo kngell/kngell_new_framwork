@@ -31,7 +31,7 @@ class Form_rules
     }
 
     //Users datas
-    public static function users()
+    public static function users(bool $table_users = true)
     {
         return [
             'terms' => [
@@ -53,7 +53,7 @@ class Form_rules
             'userName' => [
                 'display' => 'Username',
                 'required' => true,
-                'unique' => 'users',
+                'unique' => $table_users ? 'users' : 'users_related_profile',
                 'min' => 2,
                 'max' => 20
             ],
@@ -230,7 +230,7 @@ class Form_rules
     // Checkout
     // =======================================================================
     // Infos contact
-    public static function infos_contact()
+    public static function user_infos()
     {
         return [
             'firstName' => [
@@ -253,17 +253,65 @@ class Form_rules
                 'valid_email' => true,
                 'unique' => 'users',
             ],
-            'address' => [
-                'display' => 'Adresse',
+        ];
+    }
+
+    // =======================================================================
+    // Checkout
+    // =======================================================================
+    // credit_card
+    public static function credit_card()
+    {
+        return [
+            'cc_number' => [
+                'display' => 'Credit Card',
+                'required' => true,
+                'min' => 2,
+                'max' => 150,
+                'unique' => 'credit_card',
+            ],
+            'cc_name' => [
+                'display' => 'Name On Card',
+                'required' => true,
+                'min' => 2,
+                'max' => 150,
+            ],
+            'cc_expiry' => [
+                'display' => 'Credit Card Expiration Date',
+                'required' => true,
+            ],
+            'cc_cvv' => [
+                'display' => 'Security code',
+                'required' => true,
+            ],
+        ];
+    }
+
+    // =======================================================================
+    // Checkout
+    // =======================================================================
+    // address book validation
+    public static function address_book()
+    {
+        return [
+            'pays' => [
+                'display' => 'Country',
+                'required' => true,
+                'max' => 155,
+            ],
+            'address1' => [
+                'display' => 'Address',
                 'required' => true,
             ],
             'ville' => [
-                'display' => 'Ville',
+                'display' => 'Town',
                 'required' => true,
+                'max' => 155,
             ],
             'zip_code' => [
-                'display' => 'Code Postal',
+                'display' => 'Zip Code',
                 'required' => true,
+                'max' => 50
             ],
         ];
     }

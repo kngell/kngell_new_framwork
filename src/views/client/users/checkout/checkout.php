@@ -9,7 +9,6 @@
     <!-- Content -->
     <div class="container">
         <div class="page-content py-5">
-
             <div class="navigation">
                 <div class="header">
                     <h2 class="title fw-bold">Checkout</h2>
@@ -48,6 +47,7 @@
             <form class="user-ckeckout-frm needs-validation" id="user-ckeckout-frm" novalidate
                 enctype="multipart/form-data" autocomplete="off">
                 <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user-ckeckout-frm')); ?>
+                <div id="alertErr"></div>
                 <input type="hidden" name="total-ttc"
                     value="<?=isset($this->user_cart[2][1]) ? $this->user_cart[2][1] : ''?>">
                 <input type="hidden" name="total-ht"
@@ -142,7 +142,6 @@
                                                     <label for="chk-lastName" class="input-box__label">
                                                         Nom
                                                         <span class="text-danger">*</span>
-
                                                     </label>
                                                 </div>
                                             </div>
@@ -181,7 +180,7 @@
                                                         placeholder=" " autocomplete="nope"
                                                         value="<?=$this->user_data->email ?? ''?>"
                                                         form="user-ckeckout-frm">
-                                                    <div class="invalid-feddback"></div>
+                                                    <div class="invalid-feedback input-box__feedback"></div>
                                                     <label for="chk-email" class="input-box__label">
                                                         Email<span class="text-danger">*</span>
                                                     </label>
@@ -196,6 +195,9 @@
                                                 <div class="mb-3 input-box">
                                                     <select class="form-select select_country input-box__input"
                                                         name="pays" id="pays" placeholder=" " form="user-ckeckout-frm">
+                                                        <option value="<?=$this->user_data->pays?>">
+                                                            <?=$this->user_data->get_countrie($this->user_data->pays)[$this->user_data->pays]?>
+                                                        </option>
                                                     </select>
                                                     <div class="invalig-feedback"></div>
                                                     <label for="pays" class="input-box__label">
@@ -208,8 +210,9 @@
                                             <div class="col-12">
                                                 <div class="mb-3 input-box">
                                                     <input class="form-control input-box__input" type="text"
-                                                        name="address" placeholder=" " id="address1" autocomplete="nope"
-                                                        value="<?=$this->user_data->address1 ?? ''?>"
+                                                        name="address1" placeholder=" " id="address1"
+                                                        autocomplete="nope"
+                                                        value="<?=$this->user_data->htmlDecode($this->user_data->address1 ?? '') ?? ''?>"
                                                         form="user-ckeckout-frm">
                                                     <div class="invalig-feedback"></div>
                                                     <label for="address1" class="input-box__label">
@@ -218,8 +221,9 @@
                                                 </div>
                                                 <div class="mb-3 input-box">
                                                     <input class="form-control input-box__input" type="text"
-                                                        name="address" placeholder=" " id="address2" autocomplete="nope"
-                                                        value="<?=$this->user_data->address2 ?? ''?>"
+                                                        name="address2" placeholder=" " id="address2"
+                                                        autocomplete="nope"
+                                                        value="<?=$this->user_data->htmlDecode($this->user_data->address2 ?? '') ?? ''?>"
                                                         form="user-ckeckout-frm">
                                                     <div class="invalig-feedback"></div>
                                                     <label for="address2" class="input-box__label">
@@ -234,7 +238,7 @@
                                                 <div class="mb-3 input-box">
                                                     <input class="form-control input-box__input" type="text"
                                                         name="ville" id="ville" placeholder=" " autocomplete="nope"
-                                                        value="<?=$this->user_data->ville ?? ''?>"
+                                                        value="<?=$this->user_data->htmlDecode($this->user_data->ville ?? '') ?? ''?>"
                                                         form="user-ckeckout-frm">
                                                     <div class="invalig-feedback"></div>
                                                     <label for="ville" class="input-box__label">
@@ -246,7 +250,7 @@
                                                 <div class="mb-3 input-box">
                                                     <input class="form-control input-box__input" type="text"
                                                         name="region" id="region" placeholder=" " autocomplete="nope"
-                                                        value="<?=$this->user_data->region ?? ''?>"
+                                                        value="<?=$this->user_data->htmlDecode($this->user_data->region ?? '') ?? ''?>"
                                                         form="user-ckeckout-frm">
                                                     <label for="region" class="input-box__label">
                                                         Region
@@ -258,7 +262,7 @@
                                                     <input class="form-control input-box__input" type="text"
                                                         name="zip_code" id="zip_code" placeholder=" "
                                                         autocomplete="nope"
-                                                        value="<?=$this->user_data->zip_code ?? ''?>"
+                                                        value="<?=$this->user_data->htmlDecode($this->user_data->zip_code ?? '') ?? ''?>"
                                                         form="user-ckeckout-frm">
                                                     <div class="invalig-feedback"></div>
                                                     <label for="zip_code" class="input-box__label">
@@ -274,7 +278,7 @@
                                                 <div class="mb-3 input-box">
                                                     <textarea class="form-control input-box__input input-box__textarea"
                                                         id="u_comment" name="u_comment" rows="3" placeholder=" "
-                                                        form="user-ckeckout-frm"><?=$this->user_data->u_comment ?? ''?></textarea>
+                                                        form="user-ckeckout-frm"><?=$this->user_data->htmlDecode($this->user_data->u_comment ?? '') ?? ''?></textarea>
                                                     <label for="u_comment" class="input-box__label">
                                                         Commentaires, notes ...
                                                     </label>
@@ -284,7 +288,8 @@
                                         <div class="mt-2">
                                             <label class="checkbox d-inline-block me-3" for="checkout-remember-me">
                                                 <input class="checkbox__input" id="checkout-remember-me" type="checkbox"
-                                                    name="checkout-remember-me" form="user-ckeckout-frm">
+                                                    name="principale" form="user-ckeckout-frm"
+                                                    <?=$this->user_data->principale == 'on' ? 'checked' : '' ?>>
                                                 <span class="checkbox__box"></span>
                                                 Sauvegarder ces informations pour la prochaine fois
                                             </label>
@@ -409,9 +414,9 @@
                                         <div class="radio-check">
                                             <div class="radio-check__wrapper">
                                                 <label for="sh_name<?=$shipping_class->shcID?>" class="radio">
-                                                    <input type="radio" name="sh_name_<?=$shipping_class->shcID?>"
-                                                        class="radio__input" id="sh_name<?=$shipping_class->shcID?>"
-                                                        form="user-ckeckout-frm">
+                                                    <input type="radio" name="sh_name" class="radio__input"
+                                                        id="sh_name<?=$shipping_class->shcID?>" form="user-ckeckout-frm"
+                                                        value="<?=$shipping_class->shcID?>">
                                                     <span class="radio__radio"></span>
                                                     <div class="radio__text">
                                                         <?=$shipping_class->htmlDecode($shipping_class->sh_name)?>
@@ -511,6 +516,14 @@
                                             </tbody>
                                         </table>
                                     </div>
+
+                                </div>
+                                <div class="card-footer proceed" style="display:none;">
+                                    <form class="buy-frm">
+                                        <?=FH::csrfInput('csrftoken', $this->token->generate_token(8, 'buy-frm')); ?>
+                                        <button class="button buy-btn" type="button">Proceed to
+                                            buy</button>
+                                    </form>
                                 </div>
                                 <!-- end card-body-->
                             </div>
@@ -549,19 +562,25 @@
                                     </div>
                                     <p class="infos-transaction">All transactions are secure and encrypted.</p>
                                     <div id="order-payment" class="border mb-3 rounded radio-check-group">
+                                        <?php if (isset($this->pmt_getaway) && $this->pmt_getaway->count() > 0) :?>
+                                        <?php foreach ($this->pmt_getaway->get_results() as $pmt_getaway) :?>
+                                        <?php if ($pmt_getaway->status == 'on'):?>
                                         <div class="payment-gateway">
                                             <div class="radio-check payment-gateway-header">
                                                 <div class="radio-check__wrapper">
-                                                    <label for="credit-card" class="radio">
-                                                        <input type="radio" name="credit-card" class="radio__input"
-                                                            id="credit-card" form="user-ckeckout-frm">
+                                                    <label for="pm_name<?=$pmt_getaway->pmID?>" class="radio">
+                                                        <input type="radio" name="pm_name" class="radio__input"
+                                                            id="pm_name<?=$pmt_getaway->pmID?>" form="user-ckeckout-frm"
+                                                            value="<?=$pmt_getaway->pmID?>">
                                                         <span class="radio__radio"></span>
                                                         <div class="radio__text">
-                                                            <span class="fw-700">Credit Card</span>
+                                                            <span class="fw-700"><?=$pmt_getaway->pm_name?></span>
                                                         </div>
                                                     </label>
                                                 </div>
+                                                <?php if ($pmt_getaway->pm_name == 'Credit Card') :?>
                                                 <div class="brand-icons">
+                                                    <span><a href="#" class="text-highlight">Change</a></span>
                                                     <span class="payment-icon payment-icon-visa">
                                                     </span>
                                                     <span class="payment-icon payment-icon-master">
@@ -571,7 +590,9 @@
                                                     <span class="payment-icon payment-icon-discover">
                                                     </span>
                                                 </div>
+                                                <?php endif;?>
                                             </div>
+                                            <?php if ($pmt_getaway->pm_name == 'Credit Card') :?>
                                             <!-- end payment-gateway-header -->
                                             <div
                                                 class="payment-gateway-content  border-bottom payment-gateway-content-credit-card p-3">
@@ -579,11 +600,10 @@
                                                     <div class="col-md-6 mb-3">
                                                         <div class="mb-3 input-box">
                                                             <input class="form-control input-box__input" type="text"
-                                                                name="payment-card-number" id="payment-card-number"
-                                                                placeholder=" " autocomplete="off"
-                                                                form="user-ckeckout-frm">
+                                                                name="cc_number" id="cc_number" placeholder=" "
+                                                                autocomplete="off" form="user-ckeckout-frm">
                                                             <div class="invalig-feedback"></div>
-                                                            <label for="payment-card-number" class="input-box__label">
+                                                            <label for="cc_number" class="input-box__label">
                                                                 Card number<span class="text-danger">*</span>
                                                             </label>
                                                         </div>
@@ -591,11 +611,10 @@
                                                     <div class="col-md-6 mb-3">
                                                         <div class="mb-3 input-box">
                                                             <input class="form-control input-box__input" type="text"
-                                                                name="payment-name-on-card" id="payment-name-on-card"
-                                                                placeholder=" " autocomplete="off"
-                                                                form="user-ckeckout-frm">
+                                                                name="cc_name" id="cc_name" placeholder=" "
+                                                                autocomplete="off" form="user-ckeckout-frm">
                                                             <div class="invalig-feedback"></div>
-                                                            <label for="payment-name-on-card" class="input-box__label">
+                                                            <label for="cc_name" class="input-box__label">
                                                                 Name on card<span class="text-danger">*</span>
                                                             </label>
                                                         </div>
@@ -605,11 +624,9 @@
                                                     <div class="col-md-6 mb-3">
                                                         <div class="mb-3 input-box">
                                                             <input class="form-control input-box__input" type="text"
-                                                                name="payment-expiration-date"
-                                                                id="payment-expiration-date" placeholder=" "
+                                                                name="cc_expiry" id="cc_expiry" placeholder=" "
                                                                 autocomplete="off" form="user-ckeckout-frm">
-                                                            <label for="payment-expiration-date"
-                                                                class="input-box__label">
+                                                            <label for="cc_expiry" class="input-box__label">
                                                                 Expiration date (MM
                                                                 /
                                                                 YY)<span class="text-danger">*</span>
@@ -619,10 +636,9 @@
                                                     <div class="col-md-6 mb-3">
                                                         <div class="mb-3 input-box">
                                                             <input class="form-control input-box__input" type="text"
-                                                                name="payment-security-code" id="payment-security-code"
-                                                                placeholder=" " autocomplete="off"
-                                                                form="user-ckeckout-frm">
-                                                            <label for="payment-security-code" class="input-box__label">
+                                                                name="cc_cvv" id="cc_cvv" placeholder=" "
+                                                                autocomplete="off" form="user-ckeckout-frm">
+                                                            <label for="cc_cvv" class="input-box__label">
                                                                 Security code<span class="text-danger">*</span>
                                                             </label>
                                                         </div>
@@ -631,21 +647,7 @@
 
                                             </div>
                                             <!-- end payment-gateway-content -->
-                                        </div>
-                                        <!-- end payment-gateway -->
-                                        <div class="payment-gateway">
-                                            <div class="radio-check payment-gateway-header">
-                                                <div class="radio-check__wrapper">
-                                                    <label for="paypal" class="radio">
-                                                        <input type="radio" name="paypal" class="radio__input"
-                                                            id="paypal" form="user-ckeckout-frm">
-                                                        <span class="radio__radio"></span>
-                                                        <div class="radio__text">
-                                                            <span class="fw-700">Paypal</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <?php elseif ($pmt_getaway->pm_name == 'PayPal') :?>
                                             <!-- end payment-gateway-header -->
                                             <div
                                                 class="payment-gateway-content p-5 border-bottom flex-column justify-content-center align-items-center">
@@ -657,21 +659,7 @@
                                                     your purchase securely.</p>
                                             </div>
                                             <!-- end payment-gateway-content -->
-                                        </div>
-                                        <!-- end payment-gateway -->
-                                        <div class="payment-gateway">
-                                            <div class="radio-check payment-gateway-header">
-                                                <div class="radio-check__wrapper">
-                                                    <label for="Amazon-pay" class="radio">
-                                                        <input type="radio" name="Amazon-pay" class="radio__input"
-                                                            id="Amazon-pay" form="user-ckeckout-frm">
-                                                        <span class="radio__radio"></span>
-                                                        <div class="radio__text">
-                                                            <span class="fw-700">Amazon pay</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <?php elseif ($pmt_getaway->pm_name == 'Amazon Pay') :?>
                                             <!-- end payment-gateway-header -->
                                             <div
                                                 class="payment-gateway-content p-5 border-bottom flex-column justify-content-center align-items-center">
@@ -679,21 +667,7 @@
                                                 <p class="mt-3">You will be asked to login with Amazon.</p>
                                             </div>
                                             <!-- end payment-gateway-content -->
-                                        </div>
-                                        <!-- end payment-gateway -->
-                                        <div class="payment-gateway">
-                                            <div class="radio-check payment-gateway-header">
-                                                <div class="radio-check__wrapper">
-                                                    <label for="Klarna" class="radio">
-                                                        <input type="radio" name="checkout[payment-rate][id]"
-                                                            class="radio__input" id="Klarna" form="user-ckeckout-frm">
-                                                        <span class="radio__radio"></span>
-                                                        <div class="radio__text">
-                                                            <span class="fw-700">Pay over time with Klarna</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <?php elseif ($pmt_getaway->pm_name == 'Pay over time with Klarna') :?>
                                             <!-- end payment-gateway-header -->
                                             <div
                                                 class="payment-gateway-content p-5 flex-column justify-content-center align-items-center">
@@ -705,8 +679,12 @@
                                                     Klarna to complete your purchase securely.</p>
                                             </div>
                                             <!-- end payment-gateway-content -->
+                                            <?php endif;?>
                                         </div>
-                                        <!-- end payment-gateway -->
+                                        <?php endif;?>
+                                        <?php endforeach;?>
+                                        <?php endif;?>
+
                                     </div>
                                     <!-- end order-payment -->
                                     <div class="card-sub-title">
@@ -722,9 +700,9 @@
                                             <div class="radio-check billing-address-header">
                                                 <div class="radio-check__wrapper">
                                                     <label for="checkout-billing-address-id-1" class="radio">
-                                                        <input type="radio" name="checkout-billing-address-id-1"
+                                                        <input type="radio" name="prefred_billing_addr"
                                                             class="radio__input" id="checkout-billing-address-id-1"
-                                                            form="user-ckeckout-frm">
+                                                            form="user-ckeckout-frm" value="1">
                                                         <span class="radio__radio"></span>
                                                         <div class="radio__text">
                                                             <span class="fw-700">Same as shipping address</span>
@@ -739,9 +717,9 @@
                                             <div class="radio-check billing-address-header">
                                                 <div class="radio-check__wrapper">
                                                     <label for="checkout-billing-address-id-2" class="radio">
-                                                        <input type="radio" name="checkout-billing-address-id-2"
+                                                        <input type="radio" name="prefred_billing_addr"
                                                             class="radio__input" id="checkout-billing-address-id-2"
-                                                            form="user-ckeckout-frm">
+                                                            form="user-ckeckout-frm" value="2">
                                                         <span class="radio__radio"></span>
                                                         <div class="radio__text">
                                                             <span class="fw-700"> Use a different billing
@@ -814,7 +792,7 @@
                                                             <select class="form-select select_country input-box__input"
                                                                 data-placeholder=" " id="other-billing-country"
                                                                 name="other-billing-country" placeholder=" "
-                                                                form="user-ckeckout-frm">
+                                                                form="user-ckeckout-frm" style="width: 100%">
                                                             </select>
                                                             <label for="other-billing-country" class="input-box__label">
                                                                 Country<span class="text-danger">*</span>

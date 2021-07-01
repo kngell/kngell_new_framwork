@@ -72,6 +72,8 @@ class Cart {
           data_type: "values",
           model_method: "update_UserCartPrice",
           frm: form,
+          frm_name:
+            form.attr("class") + form.find("input[name='item_id']").val(),
           params: elt,
         };
         Call_controller(data, display_product);
@@ -209,7 +211,6 @@ class Cart {
     //=======================================================================
     function refresh_subtotal(resp, qty) {
       const elmt = phpPlugin.wrapper.find("#sub_total");
-      console.log(qty);
       //1- update nb items
       elmt.find(".nb-item .cart_nb_elt").html(function (i, nb_items) {
         return parseInt(nb_items) - 1;

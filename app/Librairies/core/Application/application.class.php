@@ -82,7 +82,6 @@ class Application
         $url = self::$container->load([Globals::class => []])->Globals->getGet('url') ?? null ;
         $factory = self::$container->load([RooterFactory::class => ['dispatchedUrl' => $url, 'routes' => $routes]])->RooterFactory;
         $factory->create(Rooter::class)->buildRoutes();
-        $c = self::$container;
         return $this;
     }
 }

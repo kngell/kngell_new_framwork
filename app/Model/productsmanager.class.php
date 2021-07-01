@@ -5,7 +5,7 @@ class ProductsManager extends Model
     protected string $_table = 'products';
     protected $_colContent = '';
     protected array $checkboxes = ['p_charge_tax', 'p_track_qty', 'p_continious_sell'];
-    protected array  $select2_field = ['p_company', 'p_warehouse', 'p_shipping_class'];
+    protected array  $select2_field = ['p_company', 'p_warehouse', 'p_shipping_class', 'p_unitID'];
 
     /**
      * Main Contructor
@@ -186,6 +186,11 @@ class ProductsManager extends Model
                 $r['colID'] = 'shcID';
                 $r['colTitle'] = 'sh_name';
             break;
+            case 'units':
+                $r = self::$container->load([UnitsManager::class => []])->Units->getAllItem(['where' => ['unID' => $this->p_unitID], 'return_mode' => 'class'])->get_results();
+                $r['colID'] = 'unID';
+                $r['colTitle'] = 'unit';
+            break;
 
             default:
                 // code...
@@ -227,6 +232,9 @@ class ProductsManager extends Model
                 break;
                 case 'company':
                     return 'p_company';
+                break;
+                case 'units':
+                    return 'p_unitID';
                 break;
                 default:
                 break;

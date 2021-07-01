@@ -1,8 +1,4 @@
-import {
-  displayAllDetails,
-  select2AjaxParams,
-  Call_controller,
-} from "corejs/form_crud";
+import { select2AjaxParams, Call_controller } from "corejs/form_crud";
 import { readurl } from "corejs/profile_img";
 import { BASE_URL } from "corejs/config";
 class Account {
@@ -30,24 +26,27 @@ class Account {
       e.preventDefault();
       let data = {
         url: "forms/showDetails",
-        table: $(this).find("form input[name=template]").val(),
+        table: $(this).attr("id"),
         id: $(this).find("form input[name=userID]").val(),
         data_type: "template",
         return_mode: "index",
-        token: $(this).find("form input[name=csrftoken]").val(),
+        csrftoken: $(this).find("form input[name=csrftoken]").val(),
         frm_name: "user_form" + $(this).find("form input[name=userID]").val(),
-        params: $(this).find("form input[name=template]").val(),
+        params: $(this).attr("id"),
       };
-      displayAllDetails(data, manageR);
+      Call_controller(data, manageR);
       function manageR(response, table) {
         if (response.result == "success") {
           phpPlugin.wrapper.html(response.msg[0]);
-          var newOption = new Option(
-            Object.values(response.msg[1])[0],
-            Object.keys(response.msg[1])[0],
-            false,
-            false
-          );
+          if (response.msg[1]) {
+            var newOption = new Option(
+              Object.values(response.msg[1])[0],
+              Object.keys(response.msg[1])[0],
+              false,
+              false
+            );
+          }
+
           phpPlugin.wrapper
             .find(".select_country")
             .append(newOption)

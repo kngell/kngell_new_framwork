@@ -21,10 +21,9 @@ class FormsController extends Controller
                 $model = self::$container->load([$table . 'Manager'::class => []])->$table;
                 $data['method'] = 'showAll';
                 $pagination = $data['pagination'];
-                $tableHTML = $table . 'Table';
-                $tableClass = (isset($data['user']) && $data['user'] == 'admin') ? 'TH_Admin' : 'TH';
                 in_array($table, ['assoc', 'users', 'contacts']) ? $model->set_SoftDelete(true) : '';
-                $output = $tableClass::$tableHTML(FH::getShowAllData($model, $this->request, $data), $token);
+                $tableClass = 'TH' . $table;
+                $output = self::$container->load([$tableClass => []])->$tableClass->{$table . 'Table'}(FH::getShowAllData($model, $data));
                 if (isset($pagination) && $pagination) {
                     $output = TH::pagination($output, $model, $data);
                 }
@@ -48,14 +47,19 @@ class FormsController extends Controller
     {
         if ($this->request->exists('post')) {
             $data = $this->request->get();
-            $table = str_replace(' ', '', ucwords(str_replace('_', ' ', strval($data['table']))));
-            $model = self::$container->load([$table . 'Manager'::class => []])->$table;
-            $data['method'] = !isset($data['method']) ? 'showDetails' : $data['method'];
-            $output = FH::getShowAllData($model, $this->request, $data);
-            if ($output) {
-                $this->jsonResponse(['result' => 'success', 'msg' => $output]);
+            $token = self::$container->load([Token::class => []])->Token;
+            if ($data['csrftoken'] && $token->validateToken($data['csrftoken'], $data['frm_name'])) {
+                $table = str_replace(' ', '', ucwords(str_replace('_', ' ', strval($data['table']))));
+                $model = self::$container->load([$table . 'Manager'::class => []])->$table;
+                $data['method'] = !isset($data['method']) ? 'showDetails' : $data['method'];
+                $output = FH::getShowAllData($model, $data);
+                if ($output) {
+                    $this->jsonResponse(['result' => 'success', 'msg' => $output]);
+                } else {
+                    $this->jsonResponse(['result' => 'error', 'msg' => FH::showMessage('warning', 'erreur serveur!')]);
+                }
             } else {
-                $this->jsonResponse(['result' => 'error', 'msg' => FH::showMessage('warning', 'erreur serveur!')]);
+                $this->jsonResponse(['result' => 'error', 'msg' => FH::showMessage('danger text-center', 'Bad CSRF Token')]);
             }
         }
     }
@@ -209,7 +213,7 @@ class FormsController extends Controller
                     $model->id = $data[$colID];
                     method_exists('Form_rules', $table) ? $model->validator($data, Form_rules::$table()) : '';
                     if ($model->validationPasses()) {
-                        $file = H_upload::upload_files($_FILES, $model, $this->container);
+                        $file = H_upload::upload_files($_FILES, $model, self::$container);
                         if ($file['success']) {
                             $model = $file['msg'];
                             $action = ($table == 'users' && isset($data['action'])) ? $data['action'] : '';

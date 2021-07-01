@@ -14,6 +14,7 @@ class Input_Manager {
     var arrErr = [];
     for (const [key, value] of Object.entries(InputErr)) {
       var input = form.find("#" + key).addClass("is-invalid");
+      console.log(input.parent());
       input.parent().children("div.invalid-feedback").html(value);
       arrErr.push(key);
     }

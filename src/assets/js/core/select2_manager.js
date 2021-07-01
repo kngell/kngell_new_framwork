@@ -25,6 +25,8 @@ export default class Upload {
       tags: true,
       tokenSeparators: [";", "\n", "\t"],
       allowClear: true,
+      theme: "classic",
+      width: "resolve",
       ajax: select2AjaxParams(data),
     });
     plugin.select = select;

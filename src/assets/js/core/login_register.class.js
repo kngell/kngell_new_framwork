@@ -1,5 +1,5 @@
 import { BASE_URL } from "corejs/config";
-import { Add, Call_controller } from "corejs/form_crud";
+import { Call_controller } from "corejs/form_crud";
 import input from "corejs/inputErrManager";
 import { readurl } from "corejs/profile_img";
 
@@ -83,7 +83,7 @@ class Login_And_Register {
         table: "auth",
         notification: "admin",
       };
-      Add(inputData, gestionR);
+      Call_controller(inputData, gestionR);
       function gestionR(response) {
         phpLR.regfrm.find("#register-btn").val("Enregistrer");
         if (response.result == "success") {

@@ -1,4 +1,4 @@
-import { displayAllDetails } from "corejs/form_crud";
+import { Call_controller } from "corejs/form_crud";
 class Profile {
   constructor(element) {
     this.element = element;
@@ -37,7 +37,7 @@ class Profile {
         data_type: "template",
         return_mode: "index",
       };
-      displayAllDetails(data, manageR);
+      Call_controller(data, manageR);
       function manageR(response) {
         if (response.result == "success") {
           phpPlugin.display.html(response.msg);

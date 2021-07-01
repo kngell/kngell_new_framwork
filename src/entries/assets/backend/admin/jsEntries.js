@@ -93,5 +93,10 @@ module.exports = {
       import: ["js/custom/backend/admin/company/taxes"],
       dependOn: "js/librairies/adminlib",
     },
+    //Orders
+    "js/custom/backend/admin/orders/orders": {
+      import: ["js/custom/backend/admin/orders/orders"],
+      dependOn: "js/librairies/adminlib",
+    },
   },
 };

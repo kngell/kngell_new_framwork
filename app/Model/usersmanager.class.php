@@ -31,7 +31,7 @@ class UsersManager extends Model
     {
         $tables = ['table_join' => ['users' => ['*'], 'user_extra_data' => ['*'], 'address_book' => ['*']]];
         $data = ['join' => 'LEFT JOIN',
-            'rel' => [['userID', 'userID'], ['userID', 'relID'], 'params' => ['relID| = ' . $id . '|address_book', 'tbl| = "' . $this->_table . '"|address_book']],
+            'rel' => [['userID', 'userID'], [['value' => 'userID', 'tbl' => 'users'], 'relID'], 'params' => ['relID| = ' . $id . '|address_book', 'tbl| = "' . $this->_table . '"|address_book']],
             'where' => ['userID' => ['value' => $id, 'tbl' => 'users']],
             'return_mode' => 'class'
         ];
@@ -210,43 +210,33 @@ class UsersManager extends Model
     // On insert
     public function afterSave($params = [])
     {
+        $errors = [];
         if (isset($params['group'])) {
             $select2_data = json_decode($this->htmlDecode($params['group']), true);
-            $error = $select2_data ? !$this->saveUserGroup($select2_data, $params['saveID']->get_lastID() ?? $params['userID']) : '';
+            $errors[] = $select2_data ? !$this->saveUserGroup($select2_data, $params['saveID']->get_lastID() ?? $params['userID']) : '';
         }
         // Manage default adresse
         if (!isset($params['principale'])) {
             $params['principale'] = null;
         }
         //save address
-        if ($this->get_address_fields($params)) {
-            $this->partial_save($params, ['tbl' => 'users', 'relID' => $params['userID']], 'address_book', $params['userID']);
-        }
+        $save_addr = self::$container->load([AddressBookManager::class => []])->AddressBook->partial_saveAddress($params, $this->_table, $this->id ?? $this->get_lastID());
         // save user extra data
-        if ($this->get_user_extra_data($params)) {
-            $this->partial_save($params, ['userID' => $params['userID']], 'user_extra_data', $params['userID']);
+        if ($ud = $this->get_user_extra_data($params)) {
+            $init_val = [
+                'userID' => $this->id ?? $this->get_lastID(),
+            ];
+            $u_extra = $this->partial_save($ud, ['where' => ['userID' => $this->id ?? $this->get_lastID()], 'return_mode' => 'class'], 'user_extra_data', $init_val);
         }
-        return true;
-    }
-
-    //get address fields
-    private function get_address_fields($params)
-    {
-        $ad = [];
-        $ad['address'] = isset($params['address']) ? $params['address'] : '';
-        $ad['zip_code'] = isset($params['zip_code']) ? $params['zip_code'] : '';
-        $ad['ville'] = isset($params['ville']) ? $params['ville'] : '';
-        $ad['pays'] = isset($params['pays']) ? $params['pays'] : '';
-        $ad['principale'] = isset($params['principale']) ? $params['principale'] : '';
-
-        foreach ($ad as $param) {
-            if (empty($param)) {
-                continue;
-            } else {
-                return true;
-            }
+        if (array_key_exists('errors', $save_addr)) {
+            $errors = array_merge($errors, $save_addr['errors']);
+            unset($save_addr['errors']);
         }
-        return false;
+        return [
+            'save_address' => $save_addr,
+            'user_extra_data' => $u_extra,
+            'errors' => $errors,
+        ];
     }
 
     //get user extra data fields
@@ -257,12 +247,13 @@ class UsersManager extends Model
         $ux['gender'] = isset($params['gender']) ? $params['gender'] : '';
         $ux['dob'] = isset($params['dob']) ? $params['dob'] : '';
         $ux['u_function'] = isset($params['u_function']) ? $params['u_function'] : '';
-
+        $ux['u_comment'] = isset($params['u_comment']) ? $params['u_comment'] : '';
+        $ux['u_total_spend'] = isset($params['u_total_spend']) ? $params['u_total_spend'] : '';
         foreach ($ux as $param) {
             if (empty($param)) {
                 continue;
             } else {
-                return true;
+                return $ux;
             }
         }
         return false;

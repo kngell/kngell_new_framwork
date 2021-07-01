@@ -1,4 +1,4 @@
-import { displayAllDetails } from "corejs/form_crud";
+import { Call_controller } from "corejs/form_crud";
 import OP from "corejs/operator";
 export default class User_cart {
   constructor(wrapper, header) {
@@ -11,14 +11,17 @@ export default class User_cart {
   //=======================================================================
   _display_cart = () => {
     let plugin = this;
+    const csrftoken = document.querySelector('meta[name="csrftoken"]');
     var data = {
       table: "cart",
       user: "guest",
       url: "forms/showDetails",
       data_type: "template",
+      csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
+      frm_name: "all_product_page",
     };
     const operation = new OP();
-    displayAllDetails(data, display_cart);
+    Call_controller(data, display_cart);
     function display_cart(response) {
       if (response.result == "success") {
         plugin.wrapper.find(".cart_nb_elt").html(function () {

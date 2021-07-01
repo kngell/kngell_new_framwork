@@ -251,9 +251,17 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label for="product-threshold">Low stock threshold</label>
+                                                    <label for="p_stock_threshold">Low stock
+                                                        threshold</label>
                                                     <input class="form-control" type="number" name="p_stock_threshold"
                                                         id="p_stock_threshold">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label for="product-threshold" class="mb-1">Product Unit</label>
+                                                    <select class="form-control p_unitID" type="text" name="p_unitID"
+                                                        id="p_unitID" style="width:100%; height:100%;"> </select>
                                                 </div>
                                             </div>
                                             <!-- end col -->

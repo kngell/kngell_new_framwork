@@ -144,4 +144,10 @@ class AdminController extends Controller
         $this->view_instance->set_pageTitle('Taxes Management');
         $this->view_instance->render('admin' . DS . 'company' . DS . 'alltaxes');
     }
+
+    public function ordersPage()
+    {
+        $this->view_instance->set_pageTitle('Orders Management');
+        $this->view_instance->render('admin' . DS . 'orders' . DS . 'orders');
+    }
 }

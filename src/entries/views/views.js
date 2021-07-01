@@ -46,6 +46,9 @@ import "views/backend/admin/company/allcompanies.php";
 import "views/backend/admin/company/alltaxes.php";
 import "views/backend/admin/company/company_details.php";
 import "views/backend/admin/company/partials/form.php";
+
+// Admin Orders
+import "views/backend/admin/orders/orders.php";
 //=======================================================================
 //Home Ecommerce Pages and Layouts
 //=======================================================================

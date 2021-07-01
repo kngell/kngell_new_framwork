@@ -121,6 +121,7 @@ class AuthManager extends Model
             //create a temporary user session
             self::$container->load([UserSessionsManager::class => []])->UserSessions->set_userSession($this);
             $this->session->set($this->_sessionName, $this->email);
+            $this->session->set(CONTAINER_NAME, self::$container);
             return true;
         } catch (\Throwable $th) {
             return false;
@@ -140,6 +141,7 @@ class AuthManager extends Model
             //Delete Session
             $this->session->delete(CURRENT_USER_SESSION_NAME) ;
             $this->session->delete(CHECKOUT_PROCESS_NAME) ;
+            $this->session->delete(CONTAINER_NAME) ;
             session_destroy();
             // $this->session->invalidate();
             self::$currentLoggedInUser = null;

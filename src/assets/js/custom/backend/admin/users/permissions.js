@@ -37,6 +37,7 @@ class AllUnits {
       datatable: true,
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
 
     //Select2 ajax

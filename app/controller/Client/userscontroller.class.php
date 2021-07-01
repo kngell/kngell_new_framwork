@@ -48,6 +48,7 @@ class UsersController extends Controller
         if (isset(AuthManager::$currentLoggedInUser)) {
             $this->view_instance->user_data = self::$container->load([UsersManager::class => []])->Users->get_single_user(AuthManager::$currentLoggedInUser->userID);
             $this->view_instance->shipping_class = self::$container->load([ShippingClassManager::class => []])->ShippingClass->getAllItem(['return_mode' => 'class']);
+            $this->view_instance->pmt_getaway = self::$container->load([PaymentModeManager::class => []])->PaymentMode->getAllItem(['return_mode' => 'class']);
             $this->view_instance->render('users' . DS . 'checkout' . DS . 'checkout');
         } else {
             Rooter::redirect('users' . DS . 'account' . DS . 'login');

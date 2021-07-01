@@ -227,6 +227,12 @@ class H
             case 'contacts':
                 return ['email' => 'emailc'];
                 break;
+            case 'users':
+                if($frm_name == "user-ckeckout-frm"){
+                    return ['email' => 'chk-email','firstName'=>'chk-firstName','lastName'=>'chk-lastName'];
+                }
+               
+                break;
             default:
                 return;
                 break;

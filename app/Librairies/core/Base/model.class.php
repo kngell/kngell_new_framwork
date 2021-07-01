@@ -94,7 +94,7 @@ class Model extends AbstractModel
      */
     public function htmlDecode(string $str) : string
     {
-        return !empty($str) ? htmlspecialchars_decode(html_entity_decode($str), ENT_QUOTES) : false;
+        return !empty($str) ? htmlspecialchars_decode(html_entity_decode($str), ENT_QUOTES) : '';
     }
 
     /**
@@ -180,34 +180,26 @@ class Model extends AbstractModel
         return $this->run_delete($conditions ?? [$colID => (int)$this->$colID], $params);
     }
 
-    //Get countrie
-    public function get_countrie($ctr = '')
-    {
-        $data = file_get_contents(APP . 'librairies' . DS . 'database' . DS . 'json' . DS . 'countries.json');
-        $country = array_filter(array_column(json_decode($data, true), 'name'), function ($countrie) use ($ctr) {
-            return $countrie == $ctr;
-        }, ARRAY_FILTER_USE_KEY);
-        return $country;
-    }
-
     //Partial save
-    public function partial_save($data = [], $params = [], $table = '', $index = '')
+    public function partial_save($data = [], $params = [], $table = '', array $init_insert = [])
     {
         if (!empty($table)) {
-            $m = str_replace(' ', '', ucwords(str_replace('_', ' ', $table))) . 'Manager';
-            $p_data = (new $m())->getAllbyParams($params);
+            $m = str_replace(' ', '', ucwords(str_replace('_', ' ', $table)));
+            $p_data = self::$container->load([$m . 'Manager' => []])->$m->getAllItem($params);
             if ($p_data->count() > 0) {
-                $colID = $p_data->get_colID();
                 $p_data = current($p_data->get_results());
-                $p_data->id = $p_data->$colID;
+                $p_data->id = $p_data->{$p_data->get_colID()};
             } else {
-                $p_data->tbl = $table;
-                $p_data->relID = $index;
+                if (is_array($init_insert) && count($init_insert) > 0) {
+                    foreach ($init_insert as $key => $value) {
+                        $p_data->$key = $value;
+                    }
+                }
             }
             $p_data->assign($data);
-            if ($p_data->save()->count() > 0) {
+            if ($r = $p_data->save()) {
                 $p_data = null;
-                return true;
+                return $r;
             }
             $p_data = null;
         }

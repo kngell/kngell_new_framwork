@@ -67,6 +67,7 @@ class Main {
               .html("In the cart");
           }
           if (document.location.pathname == "/kngell/home/cart") {
+            console.log("add");
             new user_cart(phpPlugin.wrapper, phpPlugin.header)._display_cart();
           }
         }

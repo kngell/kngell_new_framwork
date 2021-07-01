@@ -70,7 +70,7 @@
 
                 .item-management
                     display: flex
-                    justify-content: space-between
+                    justify-content: flex-end
                     flex-direction: column
                     &::before
                         content: ""
@@ -78,8 +78,9 @@
                         content: ""
                     .item-return
                         width:100%
+                        margin-bottom: .5rem
                     .btn 
-                        +btn-main(.4rem,3px,$gray-light,$dark-color,$gray-dark)
+                        +btn-main(.1rem,3px,$gray-light,$dark-color,$gray-dark)
                         border: 1px solid rgba($dark-light,.7)
                         display: block
                         outline: none

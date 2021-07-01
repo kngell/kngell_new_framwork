@@ -33,19 +33,26 @@ class Input
         }
     }
 
-    //=======================================================================
-    //Rename Keys of Objects
-    //=======================================================================
-    public function transform_keys($source, $item)
+    /**
+     * Transform Key -> transform source key from old to new key when present on $item
+     * ============================================================================================
+     * @param array $source
+     * @param array $item
+     * @return void
+     */
+    public function transform_keys(array $source, array $item)
     {
         $S = $source;
         if (isset($item)) {
             foreach ($source as $key => $val) {
-                foreach ($item as $k => $v) {
-                    if ($key == $k) {
-                        $S = $this->_rename_arr_key($key, $v, $S);
-                    }
+                if (isset($item[$key])) {
+                    $S = $this->_rename_arr_key($key, $item[$key], $S);
                 }
+                // foreach ($item as $k => $v) {
+                //     if ($key == $k) {
+                //         $S = $this->_rename_arr_key($key, $v, $S);
+                //     }
+                // }
             }
         }
 

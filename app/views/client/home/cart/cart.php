@@ -1,5 +1,6 @@
 <?php $this->start('head'); ?>
 <!-------Accueil-------->
+<meta name="csrftoken" content="<?=$this->token->generate_token(8, 'all_product_page')?>" />
 <link href="<?= $this->asset('css/custom/client/home/cart/cart', 'css') ?? ''?>" rel="stylesheet" type="text/css">
 <?php $this->end(); ?>
 <?php $this->start('body'); ?>

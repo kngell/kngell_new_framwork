@@ -295,12 +295,12 @@ abstract class AbstractModel implements ModelInterface
         return $this->validates;
     }
 
-    public function get_unique($colid_name)
+    public function get_unique(string $colid_name = '', string $prefix = '', string $suffix = '', int $token_length = 24)
     {
-        $token = $this->container->load([Token::class => []])->Token;
-        $output = $token->generate(24);
+        $token = $this->get_container()->load([Token::class => []])->Token;
+        $output = $prefix . $token->generate($token_length) . $suffix;
         while ($this->getDetails($output, $colid_name)->count() > 0) :
-            $output = $token->generate(24);
+            $output = $prefix . $token->generate($token_length) . $suffix;
         endwhile;
         $token = null;
         return $output;
@@ -435,5 +435,28 @@ abstract class AbstractModel implements ModelInterface
     public function get_modeName()
     {
         return $this->_modelName;
+    }
+
+    //Get countrie
+    public function get_countrie($ctr = '')
+    {
+        $data = file_get_contents(FILES . 'json' . DS . 'data' . DS . 'countries.json');
+        $country = array_filter(array_column(json_decode($data, true), 'name'), function ($countrie) use ($ctr) {
+            return $countrie == $ctr;
+        }, ARRAY_FILTER_USE_KEY);
+        return $country;
+    }
+
+    public function get_idFromString(array $params = [], string $name)
+    {
+        $arr = array_filter($params, function ($shClass) use ($name) {
+            return str_starts_with($shClass, $name);
+        }, ARRAY_FILTER_USE_KEY);
+        return is_array($arr) && count($arr) === 1 ? $arr[$name] : null;
+    }
+
+    public function getDate($date, $format = 'd-m-y'): string
+    {
+        return (new DateTime($date))->format($format);
     }
 }

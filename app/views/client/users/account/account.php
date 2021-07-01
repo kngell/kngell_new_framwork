@@ -1,5 +1,6 @@
 <?php $this->start('head'); ?>
 <!-------Costum-------->
+<meta name="csrftoken" content="<?=$this->token->generate_token(8, 'all_product_page')?>" />
 <link href="<?= $this->asset('css/custom/client/users/account/account', 'css') ?? ''?>" rel="stylesheet"
     type="text/css">
 <?php $this->end(); ?>
@@ -109,7 +110,7 @@
                     <div class="card-body transaction-body">
                         <div class="row transaction-menu">
                             <div class="col-sm-6 transaction-item">
-                                <div class="card h-100">
+                                <div class="card h-100" id="orders">
                                     <div class="card-body">
                                         <h5 class="card-title"><span class="card-img-wrapper"><img
                                                     src="/kngell/public/assets/img/mescommandes.png" alt="Mes commandes"
@@ -117,11 +118,10 @@
                                             commandes</h5>
                                         <p class="card-text">Suivre, Retourner ou Acheter à nouveau</p>
                                     </div>
-                                    <form class="user_form" id="user_form">
-                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
+                                    <form class="user_form" id="user_form<?=AuthManager::currentUser()->userID?>">
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form' . AuthManager::currentUser()->userID)); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
-                                        <input type="hidden" name="template" value="commandes">
                                     </form>
                                 </div>
                             </div>

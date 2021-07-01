@@ -6,7 +6,12 @@ import select2 from "corejs/select2_manager";
 class AllProducts {
   constructor(element) {
     this.element = element;
-    this.selectTag = ["p_company", "p_warehouse", "p_shipping_class"];
+    this.selectTag = [
+      "p_company",
+      "p_warehouse",
+      "p_shipping_class",
+      "p_unitID",
+    ];
   }
   _init = () => {
     this._setupVariables();
@@ -49,6 +54,12 @@ class AllProducts {
       element: phpPlugin.modalform.find(".p_shipping_class"),
       tbl_options: "shipping_class",
       placeholder: "Please select a shipping class",
+    });
+    myselect2._init({
+      url: "forms/showDetails",
+      element: phpPlugin.modalform.find(".p_unitID"),
+      tbl_options: "units",
+      placeholder: "Please select a unit",
     });
     let company = myselect2._init({
       url: "forms/showDetails",
@@ -106,6 +117,7 @@ class AllProducts {
       media: phpPlugin.modalbox.find("#p_media"),
       dropzone: dropzone,
       select: phpPlugin.selectTag,
+      data_type: "values",
     });
 
     //=======================================================================
@@ -114,6 +126,7 @@ class AllProducts {
     cruds._edit({
       std_fields: [
         "pdtID",
+        "p_unitID",
         "p_title",
         "p_short_descr",
         "p_descr",
@@ -143,7 +156,13 @@ class AllProducts {
       inputElement: phpPlugin.modalbox.find("#myfile"),
       dropzone: dropzone, //myDropzone,
       categorieElement: phpPlugin.modalform.find("#check-box-wrapper"),
-      tbl_options: ["categories", "company", "warehouse", "shipping_class"],
+      tbl_options: [
+        "categories",
+        "company",
+        "warehouse",
+        "shipping_class",
+        "units",
+      ],
       table: "products",
     });
     //=======================================================================

@@ -68,7 +68,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                         default:
                             foreach ($tables[$table] as $value) {
                                 $separator = $table == end($all_tables) && $value == end($tables[$table]) ? ' ' : ', ';
-                                $sql .= $table . '.' . $value . $separator;
+                                if (strpos($value, 'AS') !== false) {
+                                    $v = explode('AS', $value);
+                                    $sql .= $table . '.' . trim($v[0]) . ' AS ' . trim($v[1]) . $separator;
+                                } else {
+                                    $sql .= $table . '.' . $value . $separator;
+                                }
                             }
                             break;
                     }
@@ -82,7 +87,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     $add = ($i > 0) ? ' ' . $op . ' ' : '';
                     if (is_numeric($index)) {
                         $sql .= $data['join'] . ' ' . $all_tables[$index + 1] . ' ON ';
-                        $sql .= $all_tables[$index] . '.' . $value[0] . ' = ' . $all_tables[$index + 1] . '.' . $value[1] . ' ';
+                        $part1 = is_array($value[0]) ? $value[0]['tbl'] . '.' . $value[0]['value'] : $all_tables[$index] . '.' . $value[0];
+                        $part2 = is_array($value[1]) ? $value[1]['tbl'] . '.' . $value[1]['value'] : $all_tables[$index + 1] . '.' . $value[1];
+                        $sql .= $part1 . ' = ' . $part2 . ' ';
                     }
                     if ($index == 'params') {
                         foreach ($data['rel']['params'] as $key => $value) {
