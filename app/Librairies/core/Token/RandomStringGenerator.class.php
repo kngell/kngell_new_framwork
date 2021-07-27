@@ -14,21 +14,11 @@ class RandomStringGenerator
     /** @var int */
     protected $alphabetLength;
 
-
     /**
      * @param string $alphabet
      */
-    public function __construct($alphabet = '')
+    public function __construct()
     {
-        if ('' !== $alphabet) {
-            $this->setAlphabet($alphabet);
-        } else {
-            $this->setAlphabet(
-                implode(range('a', 'z'))
-                . implode(range('A', 'Z'))
-                . implode(range(0, 9))
-            );
-        }
     }
 
     /**
@@ -36,8 +26,15 @@ class RandomStringGenerator
      */
     public function setAlphabet($alphabet)
     {
-        $this->alphabet = $alphabet;
-        $this->alphabetLength = strlen($alphabet);
+        if ('' !== $alphabet) {
+            $this->alphabet = $alphabet;
+        } else {
+            $this->alphabet =
+                implode(range('a', 'z'))
+                . implode(range('A', 'Z'))
+                . implode(range(0, 9));
+        }
+        $this->alphabetLength = strlen($this->alphabet);
     }
 
     protected function getRandomInteger($min, $max)
@@ -69,6 +66,7 @@ class RandomStringGenerator
 
         return ($min + $rnd);
     }
+
     public function getAlphabet()
     {
         return $this->alphabet;

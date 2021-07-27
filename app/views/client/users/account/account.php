@@ -122,6 +122,7 @@
                                         <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form' . AuthManager::currentUser()->userID)); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
+                                        <input type="hidden" name="template" value="orders">
                                     </form>
                                 </div>
                             </div>
@@ -145,7 +146,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-6 transaction-item">
-                                <div class="card h-100">
+                                <div class="card h-100" id="address_book">
                                     <div class="card-body">
                                         <h5 class="card-title"><span class="card-img-wrapper"><img
                                                     src="/kngell/public/assets/img/adresses.png" alt="Mes adresses"
@@ -154,7 +155,7 @@
                                             facturation</p>
                                     </div>
                                     <form class="user_form">
-                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form')); ?>
+                                        <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'user_form' . AuthManager::currentUser()->userID)); ?>
                                         <input type="hidden" name="userID"
                                             value="<?=AuthManager::currentUser()->userID?>">
                                         <input type="hidden" name="template" value="address_book">

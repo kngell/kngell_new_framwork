@@ -1,9 +1,26 @@
 import { BASE_URL, isIE } from "./config";
 
 function get_formData(data) {
-  var formData = data.hasOwnProperty("frm")
-    ? new FormData(data.frm[0])
-    : new FormData();
+  if (data.hasOwnProperty("frm")) {
+    const arr_frm = data.frm;
+    if (data.frm instanceof Array) {
+      var formData = new FormData(arr_frm[0][0]);
+      for (let i = 1; i < arr_frm.length; i++) {
+        const frm = new FormData(arr_frm[i][0]);
+        for (var j = 0; j < frm.length; j++) {
+          formData.append(frm[j].name, frm[j].value);
+        }
+      }
+    } else {
+      var formData = new FormData(arr_frm[0]);
+    }
+  } else {
+    var formData = new FormData();
+  }
+
+  // var formData = data.hasOwnProperty("frm")
+  //   ? new FormData(data.frm[0])
+  //   : new FormData();
   formData.append("frm_name", data.frm_name);
   formData.append("isIE", isIE());
   $.each(data, function (key, val) {
@@ -19,7 +36,9 @@ function get_formData(data) {
             formData.append(val[i].name, data.files[i]);
           }
         } else {
-          formData.append(key, JSON.stringify(val));
+          if (key != "params") {
+            formData.append(key, JSON.stringify(val));
+          }
         }
       } else if (val instanceof Array) {
         for (let i = 0; i < val.length; i++) {

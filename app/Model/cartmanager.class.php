@@ -17,10 +17,10 @@ class CartManager extends Model
     {
         parent::__construct($this->_table, $this->_colID);
         $this->_modelName = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->_table))) . 'Manager';
-        self::$cart_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'shpping_cart_template.php');
-        self::$sub_total_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'cart_subtotal_template.php');
-        self::$wishlist_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'whishlist_template.php');
-        self::$empty_cart_template = file_get_contents(VIEW . 'client' . DS . 'home' . DS . 'partials' . DS . '_empty_cart_template.php');
+        self::$cart_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'shpping_cart_template.php', true);
+        self::$sub_total_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'cart_subtotal_template.php', true);
+        self::$wishlist_template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'shopping_cart' . DS . 'whishlist_template.php', true);
+        self::$empty_cart_template = file_get_contents(VIEW . 'client' . DS . 'home' . DS . 'partials' . DS . '_empty_cart_template.php', true);
     }
 
     //=======================================================================
@@ -28,11 +28,17 @@ class CartManager extends Model
     //=======================================================================
     public function getUserItem($cookie = '', $id = '', $tbl = '', )
     {
-        $tables = ['table_join' => [$this->_table => ['*'], 'products' => ['*'], 'product_categorie' => ['*'], 'categories' => ['categorie']]];
+        $tables = ['table_join' => [$this->_table => ['*'], 'products' => ['*'], 'product_categorie' => ['*'], 'categories' => ['categorie'], 'shipping_class' => ['sh_name', 'status', 'price']]];
         $data = [
-            'join' => 'INNER JOIN', 'rel' => [['item_id', 'pdtID'], ['pdtID', 'pdtID'], ['catID', 'catID']],
+            'join' => 'INNER JOIN',
+            'rel' => [
+                ['item_id', 'pdtID'],
+                ['pdtID', 'pdtID'],
+                ['catID', 'catID'],
+                [['value' => 'p_shipping_class', 'tbl' => 'products'], ['value' => 'shcID', 'tbl' => 'shipping_class']]
+            ],
             'where' => ['user_id' => ['value' => $cookie, 'tbl' => $this->_table]],
-            'group_by' => ['pdtID' => ['tbl' => 'products']],
+            'group_by' => ['cart_id DESC' => ['tbl' => $this->_table]],
             'return_mode' => 'class'
         ];
         if (!empty($id)) {
@@ -91,7 +97,7 @@ class CartManager extends Model
             foreach ($taxes as $key => $value) {
                 $template = $temp;
                 $template = str_replace('{{title}}', $value[1], $template);
-                $template = str_replace('{{tax_amount}}', strval($this->get_currency($value[0])), $template);
+                $template = str_replace('{{tax_amount}}', strval($this->money->getAmount($value[0])), $template);
                 $template = str_replace('{{tax-class}}', $key, $template);
                 $template_html .= $template;
                 $total += $value[0];
@@ -109,7 +115,7 @@ class CartManager extends Model
             $user_cart = $this->getUserItem(Cookies::get(VISITOR_COOKIE_NAME));
             $cart_html = '';
             $wl_html = '';
-            $price = $this->get_currency(0);
+            $price = $this->money->getAmount(0);
             $nb_item = 0;
             if ($user_cart && count($user_cart) > 0) {
                 foreach ($user_cart as $product) {
@@ -133,7 +139,7 @@ class CartManager extends Model
                 $sub_total = str_replace('{{total_price}}', strval($price), $sub_total);
                 $sub_total = str_replace('{{taxes_tempplate}}', isset($total_taxes) && $total_taxes[0] ? strval($total_taxes[0]) : '', $sub_total);
                 $sub_total = str_replace('{{total_ttc}}', strval($price->plus(isset($total_taxes) && $total_taxes[1] ? $total_taxes[1] : 0)) ?? 0, $sub_total);
-                $sub_total = str_replace('{{proccedd_token}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'buy-frm')), $sub_total);
+                $sub_total = str_replace('{{proccedd_token}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'buy-frm')), $sub_total);
             }
             if ($cart_html == '') {
                 $cart_html = self::$empty_cart_template;
@@ -152,11 +158,11 @@ class CartManager extends Model
             $temp = str_replace('{{title}}', $this->htmlDecode($product->p_title), $temp);
             $temp = str_replace('{{brand}}', $product->categorie, $temp);
             $temp = str_replace('{{image}}', $product->p_media != '' ? IMG . unserialize($product->p_media)[0] : ImageManager::asset_img('products/product-80x80.jpg'), $temp);
-            $temp = str_replace('{{price}}', strval($this->get_currency($product->p_regular_price * $product->item_qty)), $temp);
+            $temp = str_replace('{{price}}', strval($this->money->getAmount($product->p_regular_price * $product->item_qty)), $temp);
             $temp = str_replace('{{product_id}}', strval($product->pdtID), $temp);
             $temp = str_replace('{{qty}}', strval($product->item_qty), $temp);
-            $temp = str_replace('{{del_save_token}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'delete-cart-item-frm' . $product->pdtID ?? 1)), $temp);
-            $temp = str_replace('{{qty_token}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'form_qty' . $product->pdtID ?? 1)), $temp);
+            $temp = str_replace('{{del_save_token}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'delete-cart-item-frm' . $product->pdtID ?? 1)), $temp);
+            $temp = str_replace('{{qty_token}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'form_qty' . $product->pdtID ?? 1)), $temp);
             return [$temp, $product->p_regular_price * $product->item_qty];
         }
 
@@ -232,11 +238,11 @@ class CartManager extends Model
     {
         if (Cookies::exists(VISITOR_COOKIE_NAME)) {
             $user_cart = $this->getUserItem(Cookies::get(VISITOR_COOKIE_NAME), !empty($id) ? $id : '');
-            $ht = $this->get_currency(0);
+            $ht = $this->money->getAmount(0);
             if ($user_cart) {
                 foreach ($user_cart as $product) {
                     if ($product->c_content == 'cart') {
-                        $product->price = $this->get_currency($product->p_regular_price * $product->item_qty);
+                        $product->price = $this->money->getAmount($product->p_regular_price * $product->item_qty);
                         $ht = $ht->plus($product->p_regular_price * $product->item_qty);
                     }
                 }
@@ -251,9 +257,20 @@ class CartManager extends Model
                     }
                     $ttc = $ht->plus($tax_html['cart'][1]);
                 }
+                $shipping = $this->get_shippingHtmlDefaultClass();
+                // $ttc = $ttc->plus($shipping['amount']);
             }
         }
-        return [$user_cart, $taxe_values ?? null, [$ht ?? 0, $ttc ?? 0], $tax_html ?? [], self::$empty_cart_template];
+        return [$user_cart, $taxe_values ?? null, [$ht ?? 0, $ttc ?? 0], $tax_html ?? [], self::$empty_cart_template, $shipping];
+    }
+
+    public function get_shippingHtmlDefaultClass()
+    {
+        $sc = $this->get_defaultShippingClass();
+        $scTemplate = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'checkout' . DS . 'checkout_shipping_template.php');
+        $scTemplate = str_replace('{{title}}', $this->htmlDecode($sc['sh_name']), $scTemplate);
+        $scTemplate = str_replace('{{sh_amount}}', (string) $this->money->getAmount($sc['price']), $scTemplate);
+        return ['html' => $scTemplate, 'amount' => $sc['price']];
     }
 
     public function get_taxHtmlTemplate()
@@ -269,7 +286,7 @@ class CartManager extends Model
     //=======================================================================
     public function delete_cart($params = [], $id = '')
     {
-        return Cookies::exists(VISITOR_COOKIE_NAME) ? $this->delete('', ['where' => ['user_id' => Cookies::get(VISITOR_COOKIE_NAME), 'item_id' => $params['item_id']]]) : false;
+        return Cookies::exists(VISITOR_COOKIE_NAME) ? $this->delete(['user_id' => Cookies::get(VISITOR_COOKIE_NAME), 'item_id' => $params['item_id']], $params) : false;
     }
 
     //=======================================================================
@@ -278,7 +295,7 @@ class CartManager extends Model
     public function afterDelete($params = [])
     {
         $empty_cart_template = file_get_contents(VIEW . 'client' . DS . 'home' . DS . 'partials' . DS . '_empty_cart_template.php');
-        $products_taxes = $this->getProductAndTax($params['where']['item_id']);
+        $products_taxes = $this->getProductAndTax($params['item_id']);
         $product_price = 0;
         $pt = [];
         if ($products_taxes && count($products_taxes) > 0) {
@@ -320,7 +337,7 @@ class CartManager extends Model
 
     public function get_successMsg($response = null, $action = '', $method = '')
     {
-        if ($response['saveID']->_lastID != null) {
+        if ($response->_lastID != null) {
             return [1];
         }
         return [0];

@@ -16,12 +16,16 @@ class AuthManager extends Model
     //construct
     //=======================================================================
 
-    public function __construct($user = '')
+    public function __construct()
     {
         parent::__construct($this->_table, $this->_colID);
         $this->session = GlobalsManager::get('global_session');
         $this->_sessionName = CURRENT_USER_SESSION_NAME;
         $this->_cookieName = REMEMBER_ME_COOKIE_NAME;
+    }
+
+    public function initUser(string $user = '')
+    {
         if ($user) {
             $u = is_int($user) ? $this->getDetails($user) : $this->getDetails($user, 'email');
             if ($u->count() > 0) {
@@ -105,7 +109,7 @@ class AuthManager extends Model
             }
             // check for visitor cookies
             if (!Cookies::exists(VISITOR_COOKIE_NAME)) {
-                $visitor = $this->container->load([VisitorsManager::class => []])->Visitors->add_new_visitor(H_visitors::getVisitorData('91.173.88.22'));
+                $visitor = $this->container->make(VisitorsManager::class)->Visitors->add_new_visitor(H_visitors::getVisitorData('91.173.88.22'));
                 $this->user_cookie = $visitor->cookies;
                 $this->save();
             } elseif (!$this->user_cookie) {
@@ -119,9 +123,8 @@ class AuthManager extends Model
                 }
             }
             //create a temporary user session
-            self::$container->load([UserSessionsManager::class => []])->UserSessions->set_userSession($this);
+            $this->container->bind(UserSessionsManager::class)->make(UserSessionsManager::class)->set_userSession($this);
             $this->session->set($this->_sessionName, $this->email);
-            $this->session->set(CONTAINER_NAME, self::$container);
             return true;
         } catch (\Throwable $th) {
             return false;
@@ -136,7 +139,7 @@ class AuthManager extends Model
         try {
             //check visitor Cookies
             if (!Cookies::exists(VISITOR_COOKIE_NAME)) {
-                $this->container->load([VisitorsManager::class => []])->Visitors->add_new_visitor();
+                $this->container->make(VisitorsManager::class)->add_new_visitor();
             }
             //Delete Session
             $this->session->delete(CURRENT_USER_SESSION_NAME) ;
@@ -157,12 +160,12 @@ class AuthManager extends Model
     public function deleteUserAccount($user = null)
     {
         try {
-            $this->container->load([UsersRequestsManager::class => []])->UsersRequests->delete('', ['userID' => $user->userID]);
-            $this->container->load([LoginAttemptsManager::class => []])->LoginAttempts->delete('', ['userID' => $user->userID]);
-            $this->container->load([UserSessionsManager::class => []])->UserSessions->delete('', ['userID' => $user->userID]);
-            $this->container->load([UserExtraDataManager::class => []])->UserExtraData->delete('', ['userID' => $user->userID]);
-            $this->container->load([AddressBookManager::class => []])->AddressBook->delete('', ['relID' => $user->userID]);
-            $this->container->load([GroupUserManager::class => []])->GroupUser->delete('', ['userID' => $user->userID]);
+            $this->container->make(UsersRequestsManager::class)->delete('', ['userID' => $user->userID]);
+            $this->container->make(LoginAttemptsManager::class)->delete('', ['userID' => $user->userID]);
+            $this->container->make(UserSessionsManager::class)->delete('', ['userID' => $user->userID]);
+            $this->container->make(UserExtraDataManager::class)->delete('', ['userID' => $user->userID]);
+            $this->container->make(AddressBookManager::class)->delete('', ['relID' => $user->userID]);
+            $this->container->make(GroupUserManager::class)->delete('', ['userID' => $user->userID]);
             if (Cookies::exists(REMEMBER_ME_COOKIE_NAME)) {
                 Cookies::delete(REMEMBER_ME_COOKIE_NAME);
             }
@@ -191,13 +194,14 @@ class AuthManager extends Model
     //=======================================================================
     //Check current user state
     //=======================================================================
-    public static function currentUser()
+    public static function currentUser(Container $container = null)
     {
         $session = GlobalsManager::get('global_session');
         if ($session->exists(CURRENT_USER_SESSION_NAME)) {
             $email = $session->get(CURRENT_USER_SESSION_NAME);
             if (!isset(self::$currentLoggedInUser)) {
-                self::$currentLoggedInUser = new self((string) $email);
+                self::$currentLoggedInUser = Container::getInstance()->make(AuthManager::class);
+                self::$currentLoggedInUser->initUser((string) $email);
             }
         }
         return self::$currentLoggedInUser;
@@ -252,7 +256,7 @@ class AuthManager extends Model
         $user_data = [];
         if (Cookies::exists(VISITOR_COOKIE_NAME)) {
             $visitor = Cookies::get(VISITOR_COOKIE_NAME);
-            $user_session = $this->container->load([UserSessionsManager::class => []])->UserSessions;
+            $user_session = $this->container->make(UserSessionsManager::class);
             if ($user_session && $user_session->remember_cookie) {
                 $user_data['remember'] = true;
                 $user_data['email'] = $user_session->email ?? '';
@@ -288,7 +292,7 @@ class AuthManager extends Model
      */
     public function acls()
     {
-        return $this->container->load([UsersManager::class => []])->Users->set_container($this->container)->get_selectedOptions($this) ?? [];
+        return $this->container->make(UsersManager::class)->get_selectedOptions($this) ?? [];
     }
 
     //form validation

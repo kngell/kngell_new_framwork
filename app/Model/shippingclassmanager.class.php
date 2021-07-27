@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 class ShippingClassManager extends Model
 {
     protected string $_colID = 'shcID';

@@ -368,7 +368,7 @@ class TH_Admin
                 </td>
                 <td><a href="' . PROOT . 'admin' . US . 'new_product' . '">' . $item->p_title . '</a></td>
                 <td>' . 'Categorie' . '</td>
-                <td>' . $item->get_currency($item->p_regular_price) . '</td>
+                <td>' . $item->getPrice($item->p_regular_price) . '</td>
                 <td>' . $item->p_qty . '</td>
                 <td>2</td>
                 <td><span class="badge ' . $status_class . ' rounded">' . $status_text . '</span></td>

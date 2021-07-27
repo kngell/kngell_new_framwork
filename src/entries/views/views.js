@@ -46,18 +46,23 @@ import "views/backend/admin/company/allcompanies.php";
 import "views/backend/admin/company/alltaxes.php";
 import "views/backend/admin/company/company_details.php";
 import "views/backend/admin/company/partials/form.php";
+// Warehouses
+import "views/backend/admin/warehouse/allwarehouses.php";
 
 // Admin Orders
 import "views/backend/admin/orders/orders.php";
 //=======================================================================
 //Home Ecommerce Pages and Layouts
 //=======================================================================
+
 // Home Layout
 import "views/client/layouts/inc/default/footer.php";
 import "views/client/layouts/inc/default/header.php";
 import "views/client/layouts/inc/default/nav.php";
 import "views/client/layouts/inc/default/modal.php";
 import "views/client/layouts/default.php";
+//Erros Displayer
+import "views/client/errors/_errors.php";
 //home Pages ecommerce index
 import "views/client/home/index.php";
 import "views/client/home/partials/_banner_adds.php";
@@ -70,15 +75,25 @@ import "views/client/home/partials/_top_sales.php";
 
 //home Pages ecommerce product
 import "views/client/home/product/product.php";
-import "views/client/home/product/details.php";
 import "views/client/home/product/partials/_product_details.php";
 import "views/client/home/product/partials/_not_found_product.php";
 //home Pages ecommerce Cart
 import "views/client/home/cart/cart.php";
 import "views/client/home/cart/partials/_shopping_cart.php";
 import "views/client/home/cart/partials/_wishlist.php";
-// home pages ecommerce promotions
-import "views/client/home/promotions/promotions.php";
+// home pages ecommerce Clothing
+import "views/client/clothing/clothing.php";
+import "views/client/clothing/details.php";
+import "views/client/clothing/modules/_brand.php";
+import "views/client/clothing/modules/_arrivals.php";
+import "views/client/clothing/modules/_features.php";
+import "views/client/clothing/modules/_middle_season.php";
+import "views/client/clothing/modules/_dresses_suits.php";
+import "views/client/clothing/modules/_best_wishes.php";
+import "views/client/clothing/modules/_details.php";
+import "views/client/clothing/modules/_related_products.php";
+
+//SiteMap
 import "views/client/home/sitemap/sitemap.php";
 // home pages ecommerce boutique
 import "views/client/home/boutique/boutique.php";
@@ -94,5 +109,7 @@ import "views/client/users/account/emailverified.php";
 import "views/client/users/account/resetpassword.php";
 
 // Users checkout
-import "views/client/users/checkout/payment.php";
+import "views/client/users/payment/payment_success.php";
 import "views/client/users/checkout/checkout.php";
+import "views/client/users/checkout/partials/card_summary.php";
+import "views/client/users/checkout/partials/_checkout_contact_frm.php";

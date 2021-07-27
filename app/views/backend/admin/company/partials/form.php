@@ -23,7 +23,7 @@
                 <?= FH::inputBlock('text', 'mobile', 'N° Téléphone portable', '', ['class' => 'form-control'], ['class' => 'mb-3 col-md-6']);?>
                 <?= FH::inputBlock('email', 'couriel', 'Courriel : ', '', ['class' => 'form-control'], ['class' => 'mb-3']);?>
                 <?= FH::inputBlock('text', 'site_web', 'Site web :', '', ['class' => 'form-control'], ['class' => 'mb-3']);?>
-                <?= FH::inputBlockArea('address', 'Adresse : ', '', ['class' => 'form-control h-100'], ['class' => 'mb-3 h-100']);?>
+                <?= FH::inputBlockArea('address1', 'Adresse : ', '', ['class' => 'form-control h-100'], ['class' => 'mb-3 h-100']);?>
                 <div class="row">
                     <?= FH::inputBlock('text', 'ville', 'Ville : ', '', ['class' => 'form-control'], ['class' => 'mb-3 col-md-7']);?>
                     <?= FH::inputBlock('text', 'zip_code', 'Code postal : ', '', ['class' => 'form-control'], ['class' => 'mb-3 col-md-5']);?>

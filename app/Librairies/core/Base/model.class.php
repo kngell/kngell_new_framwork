@@ -1,14 +1,11 @@
 <?php
 
 declare(strict_types=1);
-use Brick\Money\Money;
-use Brick\Money\Context\AutoContext;
-use Brick\Math\RoundingMode;
-
 class Model extends AbstractModel
 {
     protected Object $repository;
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
+    protected MoneyManager $money;
     protected $validates = true;
     protected $_results;
     protected $_count;
@@ -26,6 +23,8 @@ class Model extends AbstractModel
      */
     public function __construct(string $tableSchema, string $tableSchemaID)
     {
+        $this->set_container();
+        $this->set_money();
         $this->throwException($tableSchema, $tableSchemaID);
         $this->createRepository($tableSchema, $tableSchemaID);
     }
@@ -61,8 +60,28 @@ class Model extends AbstractModel
      */
     public function createRepository(string $tableSchema, string $tableSchemaID): void
     {
-        $factory = self::$container->load([DataRepositoryFactory::class => ['crudIdentifier' => 'baseModel', 'tableSchema' => $tableSchema, 'tableSchemaID' => $tableSchemaID]])->DataRepositoryFactory;
-        $this->repository = $factory->create(DataRepository::class);
+        $this->repository = $this->container->make(DataRepositoryFactory::class)->initParams('crudIdentifier', $tableSchema, $tableSchemaID)->create(DataRepository::class);
+    }
+
+    public function set_container()
+    {
+        if (!isset($this->container)) {
+            $this->container = Container::getInstance();
+        }
+        return $this;
+    }
+
+    public function set_money()
+    {
+        if (!isset($this->money)) {
+            $this->money = MoneyManager::getInstance();
+        }
+        return $this;
+    }
+
+    public function get_money() : MoneyManager
+    {
+        return $this->money;
     }
 
     /**
@@ -75,13 +94,14 @@ class Model extends AbstractModel
      */
     public function getAllItem(array $data = [], array $tables = [], array $params = []) : ?self
     {
+        $params = array_merge($this->setQueryParams($data), $params);
         $data = $this->set_deleted_Params($data);
         if (isset($data['return_mode']) && $data['return_mode'] == 'class' && !isset($data['class'])) {
             $data = array_merge($data, ['class' => get_class($this)]);
         }
         $results = $this->repository->findBy([], [], $params, array_merge($data, $tables));
-        $this->_results = $results != -1 ? $results->get_results() : null;
-        $this->_count = $results != -1 ? $results->count() : 0;
+        $this->_results = $results->count() > 0 ? $results->get_results() : null;
+        $this->_count = $results->count() > 0 ? $results->count() : 0;
         $results = null;
         return $this;
     }
@@ -134,9 +154,9 @@ class Model extends AbstractModel
      * @param array $params
      * @return void
      */
-    public function save(array $params = [])
+    public function save(array $params = []) : ?Object
     {
-        if ($data = $this->beforeSave($params)) {
+        if ($this->beforeSave($params)) {
             $fields = H::getObjectProperties($this);
             if (property_exists($this, 'id') && $this->id != '') {
                 $fields = $this->beforeSaveUpadate($fields);
@@ -150,34 +170,26 @@ class Model extends AbstractModel
                 return $this->afterSave($params);
             }
         }
-        return $data;
+        return null;
     }
 
     /**
      * Delete Data
      * =========================================================================================================
-     * @param mixed $id
-     * @param array $params
+     * @param mixed $params
      * @return void
      */
-    public function delete($id = '', array $params = [])
+    public function delete(mixed $cond = null, array $params = [])
     {
-        $colID = $this->get_colID();
         switch (true) {
-            case $id == '' && !empty($params):
-                $conditions = isset($params['where']) ? $params['where'] : [];
-                break;
-            case $id != '' && !empty($params):
-                $conditions = array_merge([$colID => (int)$id], isset($params['where']) ? $params['where'] : []);
-                break;
-            case $id != '' && empty($params):
-                $conditions = [$colID => (int)$id];
+            case is_array($cond) && count($cond):
+                $conditions = $cond;
                 break;
             default:
-                // code...
+                $conditions = [$this->get_colID() => (int) $cond ?? $this->{$this->get_colID()}];
                 break;
         }
-        return $this->run_delete($conditions ?? [$colID => (int)$this->$colID], $params);
+        return $this->run_delete($conditions, $params);
     }
 
     //Partial save
@@ -185,7 +197,7 @@ class Model extends AbstractModel
     {
         if (!empty($table)) {
             $m = str_replace(' ', '', ucwords(str_replace('_', ' ', $table)));
-            $p_data = self::$container->load([$m . 'Manager' => []])->$m->getAllItem($params);
+            $p_data = $this->container->make($m . 'Manager')->getAllItem($params);
             if ($p_data->count() > 0) {
                 $p_data = current($p_data->get_results());
                 $p_data->id = $p_data->{$p_data->get_colID()};
@@ -219,10 +231,10 @@ class Model extends AbstractModel
             return [];
         }
         return  [array_map(
-            function ($option) {
+            function ($option) use ($m) {
                 $colID = $option->get_colID();
                 $title = $option->get_colTitle();
-                return ['id' => (int)$option->$colID, 'text' => $this->htmlDecode($option->$title)];
+                return ['id' => (int)$option->$colID, 'text' => !empty($title) ? $this->htmlDecode($option->$title) : $m->get_customTitle($option)];
             },
             $all_options
         ), array_map(
@@ -267,6 +279,6 @@ class Model extends AbstractModel
      */
     public function get_container() : ContainerInterface
     {
-        return self::$container;
+        return $this->container;
     }
 }

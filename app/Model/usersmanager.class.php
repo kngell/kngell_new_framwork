@@ -14,7 +14,6 @@ class UsersManager extends Model
     public function __construct()
     {
         parent::__construct($this->_table, $this->_colID);
-        $this->_modelName = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->_table))) . 'Manager';
     }
 
     //=======================================================================
@@ -23,17 +22,32 @@ class UsersManager extends Model
     //Get Select2 fields Names
     public function get_fieldName(string $table = '')
     {
-        return 'group';
+        switch ($table) {
+            case 'orders':
+                return 'ord_userID';
+                break;
+
+            default:
+                return 'group';
+                break;
+        }
     }
 
     // Get single user Data
     public function get_single_user($id)
     {
         $tables = ['table_join' => ['users' => ['*'], 'user_extra_data' => ['*'], 'address_book' => ['*']]];
-        $data = ['join' => 'LEFT JOIN',
-            'rel' => [['userID', 'userID'], [['value' => 'userID', 'tbl' => 'users'], 'relID'], 'params' => ['relID| = ' . $id . '|address_book', 'tbl| = "' . $this->_table . '"|address_book']],
-            'where' => ['userID' => ['value' => $id, 'tbl' => 'users']],
-            'return_mode' => 'class'
+        $data = [
+            'join' => 'LEFT JOIN',
+            'rel' => [
+                ['userID', 'userID'],
+                [['value' => 'userID', 'tbl' => 'users'], 'relID'],
+                'params' => ['relID| = ' . $id . '|address_book', 'tbl| = "' . $this->_table . '"|address_book']
+            ],
+            'where' => ['userID' => ['value' => $id, 'tbl' => 'users']
+            ],
+            'return_mode' => 'class',
+            //'class_args' => [$this->form]
         ];
         $user = $this->getAllItem($data, $tables)->get_results();
         return $user ? current($user) : null;
@@ -44,7 +58,7 @@ class UsersManager extends Model
     {
         $tables = ['table_join' => ['groups' => ['*'], 'group_user' => ['userID']]];
         $data = ['join' => 'INNER JOIN', 'rel' => [['grID', 'groupID']], 'where' => ['name' => ['value' => 'admin', 'tbl' => 'groups']], 'return_mode' => 'class'];
-        $admin_group = self::$container->load([GroupsManager::class => []])->Groups->getAllItem($data, $tables)->get_results();
+        $admin_group = $this->container->make(GroupsManager::class)->getAllItem($data, $tables)->get_results();
         switch ($method) {
             case 'get_adminUsers':
                 $this->_deleted_item = false;
@@ -113,16 +127,16 @@ class UsersManager extends Model
         $template = str_replace('{{phone}}', $user->phone ?? '', $template);
         $template = str_replace('{{delBtnClass}}', $btn[0] ?? '', $template);
         $template = str_replace('{{users_profile}}', PROOT . 'admin' . US . 'profile' . US . $user->userID, $template);
-        $template = str_replace('{{token_d}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'delete_user' . $user->userID)), $template);
-        $template = str_replace('{{token_r}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'restore_user' . $user->userID)), $template);
-        $template = str_replace('{{token_e}}', FH::csrfInput('csrftoken', self::$container->load([Token::class => []])->Token->generate_token(8, 'edit-user-frm' . $user->userID)), $template);
+        $template = str_replace('{{token_d}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'delete_user' . $user->userID)), $template);
+        $template = str_replace('{{token_r}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'restore_user' . $user->userID)), $template);
+        $template = str_replace('{{token_e}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'edit-user-frm' . $user->userID)), $template);
         return $template;
     }
 
     //output users extradata
     public function output_userExtraData($m = null, $temp = '')
     {
-        $extra_data = self::$container->load([UserExtraDataManager::class => []])->UserExtraData->getDetails($m->userID, 'userID');
+        $extra_data = $this->container->make(UserExtraDataManager::class)->getDetails($m->userID, 'userID');
         $template = $temp;
         $template = str_replace('{{function}}', $extra_data->u_function ?? '', $template);
         $template = str_replace('{{address}}', $extra_data->u_address ?? '', $template);
@@ -210,38 +224,42 @@ class UsersManager extends Model
     // On insert
     public function afterSave($params = [])
     {
-        $errors = [];
-        if (isset($params['group'])) {
-            $select2_data = json_decode($this->htmlDecode($params['group']), true);
-            $errors[] = $select2_data ? !$this->saveUserGroup($select2_data, $params['saveID']->get_lastID() ?? $params['userID']) : '';
+        $saveID = isset($params['saveID']) ? $params['saveID'] : null;
+        unset($params['saveID']);
+        if (!empty($params)) {
+            $saveID->errors = [];
+            if (isset($params['group'])) {
+                $select2_data = json_decode($this->htmlDecode($params['group']), true);
+                if ($select2_data ? !$this->saveUserGroup($select2_data, $saveID->get_lastID() ?? $params['userID']) : '') {
+                    $saveID->errors['group'] = true;
+                }
+            }
+            // Manage default adresse
+            if (!isset($params['principale'])) {
+                $params['principale'] = null;
+            }
+            //save address
+            $saveID->save_addr = $this->container->make(AddressBookManager::class)->partial_saveAddress($params, $this->_table, $this->id ?? $this->get_lastID());
+
+            // save user extra data
+            if ($ud = $this->get_user_extra_data($params)) {
+                $init_val = [
+                    'userID' => $this->id ?? $this->get_lastID(),
+                ];
+                $saveID->u_extra = $this->partial_save($ud, ['where' => ['userID' => $this->id ?? $this->get_lastID()], 'return_mode' => 'class'], 'user_extra_data', $init_val);
+            }
+            if (is_array($saveID->save_addr) && array_key_exists('errors', $saveID->save_addr)) {
+                $saveID->errors = array_merge($saveID->errors, $saveID->save_addr['errors']);
+                unset($saveID->save_addr['errors']);
+            }
+            return $saveID;
         }
-        // Manage default adresse
-        if (!isset($params['principale'])) {
-            $params['principale'] = null;
-        }
-        //save address
-        $save_addr = self::$container->load([AddressBookManager::class => []])->AddressBook->partial_saveAddress($params, $this->_table, $this->id ?? $this->get_lastID());
-        // save user extra data
-        if ($ud = $this->get_user_extra_data($params)) {
-            $init_val = [
-                'userID' => $this->id ?? $this->get_lastID(),
-            ];
-            $u_extra = $this->partial_save($ud, ['where' => ['userID' => $this->id ?? $this->get_lastID()], 'return_mode' => 'class'], 'user_extra_data', $init_val);
-        }
-        if (array_key_exists('errors', $save_addr)) {
-            $errors = array_merge($errors, $save_addr['errors']);
-            unset($save_addr['errors']);
-        }
-        return [
-            'save_address' => $save_addr,
-            'user_extra_data' => $u_extra,
-            'errors' => $errors,
-        ];
     }
 
     //get user extra data fields
     private function get_user_extra_data($params)
     {
+        $this;
         $ux = [];
         $ux['u_descr'] = isset($params['u_descr']) ? $params['u_descr'] : '';
         $ux['gender'] = isset($params['gender']) ? $params['gender'] : '';
@@ -262,7 +280,7 @@ class UsersManager extends Model
     //Save user permission group
     public function saveUserGroup($params = [], $userID = '')
     {
-        $user_roles = self::$container->load([GroupUserManager::class => []])->GroupUser->getAllItem(['where' => ['userID' => $userID], 'return_mode' => 'class']);
+        $user_roles = $this->container->make(GroupUserManager::class)->getAllItem(['where' => ['userID' => $userID], 'return_mode' => 'class']);
         $error = false;
         $groupID = false;
         if ($user_roles->count() >= 1) {
@@ -275,7 +293,7 @@ class UsersManager extends Model
         }
         if ($params && count($params) > 0) {
             foreach ($params as $role) {
-                $user_group = self::$container->load([GroupsManager::class => []])->Groups->getAllItem(['where' => ['name' => strtolower($role['text'])], 'return_mode' => 'class']);
+                $user_group = $this->container->make(GroupsManager::class)->getAllItem(['where' => ['name' => strtolower($role['text'])], 'return_mode' => 'class']);
                 if ($user_group->count() <= 0) {
                     $user_group->name = strtolower($role['text']);
                     $groupID = $user_group->save();
@@ -290,7 +308,7 @@ class UsersManager extends Model
         }
         $user_roles = null;
 
-        return $error;
+        return $error ;
     }
 
     //get selected option
@@ -302,7 +320,7 @@ class UsersManager extends Model
             'where' => ['userID' => $m->userID],
             'return_mode' => 'class'
         ];
-        $user_roles = self::$container->load([GroupUserManager::class => []])->GroupUser->getAllItem($data, $tables);
+        $user_roles = $this->container->make(GroupUserManager::class)->getAllItem($data, $tables);
         $response = [];
         if ($user_roles->count() >= 1) {
             foreach ($user_roles->get_results() as $role) {

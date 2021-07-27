@@ -14,7 +14,6 @@ import user_cart from "corejs/user_cart";
 import OP from "corejs/operator";
 import { BASE_URL } from "corejs/config";
 import log_reg from "corejs/logregloader";
-import { each } from "jquery";
 class Cart {
   constructor(element) {
     this.element = element;
@@ -68,7 +67,7 @@ class Cart {
       if (review_price) {
         var data = {
           table: "cart",
-          url: "forms/showDetails",
+          url: "showDetails",
           data_type: "values",
           model_method: "update_UserCartPrice",
           frm: form,
@@ -252,7 +251,6 @@ class Cart {
             $.each(resp[1], function (key, val) {
               const item_tax =
                 (parseFloat(val) * qty * parseFloat(resp[0])) / 100;
-              console.log(key, val, item_tax, t_price);
               total_price = total_price - item_tax;
             });
           }
@@ -280,7 +278,7 @@ class Cart {
         }
         let remove_btn = "btn-success";
         var data = {
-          url: "guests/delete",
+          url: "deleteFromGuestCart",
           table: "cart",
           method: "delete_cart",
           frm: $(this).parent(),
@@ -353,7 +351,7 @@ class Cart {
         }
         $(this).html("Please Wait...");
         var data = {
-          url: "guests/toggleWishlistAndcCart",
+          url: "toggleWishlistAndcCart",
           frm: $(this).parent(),
           frm_name:
             "delete-cart-item-frm" +
@@ -396,7 +394,7 @@ class Cart {
     phpPlugin.wrapper.find("#sub_total").on("click", ".buy-btn", function (e) {
       e.preventDefault();
       var data = {
-        url: "checkout/proceedToBuy",
+        url: "proceedToBuy",
         frm: $(this).parent(),
         frm_name: "buy-frm",
       };
@@ -404,7 +402,7 @@ class Cart {
       function manageR(response) {
         if (response.result == "success") {
           if (response.msg == "checkout") {
-            window.location.href = BASE_URL + "users/checkout";
+            window.location.href = BASE_URL + "checkout";
           } else if (response.msg == "login-required") {
             (async () => {
               const bs = await import(

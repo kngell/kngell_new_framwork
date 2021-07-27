@@ -84,4 +84,10 @@ export default class Operator {
         .replace(new RegExp("\\" + decimalSeparator), ".")
     );
   };
+
+  _isDomElem = (el) => {
+    return el instanceof HTMLElement || el[0] instanceof HTMLElement
+      ? true
+      : false;
+  };
 }

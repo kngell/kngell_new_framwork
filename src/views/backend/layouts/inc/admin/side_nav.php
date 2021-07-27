@@ -32,10 +32,10 @@
                         <ul class="sidebar-second-level collapse list-unstyled" id="homeSubmenu"
                             data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'analytics'?>">Analytics</a>
+                                <a href="<?=PROOT . 'analytics'?>">Analytics</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'index'?>">Ecommerce</a>
+                                <a href="<?=PROOT . 'admin'?>">Ecommerce</a>
                             </li>
                         </ul>
                     </li>
@@ -49,23 +49,23 @@
                             data-parent="#left-sidebar">
 
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allusers' . US . 'get_allUsers'?>">All
+                                <a href="<?=PROOT . 'allusers' . US . 'get_allUsers'?>">All
                                     Users</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allusers' . US . 'get_deletedUsers'?>">Deleted
+                                <a href="<?=PROOT . 'allusers' . US . 'get_deletedUsers'?>">Deleted
                                     Users</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allusers' . US . 'get_adminUsers'?>">Admin
+                                <a href="<?=PROOT . 'allusers' . US . 'get_adminUsers'?>">Admin
                                     Users</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'profile'?>">User
+                                <a href="<?=PROOT . 'admin_sideUserprofile'?>">User
                                     Profile</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'permissions'?>">Group
+                                <a href="<?=PROOT . 'UserPermissions'?>">Group
                                     and permissions</a>
                             </li>
                         </ul>
@@ -79,28 +79,28 @@
                         <ul class="sidebar-second-level collapse list-unstyled" id="productsManagement"
                             data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allproducts'?>">All
+                                <a href="<?=PROOT . 'allproducts'?>">All
                                     Products</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allbrands'?>">All
+                                <a href="<?=PROOT . 'allbrands'?>">All
                                     Brands</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allcategories'?>">All
+                                <a href="<?=PROOT . 'allcategories'?>">All
                                     Categories</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allunits'?>">All
+                                <a href="<?=PROOT . 'allunits'?>">All
                                     Units</a>
                             </li>
 
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'product_details'?>">
+                                <a href="<?=PROOT . 'adminproduct_details'?>">
                                     Details</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'new_product'?>">Add
+                                <a href="<?=PROOT . 'adminnew_product'?>">Add
                                     New </a>
                             </li>
                         </ul>
@@ -114,7 +114,7 @@
                         <ul class="sidebar-second-level collapse list-unstyled" id="shippingManagement"
                             data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'shippingClass'?>">Shipping
+                                <a href="<?=PROOT . 'shippingClass'?>">Shipping
                                     Class</a>
                             </li>
                         </ul>
@@ -128,15 +128,15 @@
                         <ul class="sidebar-second-level collapse list-unstyled" id="organization"
                             data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allcompanies'?>">All
+                                <a href="<?=PROOT . 'allcompanies'?>">All
                                     companies</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'allwarehouses'?>">All
+                                <a href="<?=PROOT . 'allwarehouses'?>">All
                                     Warehouses</a>
                             </li>
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'alltaxes'?>">All
+                                <a href="<?=PROOT . 'alltaxes'?>">All
                                     Taxes</a>
                             </li>
                         </ul>
@@ -149,14 +149,14 @@
                         </a>
                         <ul class="sidebar-second-level collapse list-unstyled" id="orders" data-parent="#left-sidebar">
                             <li>
-                                <a href="<?=PROOT . 'admin' . US . 'orders'?>">All
+                                <a href="<?=PROOT . 'orders'?>">All
                                     Orders</a>
                             </li>
 
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a href="<?=PROOT . 'admin' . US . 'calendar'?>">
+                        <a href="<?=PROOT . 'calendar'?>">
                             <i class="fal fa-calendar"></i>
                             <span>Calendar</span>
                         </a>

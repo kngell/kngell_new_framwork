@@ -8,15 +8,16 @@ abstract class CustomValidator
 
     protected $_model;
 
-    public function __construct($model, $field, $rule, $msg)
+    abstract public function runValidation();
+
+    public function setparams($model, $field, $rule, $msg)
     {
         $this->_model = $model ?? '';
         $this->field = $field ?? '';
         $this->rule = $rule ?? '';
         $this->msg = $msg ?? '';
+        return $this;
     }
-
-    abstract public function runValidation();
 
     public function run()
     {

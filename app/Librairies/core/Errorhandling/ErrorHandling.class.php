@@ -51,7 +51,7 @@ class ErroHandling
             $message .= '\nStack trace : ' . $exception->getTraceAsString();
             $message .= '\nThrown in : ' . $exception->getFile() . ' on line ' . $exception->getLine();
             error_log($message);
-            echo (new View())->getTemplate("Error/{$code}.html.twig", ['erro_message' => $message]);
+            // echo (new View())->getTemplate("Error/{$code}.html.twig", ['erro_message' => $message]);
         }
     }
 }

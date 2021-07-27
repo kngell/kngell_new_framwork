@@ -18,11 +18,11 @@ interface RooterInterface
      */
     public function parseUrl(string $urlroute) : string;
 
-    /**
-     * Validate Url
-     * --------------------------------------------------------------------------------------------------
-     * @param string $controller
-     * @return boolean
-     */
-    public function IsvalidController(string $controller) : bool;
+    public function resolve();
+
+    public function get(string $path, mixed $callback);
+
+    public function post(string $path, mixed $callback);
+
+    public function getResponse();
 }

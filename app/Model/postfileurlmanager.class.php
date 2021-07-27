@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class PostFileUrlManager extends Model
 {
     protected $_table = 'post_file_url';

@@ -27,6 +27,7 @@ class THProducts
                 <th class="no-sort">Image</th>
                 <th>Name</th>
                 <th>Category</th>
+                <th>Brand</th>
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Units Sold</th>
@@ -57,8 +58,9 @@ class THProducts
                     </a>
                 </td>
                 <td><a href="' . PROOT . 'admin' . US . 'new_product' . '">' . $item->p_title . '</a></td>
-                <td>' . 'Categorie' . '</td>
-                <td>' . $item->get_currency($item->p_regular_price) . '</td>
+                <td>' . $item->categorie . '</td>
+                <td>' . $item->br_name . '</td>
+                <td class="price">' . $item->get_money()->getAmount($item->p_regular_price) . '</td>
                 <td>' . $item->p_qty . '</td>
                 <td>2</td>
                 <td><span class="badge ' . $status_class . ' rounded">' . $status_text . '</span></td>

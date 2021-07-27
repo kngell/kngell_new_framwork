@@ -25,7 +25,7 @@ class THGroups
     public function groupsTable(array $data) : string
     {
         $output = '';
-        $output .= '<table class="table table-striped text-center">
+        $output .= '<table class="table table-striped text-center" id="ecommerce-datatable">
                     <thead>
                         <tr>
                             <th scope="col" style="width:10%" class="text-center">#</th>

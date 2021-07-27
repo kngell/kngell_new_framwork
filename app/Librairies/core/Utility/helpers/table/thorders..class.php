@@ -10,7 +10,7 @@ class THOrders
      * @param Token $token
      * @param array $data
      */
-    public function __construct(Token $token = null, )
+    public function __construct(Token $token = null)
     {
         $this->token = $token;
     }
@@ -23,7 +23,7 @@ class THOrders
     public function ordersTable(array $data = []) : string
     {
         $output = '';
-        $output .= '<table class="table table-middle table-hover">
+        $output .= '<table class="table table-middle table-hover" id="ecommerce-datatable">
         <thead>
             <tr>
                 <th>
@@ -58,23 +58,23 @@ class THOrders
                                 </a>
                             </td>
                             <td>' . H::time_in_ago((new DateTime($order->created_at))->getTimestamp()) . '</td>
-                            <td><span class="' . $ord_status['class'] . '">' . $ord_status['status'] . '</span></td>
+                            <td><span class="badge ' . $ord_status['class'] . ' badge">' . $ord_status['status'] . '</span></td>
                 
                             <td>' . $ord_billing_addr . '
                                 <span class="d-block"><i>via Cash on delivery</i></span>
                             </td>
                             <td><a target="_blank" href="#">' . $ord_delivery_addr . '</a></td>
-                            <td class="price">' . $order->get_currency($order->ord_amountTTC) . '</td>
+                            <td class="price">' . $order->get_money()->getAmount($order->ord_amountTTC) . '</td>
                             <td>
                                 <ul class="list-unstyled table-actions">
                                     <li>
                                         <form class="edit-order" id="edit-order' . $order->ordID . '">
                                         ' . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'edit-order' . $order->ordID)) . '
-                                        <input type="hidden" name="brID" value="' . $order->ordID . '">
-                                            <button type="button"><i class="fal fa-pen"
+                                        <input type="hidden" name="ordID" value="' . $order->ordID . '">
+
+                                        <button type="button" title="Edit" class="text-primary editBtn"  data-bs-toggle="modal" data-bs-target="#modal-box"><i class="fal fa-pen"
                                                 data-bs-original-title="Edit"
-                                                data-bs-toggle="tooltip"></i>
-                                            </button>
+                                                data-bs-toggle="tooltip"></i></button>
                                         </form>
                                     </li>
                                     <li><button type="button"><i class="fal fa-chart-bar"
@@ -86,39 +86,48 @@ class THOrders
                             </td>
                         </tr>';
         }
-        $output .= '</tbody></table>';
+        $output .= '</tbody>
+        </table>';
         return $output;
     }
 
     /**
      * Get Order Status
      *
-     * @param string $order
-     * @return array
+     * @param string|null $order
+     * @return array|null
      */
-    private function get_OrdersStatus(string $order) : array
+    private function get_OrdersStatus(int | null $order) : ?array
     {
         switch ($order) {
-            case 'traitement':
-                $status = 'Processing';
-                $status_class = 'badge bg-info rounded';
-                break;
-            case 'preparation':
-                $status = 'On hold';
-                $status_class = 'badge bg-warning rounded';
-                break;
-            case 'livraison':
-                $status = 'On Shipping';
-                $status_class = 'badge bg-secondary rounded';
-                break;
-            case 'livré':
+            case 1:
                 $status = 'Completed';
-                $status_class = 'badge bg-success rounded';
+                $status_class = 'bg-success';
+                break;
+            case 2:
+                $status = 'Pending Payment';
+                $status_class = 'bg-warning';
+                break;
+            case 3:
+                $status = 'Processing';
+                $status_class = 'bg-secondary';
+                break;
+            case 4:
+                $status = 'On Hold';
+                $status_class = 'bg-info';
+                break;
+            case 5:
+                $status = 'Cancelled';
+                $status_class = 'bg-dark';
+                break;
+            case 6:
+                $status = 'Failed';
+                $status_class = 'bg-danger';
                 break;
 
             default:
-                $status = 'On Error';
-                $status_class = 'badge bg-danger rounded';
+                $status = 'Unknown';
+                $status_class = 'bg-secondary';
                 break;
         }
         return ['status' => $status ?? '', 'class' => $status_class ?? ''];
@@ -136,5 +145,6 @@ class THOrders
             $addr = current($addr);
             return $addr->htmlDecode($addr->address1 . ',&nbsp;' . $addr->address2 . ',&nbsp;' . $addr->zip_code . ',&nbsp;' . $addr->ville . ',&nbsp;' . $addr->region . ',&nbsp;' . $addr->pays);
         }
+        return '';
     }
 }

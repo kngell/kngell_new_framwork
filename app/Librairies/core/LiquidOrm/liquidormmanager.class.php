@@ -8,7 +8,7 @@ class LiquidOrmManager
     protected string $tableSchameID;
     protected DataMapperEnvironmentConfig $datamapperEnvConfig;
     protected array $options;
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
 
     /**
      * Main contructor
@@ -19,6 +19,7 @@ class LiquidOrmManager
      */
     public function __construct(string $tableSchema, string $tableSchemaID, ?array $options = [])
     {
+        $this->set_container();
         $this->tableSchema = $tableSchema;
         $this->tableSchameID = $tableSchemaID;
         $this->options = $options;
@@ -31,14 +32,8 @@ class LiquidOrmManager
      */
     public function initialize()
     {
-        $datamapper = self::$container->load([DataMapperFactory::class => []])->DataMapperFactory->create(DatabaseConnexion::class, $this->datamapperEnvConfig);
-        if ($datamapper) {
-            $querybuilder = self::$container->load([QueryBuilderFactory::class => []])->QueryBuilderFactory->create(QueryBuilder::class);
-            if ($querybuilder) {
-                $entitymanagerFactory = self::$container->load([EntityManagerFactory::class => ['datamapper' => $datamapper, 'querybuilder' => $querybuilder]])->Entity;
-                return $entitymanagerFactory->create(Crud::class, $this->tableSchema, $this->tableSchameID, $this->options);
-            }
-        }
+        $entitymanagerFactory = $this->container->make(EntityManagerFactory::class);
+        return $entitymanagerFactory->create(Crud::class, $this->tableSchema, $this->tableSchameID, $this->options);
     }
 
     /**
@@ -47,9 +42,9 @@ class LiquidOrmManager
      * @param ContainerInterface $container
      * @return self
      */
-    public function set_container(ContainerInterface $container) : self
+    public function set_container() : self
     {
-        $this->container = $container;
+        $this->container = Container::getInstance();
         return $this;
     }
 

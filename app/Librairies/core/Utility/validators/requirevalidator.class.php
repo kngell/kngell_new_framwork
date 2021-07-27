@@ -5,7 +5,7 @@ class Requirevalidator extends CustomValidator
     {
         $pass = true;
         $value = $this->_model->{$this->field};
-        $pass = $value == '0' ? true : (!empty($value));
+        $pass = $value == '0' ? true : (!(empty($value) || $value == '[]'));
         return $pass;
     }
 }

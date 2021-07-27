@@ -2,8 +2,6 @@
 declare(strict_types=1);
 class GrantAccess
 {
-    public static Container $container;
-
     public static function hasAccess($controller, $method = 'index')
     {
         $acl_file = file_get_contents(APP . 'acl.json');
@@ -12,10 +10,8 @@ class GrantAccess
         $current_user_acls = ['Guest'];
         $grantAccess = false;
         $session = GlobalsManager::get('global_session');
-        self::$container->load([AuthManager::class => ['user' => '']])->Auth;
         if ($session->exists(CURRENT_USER_SESSION_NAME) && AuthManager::currentUser() != null) {
             $current_user_acls[] = 'LoggedIn';
-            AuthManager::currentUser()->set_container(self::$container);
             foreach (AuthManager::currentUser()->acls() as $a) {
                 $current_user_acls[] = $a;
             }
@@ -78,16 +74,11 @@ class GrantAccess
 
     private static function get_link($value)
     {
-        // check is an external link
+        $container = Container::getInstance();
         if (preg_match('/https?:\/\//', $value) == 1) {
             return $value;
         } else {
-            $uAry = explode('/', $value);
-            $controller_name = ucwords($uAry[0]) . 'Controller';
-            $method_name = isset($uAry[1]) ? $uAry[1] : '';
-            //dd($controller_name);
-            if (self::hasAccess($controller_name, $method_name)) {
-                //dd(PROOT . $controller_name);
+            if (self::hasAccess(get_class($container->controller), $container->method)) {
                 return PROOT . $value;
             }
             return false;

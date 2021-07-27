@@ -113,12 +113,13 @@ class Crud implements CrudInterface
                 'extras' => $options,
                 'table_join' => isset($options['table_join']) ? $options['table_join'] : []
             ];
+            // $params = ModelHelper::get_params_args($params);
             $query = $this->querybuilder->buildQuery($arg)->select();
             $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($arg['where'], $params));
             if ($this->datamapper->numrow() > 0) {
                 return $this->datamapper->results($options);
             }
-            return -1;
+            return $this->datamapper;
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -181,7 +182,7 @@ class Crud implements CrudInterface
             ];
             $query = $this->querybuilder->buildQuery($arg)->delete();
             $this->datamapper->persist($query, $this->datamapper->buildQueryParameters($conditions));
-            if ($this->datamapper->numrow() == 1) {
+            if ($this->datamapper->numrow() >= 1) {
                 return $this->datamapper->numrow();
             }
             return 0;

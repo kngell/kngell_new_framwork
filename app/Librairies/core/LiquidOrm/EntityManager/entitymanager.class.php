@@ -16,7 +16,7 @@ class EntityManager implements EntityManagerInterface
      * @param CrudInterface $crud
      * @return void
      */
-    public function __construct(CrudInterface $crud)
+    public function __construct(Crud $crud)
     {
         $this->crud = $crud;
     }

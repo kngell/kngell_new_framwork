@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 class UnitsManager extends Model
 {
     protected string $_colID = 'unID';

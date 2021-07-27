@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 class Controller
 {
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
     protected SessionInterface $session;
     protected View $view_instance;
-    protected Input $request;
+    protected Token $token;
+    protected MoneyManager $money;
+
+    /**
+     * @var BaseMiddleWare $middleware
+     */
+    protected array $middlewares = [];
+
     protected string $controller;
     protected string $method;
     protected string $filePath;
@@ -25,10 +32,15 @@ class Controller
      * @param string $method
      * @param string $filePath
      */
-    public function __construct(string $controller, string $method)
+    public function __construct()
+    {
+    }
+
+    public function iniParams($controller, $method) : self
     {
         $this->controller = $controller;
         $this->method = $method;
+        return $this;
     }
 
     /**
@@ -48,6 +60,27 @@ class Controller
         } else {
             throw new BaseBadMethodCallException('Method ' . $name . ' does not exist in ' . get_class($this));
         }
+    }
+
+    /**
+     * Register Controller Middlewares
+     * ==================================================================================================
+     * @param BaseMiddleWare $middleware
+     * @return void
+     */
+    public function registerMiddleware(BaseMiddleWare $middleware) : void
+    {
+        $this->middlewares[] = $middleware;
+    }
+
+    /**
+     * Get Middlewares
+     * ==================================================================================================
+     * @return array
+     */
+    public function getMiddlewares() : array
+    {
+        return $this->middlewares;
     }
 
     /**
@@ -80,7 +113,7 @@ class Controller
         $view = explode(DS, $viewName);
         $files = H::search_file(VIEW . strtolower($this->filePath) . strtolower($view[0]), strtolower($view[1]) . '.php');
         if ($files) {
-            return !isset($this->view_instance) ? new View($viewName, $data, $this->filePath) : $this->view_instance;
+            return !isset($this->view_instance) ? $this->container->make(View::class)->initParams($viewName, $data, $this->filePath) : $this->view_instance;
         }
         return isset($this->view_instance) ? $this->view_instance : null;
     }
@@ -93,11 +126,11 @@ class Controller
     protected function before()
     {
         $this->view_instance = $this->get_view(substr($this->controller, 0, strpos($this->controller, 'Controller')) . DS . $this->method, []);
-        $this->view_instance->token = self::$container->load([Token::class => []])->Token;
+        $this->view_instance->token = $this->token;
         if ($this->filePath == 'Client' . DS) {
             $this->view_instance->set_siteTitle("K'nGELL Ingénierie Logistique");
-            $this->view_instance->products = self::$container->load([ProductsManager::class => []])->Products->set_container(self::$container)->get_Products();
-            $this->view_instance->user_cart = self::$container->load([CartManager::class => []])->Cart->set_container(self::$container)->get_userCart() ?? [];
+            $this->view_instance->products = $this->container->make(ProductsManager::class)->get_Products($this->brand());
+            $this->view_instance->user_cart = $this->container->make(CartManager::class)->get_userCart() ?? [];
             $this->view_instance->search_box = file_get_contents(FILES . 'template' . DS . 'base' . DS . 'search_box.php');
         } elseif ($this->filePath == 'Backend' . DS) {
             $this->view_instance->set_siteTitle("K'nGELL Administration");
@@ -111,7 +144,20 @@ class Controller
 
     public function get_container()
     {
-        return self::$container;
+        return $this->container;
+    }
+
+    public function brand() : int
+    {
+        switch ($this->controller) {
+            case 'ClothingController':
+                return 3;
+                break;
+
+            default:
+                return 2;
+                break;
+        }
     }
 
     /**
@@ -120,10 +166,10 @@ class Controller
      * @param ContainerInterface $container
      * @return self
      */
-    public function set_container(ContainerInterface $container) : self
+    public function set_container() : self
     {
-        if (!isset(self::$container)) {
-            self::$container = $container;
+        if (!isset($this->container)) {
+            $this->container = Container::getInstance();
         }
         return $this;
     }
@@ -133,10 +179,23 @@ class Controller
      * ==================================================================================================
      * @return self
      */
-    public function set_request() : self
+    public function set_request($request) : self
     {
         if (!isset($this->request)) {
-            $this->request = self::$container->load([Input::class => []])->Input;
+            $this->request = $request;
+        }
+        return $this;
+    }
+
+    /**
+     * Set response for http
+     * ==================================================================================================
+     * @return self
+     */
+    public function set_response($response) : self
+    {
+        if (!isset($this->reponse)) {
+            $this->response = $response;
         }
         return $this;
     }
@@ -149,7 +208,25 @@ class Controller
      */
     public function set_path(string $path) : self
     {
-        $this->filePath = $path;
+        if (!isset($this->filePath)) {
+            $this->filePath = $path;
+        }
+        return $this;
+    }
+
+    public function set_token() : self
+    {
+        if (!isset($this->token)) {
+            $this->token = $this->container->make(Token::class);
+        }
+        return $this;
+    }
+
+    public function set_money() : self
+    {
+        if (!isset($this->money)) {
+            $this->money = $this->container->make(MoneyManager::class);
+        }
         return $this;
     }
 
@@ -164,6 +241,33 @@ class Controller
             $this->session = GlobalsManager::get('global_session');
         }
         return $this;
+    }
+
+    protected function open_userCheckoutSession()
+    {
+        $user_data = $this->view_instance->user_data;
+        $shipping = current(array_filter($this->view_instance->shipping_class->get_results(), function ($shipping) {
+            return $shipping->default_shipping_class == '1';
+        }));
+        $userCheckoutSession = [
+            'cart_items' => array_column($this->view_instance->user_cart[0], 'cart_id'),
+            'email' => $user_data->email,
+            'ship_address' => [
+                'id' => $user_data->abID,
+                'name' => $this->request->htmlDecode($user_data->address1 ?? '') . ' ' . $this->request->htmlDecode($user_data->address2 ?? '') . ', ' . $this->request->htmlDecode($user_data->zip_code ?? '') . ', ' . $this->request->htmlDecode($user_data->ville ?? '') . ' (' . $this->request->htmlDecode($user_data->region ?? '') . ') - ' . $this->request->htmlDecode($user_data->pays ?? '')
+            ],
+            'bill_address' => [
+                'id' => $user_data->abID,
+                'name' => $this->request->htmlDecode($user_data->address1 ?? '') . ' ' . $this->request->htmlDecode($user_data->address2 ?? '') . ', ' . $this->request->htmlDecode($user_data->zip_code ?? '') . ', ' . $this->request->htmlDecode($user_data->ville ?? '') . ' (' . $this->request->htmlDecode($user_data->region ?? '') . ') - ' . $this->request->htmlDecode($user_data->pays ?? '')
+            ],
+            'shipping' => [
+                'id' => $shipping->shcID,
+                'price' => $shipping->price,
+                'name' => $shipping->sh_name
+            ],
+            'ttc' => $this->view_instance->user_cart[2][1]
+        ];
+        $this->session->set(CHECKOUT_PROCESS_NAME, $userCheckoutSession);
     }
 
     public function jsonResponse(array $resp)
@@ -201,17 +305,27 @@ class Controller
                 foreach ($table_options as $tbl_option) {
                     if (!empty($data['tbl_options'])) {
                         $tbl_opt = str_replace(' ', '', ucwords(str_replace('_', ' ', $tbl_option)));
-                        $m[$tbl_option] = self::$container->load([$tbl_opt . 'Manager'::class => []])->$tbl_opt->set_container(self::$container);
+                        $m[$tbl_option] = $this->container->make($tbl_opt . 'Manager'::class);
                     }
                 }
                 return $m;
             } else {
                 if (!empty($data['tbl_options'])) {
                     $tbl_opt = str_replace(' ', '', ucwords(str_replace('_', ' ', $data['tbl_options'])));
-                    return self::$container->load([$tbl_opt . 'Manager'::class => []])->$tbl_opt->set_container(self::$container);
+                    return $this->container->make($tbl_opt . 'Manager'::class);
                 }
             }
         }
         return null;
+    }
+
+    public function get_controller()
+    {
+        return $this->controller;
+    }
+
+    public function get_method()
+    {
+        return $this->method;
     }
 }

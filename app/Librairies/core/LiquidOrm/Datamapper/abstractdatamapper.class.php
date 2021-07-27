@@ -21,7 +21,7 @@ abstract class AbstractDataMapper implements DataMapperInterface
                     $value = $this->_count;
                 break;
                 case 'single':
-                    $q->setFetchMode(PDO::FETCH_CLASS, $data['class']);
+                    $q->setFetchMode(PDO::FETCH_CLASS, $data['class'], $data['class_args'] ?? []);
                     $value = $q->fetch(PDO::FETCH_CLASS);
                     //$value = $q->fetch(PDO::FETCH_OBJ);
                 break;
@@ -33,7 +33,7 @@ abstract class AbstractDataMapper implements DataMapperInterface
                 break;
             }
             } else {
-                $value = $q->fetchAll($type, $data['class']);
+                $value = $q->fetchAll($type, $data['class'], $data['class_args'] ?? []);
             }
         } else {
             if (array_key_exists('return_type', $data)) {

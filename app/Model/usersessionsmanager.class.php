@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class UserSessionsManager extends Model
 {
     protected $_table = 'user_sessions';
@@ -8,10 +9,14 @@ class UserSessionsManager extends Model
     //=======================================================================
     //construct
     //=======================================================================
-    public function __construct($userSession = null)
+    public function __construct()
     {
         parent::__construct($this->_table, $this->_colID);
         $this->_modelName = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->_table))) . 'Manager';
+    }
+
+    public function initUserSession($userSession = null)
+    {
         if ($userSession) {
             $cond = ['where' => ['user_cookie' => $userSession], 'return_mode' => 'class', 'class' => 'UserSessionsManager'];
             $us = $this->findFirst($cond);

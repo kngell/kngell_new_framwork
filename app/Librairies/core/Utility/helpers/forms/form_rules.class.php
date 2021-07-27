@@ -30,6 +30,19 @@ class Form_rules
         ];
     }
 
+    // Units validation
+    public static function shippingClass()
+    {
+        return [
+            'sh_name' => [
+                'display' => 'Shipping Class',
+                'required' => true,
+                'max' => 65,
+                'unique' => 'shipping_class',
+            ],
+        ];
+    }
+
     //Users datas
     public static function users(bool $table_users = true)
     {
@@ -222,6 +235,18 @@ class Form_rules
                 'max' => 155,
                 'valid_email' => true,
                 'unique' => 'company',
+            ],
+        ];
+    }
+
+    public static function brand()
+    {
+        return [
+            'br_name' => [
+                'display' => 'Brand',
+                'required' => true,
+                'max' => 150,
+                'unique' => 'brand',
             ],
         ];
     }

@@ -4,10 +4,10 @@ class Token extends RandomStringGenerator
     //=======================================================================
     //Generate Token
     //=======================================================================
-    public function generate_token($length = '', $frm = '')
+    public function generate_token(int $length = 8, string $frm = '', string $alphabet = '')
     {
         $identifiant = '';
-
+        $this->setAlphabet($alphabet);
         for ($i = 0; $i < $length; $i++) {
             $randomKey = $this->getRandomInteger(0, $this->alphabetLength);
             $identifiant .= $this->alphabet[$randomKey];
@@ -50,10 +50,10 @@ class Token extends RandomStringGenerator
         return false;
     }
 
-    public function generate($length)
+    public function generate(int $length = 8, string $alphabet = '')
     {
         $token = '';
-
+        $this->setAlphabet($alphabet);
         for ($i = 0; $i < $length; $i++) {
             $randomKey = $this->getRandomInteger(0, $this->alphabetLength);
             $token .= $this->alphabet[$randomKey];

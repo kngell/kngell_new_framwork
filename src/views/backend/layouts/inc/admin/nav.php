@@ -266,7 +266,7 @@
                 <div class="dropdown-header">
                     <h6 class="text-center">Bienvenu !</h6>
                 </div>
-                <a href="<?=PROOT . 'users' . US . 'account' . US . 'account'?>" class="dropdown-item">
+                <a href="<?=PROOT . 'account' . US . 'account'?>" class="dropdown-item">
                     <i class="fal fa-user-alt me-1"></i>
                     <span>Mon compte</span>
                 </a>

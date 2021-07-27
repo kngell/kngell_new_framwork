@@ -30,8 +30,8 @@ module.exports = {
       dependOn: "js/librairies/frontlib",
     },
     //Ecommerce - Details (custom) page js
-    "js/custom/client/home/product/details": {
-      import: ["js/custom/client/home/product/details"],
+    "js/custom/client/clothing/details": {
+      import: ["js/custom/client/clothing/details"],
       dependOn: "js/librairies/frontlib",
     },
     //Ecommerce - Cart page js
@@ -41,8 +41,8 @@ module.exports = {
     },
 
     //Ecommerce - Promotions page js
-    "js/custom/client/home/promotions/promotions": {
-      import: ["js/custom/client/home/promotions/promotions"],
+    "js/custom/client/clothing/clothing": {
+      import: ["js/custom/client/clothing/clothing"],
       dependOn: "js/librairies/frontlib",
     },
     //Ecommerce - Boutique page js
@@ -77,8 +77,8 @@ module.exports = {
     //Users Checkout
     //=======================================================================
     //Ecommerce - Payment page js
-    "js/custom/client/users/checkout/payment": {
-      import: ["js/custom/client/users/checkout/payment"],
+    "js/custom/client/users/payment/payment_success": {
+      import: ["js/custom/client/users/payment/payment_success"],
       dependOn: "js/librairies/frontlib",
     },
     //Ecommerce - Checkout page js

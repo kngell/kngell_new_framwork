@@ -44,33 +44,43 @@ class AllProducts {
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
       data_type: "values",
+      model_method: "get_Products",
     });
     //=======================================================================
     //Ajax Select2
     //=======================================================================
+
     let myselect2 = new select2();
     myselect2._init({
-      url: "forms/showDetails",
+      url: "showDetails",
       element: phpPlugin.modalform.find(".p_shipping_class"),
       tbl_options: "shipping_class",
       placeholder: "Please select a shipping class",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
     myselect2._init({
-      url: "forms/showDetails",
+      url: "showDetails",
       element: phpPlugin.modalform.find(".p_unitID"),
       tbl_options: "units",
       placeholder: "Please select a unit",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
     let company = myselect2._init({
-      url: "forms/showDetails",
+      url: "showDetails",
       element: phpPlugin.modalform.find(".p_company"),
       tbl_options: "company",
       placeholder: "Please select a Company",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
     let warehouse = new select2()._init({
-      url: "forms/showDetails",
+      url: "showDetails",
       element: phpPlugin.modalform.find(".p_warehouse"),
       placeholder: "Please select a wareHouse",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
     company.select.on("change", function (e) {
       warehouse._destroy();
@@ -81,12 +91,15 @@ class AllProducts {
       }
       warehouse._init({
         element: warehouse.select,
-        url: "forms/showDetails",
+        url: "showDetails",
         tbl_options: "warehouse",
         parentElt: "company",
         placeholder: "Please select a wareHouse",
+        csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+        frm_name: phpPlugin.modalform.attr("id"),
       });
     });
+
     //=======================================================================
     //Set / Create Add Btn
     //=======================================================================
@@ -178,10 +191,11 @@ class AllProducts {
     cruds._delete({
       swal: true,
       datatable: true,
-      url_check: "forms/checkdelete",
+      url_check: "checkdelete",
       delete_frm_class: ".delete-product-frm",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //=======================================================================
     //Categorie Status

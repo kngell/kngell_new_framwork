@@ -30,11 +30,14 @@ class AllUsers {
       bsmodal: document.getElementById("modal-box"),
     });
     //Select2 ajax
+    const csrftoken = document.querySelector('meta[name="csrftoken"]');
     new select2()._init({
       element: phpPlugin.modalform.find(".group"),
       tbl_options: "groups",
       placeholder: "Please select a user",
-      url: "forms/showDetails",
+      url: "showDetails",
+      csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
+      frm_name: "all_product_page",
     });
     //set create/add function
     cruds._set_addBtn();

@@ -15,7 +15,7 @@ export default class User_cart {
     var data = {
       table: "cart",
       user: "guest",
-      url: "forms/showDetails",
+      url: "showDetails",
       data_type: "template",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",

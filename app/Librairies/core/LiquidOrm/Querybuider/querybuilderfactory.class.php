@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 class QueryBuilderFactory
 {
-    protected static ContainerInterface $container;
+    protected QueryBuilderInterface $querybuider;
 
     /**
-     * =====================================================================
      * Main constructor
-     * =====================================================================
+     * =======================================================================================
      *@return void
      */
-    public function __construct()
+    public function __construct(QueryBuilder $querybuider)
     {
+        $this->querybuider = $querybuider;
     }
 
     /**
@@ -21,24 +21,11 @@ class QueryBuilderFactory
      * ========================================================================================
      *@return QueryBuilderInterface
      */
-    public function create(string $querybuiderString) : QueryBuilderInterface
+    public function create() : QueryBuilderInterface
     {
-        $querybuilderObject = self::$container->load([$querybuiderString => []])->$querybuiderString;
-        if (!$querybuilderObject instanceof QueryBuilderInterface) {
-            throw new QueryBuilderExceptions($querybuiderString . ' is not a valid query builder!');
+        if (!$this->querybuider instanceof QueryBuilderInterface) {
+            throw new QueryBuilderExceptions($this->querybuider . ' is not a valid query builder!');
         }
-        return $querybuilderObject;
-    }
-
-    /**
-     * set Container
-     * ========================================================================================
-     * @param ContainerInterface $container
-     * @return self
-     */
-    public function set_container(ContainerInterface $container) :self
-    {
-        $this->container = $container;
-        return $this;
+        return $this->querybuider;
     }
 }

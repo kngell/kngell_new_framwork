@@ -13,7 +13,7 @@ class DataRepository implements DataRepositoryInterface
      * ====================================================================
      * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManagerInterface $em = null)
+    public function __construct(EntityManager $em = null)
     {
         $this->em = $em;
     }

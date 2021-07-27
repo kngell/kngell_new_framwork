@@ -38,11 +38,13 @@ class AllUnits {
       data_type: "values",
     });
     //Select2 ajax
-    let select = new select2()._init({
+    new select2()._init({
       element: phpPlugin.modalform.find(".unit"),
       tbl_options: "units",
       placeholder: "Please select a unit",
-      url: "forms/showDetails",
+      url: "showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
 
     //set create/add function
@@ -59,6 +61,7 @@ class AllUnits {
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page", // page csrf name
       select: ["unit"],
+      data_type: "values",
     });
     //edit
     cruds._edit({
@@ -79,10 +82,11 @@ class AllUnits {
     cruds._delete({
       swal: true,
       datatable: true,
-      url_check: "forms/checkdelete",
+      url_check: "checkdelete",
       delete_frm_class: ".delete-unit-status",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //Activate item
     cruds._active_inactive_elmt({ table: "units" });

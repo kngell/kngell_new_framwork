@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class TaxesManager extends Model
 {
     protected $_colID = 'tID';
@@ -89,7 +90,7 @@ class TaxesManager extends Model
             $select2_data = json_decode($this->htmlDecode($params['categorieID']), true);
             $colID = $this->get_colID();
             if (json_last_error() === JSON_ERROR_NONE) {
-                $taxes_region = self::$container->load([TaxeRegionManager::class => []])->TaxeRegion->getAllItem(['where' => ['tr_tax_ID' => $params[$colID]], 'return_mode' => 'class']);
+                $taxes_region = $this->container->make(TaxeRegionManager::class)->getAllItem(['where' => ['tr_tax_ID' => $params[$colID]], 'return_mode' => 'class']);
                 if ($taxes_region->count() >= 1) {
                     foreach ($taxes_region->get_results() as $tr) {
                         if (!$tr->delete()) {
@@ -138,7 +139,7 @@ class TaxesManager extends Model
             'where' => ['tr_tax_ID' => $this->tID],
             'return_mode' => 'class'
         ];
-        $taxe_region = self::$container->load([TaxeRegionManager::class => []])->TaxeRegion->getAllItem($data, $tables);
+        $taxe_region = $this->container->make(TaxeRegionManager::class)->getAllItem($data, $tables);
         $response = [];
         if ($taxe_region->count() >= 1) {
             foreach ($taxe_region->get_results() as $tr) {

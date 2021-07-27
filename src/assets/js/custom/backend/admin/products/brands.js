@@ -62,6 +62,7 @@ class Brand {
       modal: true,
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page", // page csrf name
+      data_type: "values",
     });
 
     /**
@@ -95,10 +96,11 @@ class Brand {
     cruds._delete({
       swal: true,
       datatable: true,
-      url_check: "forms/checkdelete",
+      url_check: "checkdelete",
       delete_frm_class: ".delete-brand-frm",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //=======================================================================
     //Categorie Status

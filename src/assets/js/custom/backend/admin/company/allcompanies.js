@@ -50,6 +50,7 @@ class AllCompanies {
       modal: true,
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page", // page csrf name
+      data_type: "values",
     });
 
     //=======================================================================
@@ -72,7 +73,7 @@ class AllCompanies {
         "phone",
         "mobile",
         "fax",
-        "address",
+        "address1",
         "zip_code",
         "ville",
         "pays",
@@ -95,6 +96,7 @@ class AllCompanies {
       delete_frm_class: ".delete-company-frm",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //=======================================================================
     //Categorie Status

@@ -88,6 +88,11 @@
                     color: $gray-dark
                     cursor: not-allowed
         .tab-content
+            .button-group
+                .previous
+                    +button($dark-yellow,$dark-yellow-light)
+                .next,.complete-order
+                    +button($color-primary,$blue-dark) 
             .tab-pane
                 padding: 10px
                 .order-summary
@@ -111,9 +116,10 @@
                                 font-size: 1rem
                                 font-weight: 600
                                 border-bottom: 1px dashed $purple-dark
-                            .res-tax-item
-                                font-style: normal
+                            .res-tax-item,.total-shipping
+                                font-style: italic
                                 font-size: .8rem
+                                text-transform: capitalize
                                 td
                                     padding-bottom: 0
                             .total-ttc
@@ -233,13 +239,7 @@
                                 .next
                                     +button($color-primary,$blue-dark)
                                     text-decoration: none
-            #shipping-information
-                .order-details
-                    .button-group
-                        .previous
-                            +button($dark-yellow,$dark-yellow-light)
-                        .next
-                            +button($color-primary,$blue-dark)     
+            
             #payment-information
                 .order-summary
                     .card
@@ -256,8 +256,6 @@
                     #order-payment
                         .payment-gateway
                             .payment-gateway-header
-                                .radio-check__wrapper
-                                    width: auto
                                 .brand-icons
                                     +dflex()
                                     .payment-icon 
@@ -293,11 +291,6 @@
                             .billing-address-content
                                 +input(100%,2rem,$gray-300,$radius,$dark-in,$white-green,$blue-light,$gray-dark,$white-color)
                                 +custom_select2($white-color,$gray-300)
-                    .button-group
-                        .previous
-                            +button($dark-yellow,$dark-yellow-light)
-                        .complete-order
-                            +button($color-primary,$blue-dark) 
 .hidden
     display: none
 .next,.previous

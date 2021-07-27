@@ -68,17 +68,17 @@
                         <ul class="pagination justify-content-center m-0">
                             <li class="page-item <?=($current_page <= 1) ? 'disabled' : ''?>">
                                 <a class="page-link"
-                                    href="<?=PROOT . 'admin' . US . 'allusers' . US . $this->user_method?>?page=<?=$current_page - 1?>">Précédente</a>
+                                    href="<?=PROOT . 'allusers' . US . $this->user_method?>?page=<?=$current_page - 1?>">Précédente</a>
                             </li>
                             <?php for ($page = 1; $page <= $total_page; $page++):?>
                             <li class="page-item <?=($current_page == $page) ? 'active' : ''?>">
                                 <a class="page-link"
-                                    href="<?=PROOT . 'admin' . US . 'allusers' . US . $this->user_method?>?page=<?=$page?>"><?=$page?></a>
+                                    href="<?=PROOT . 'allusers' . US . $this->user_method?>?page=<?=$page?>"><?=$page?></a>
                             </li>
                             <?php endfor;?>
                             <li class="page-item <?=($current_page >= $total_page) ? 'disabled' : ''?>">
                                 <a class="page-link"
-                                    href="<?=PROOT . 'admin' . US . 'allusers' . $this->user_method ?>?page=<?=$current_page + 1?>">Suivante</a>
+                                    href="<?=PROOT . 'allusers' . $this->user_method ?>?page=<?=$current_page + 1?>">Suivante</a>
                             </li>
                         </ul>
                     </nav>

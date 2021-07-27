@@ -1,10 +1,10 @@
-export default class Payment_Toogle {
-  init() {
-    this._togglePayment();
+export default class P_Toogle {
+  constructor() {
+    this._togglePmt();
     this._toggleBillingAddress();
   }
 
-  _togglePayment = () => {
+  _togglePmt = () => {
     let element = document.getElementById("order-payment");
     if (!element) return false;
     $(".payment-gateway-header input[type='radio']").each(function () {

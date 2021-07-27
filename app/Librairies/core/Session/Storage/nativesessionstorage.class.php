@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 class NativeSessionStorage extends AbstractSessionStorage
 {
-    public function __construct(array $options = [])
+    public function __construct()
     {
-        parent::__construct($options);
+    }
+
+    public function initOptions(array $options = [])
+    {
+        parent::initOptions($options);
+        return $this;
     }
 
     /**

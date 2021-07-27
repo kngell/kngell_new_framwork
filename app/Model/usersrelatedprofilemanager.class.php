@@ -23,7 +23,7 @@ class UsersRelatedProfileManager extends Model
     //=======================================================================
     public function afterSave($params = [])
     {
-        $save_addr = self::$container->load([AddressBookManager::class => []])->AddressBook->partial_saveAddress($params, $this->_table, $this->get_lastID());
+        $save_addr = $this->container->make(AddressBookManager::class)->partial_saveAddress($params, $this->_table, $this->get_lastID());
         if (array_key_exists('errors', $save_addr)) {
             $errors = $save_addr['errors'];
             unset($save_addr['errors']);

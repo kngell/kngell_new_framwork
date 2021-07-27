@@ -31,6 +31,16 @@ class Sanitizer
         }
     }
 
+    public static function cleanOutputModel(Object $m) : Object
+    {
+        foreach ($m as $key => $value) {
+            if (is_string($value)) {
+                $m->$key = $m->htmlDecode($m->$key);
+            }
+        }
+        return $m;
+    }
+
     /**
      * Support clean Data
      * ======================================================================================

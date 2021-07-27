@@ -78,9 +78,9 @@ class Login_And_Register {
       e.stopPropagation();
       phpLR.regfrm.find("#register-btn").val("Please wait...");
       var inputData = {
-        url: "auth/ajaxRegister",
+        url: "ajaxRegister",
         frm: phpLR.regfrm,
-        table: "auth",
+        table: "users",
         notification: "admin",
       };
       Call_controller(inputData, gestionR);
@@ -117,7 +117,7 @@ class Login_And_Register {
       e.stopPropagation();
       phpLR.loginfrm.find("#login-btn").val("Please wait...");
       var data = {
-        url: "auth/ajaxLogin",
+        url: "ajaxLogin",
         frm: phpLR.loginfrm,
         frm_name: "login-frm",
       };
@@ -126,7 +126,7 @@ class Login_And_Register {
         phpLR.loginfrm.find("#login-btn").val("Login");
         if (response.result == "success") {
           if (response.msg == "checkout") {
-            window.location.href = BASE_URL + "users/checkout";
+            window.location.href = BASE_URL + "checkout";
           } else {
             window.location.reload();
           }
@@ -172,7 +172,7 @@ class Login_And_Register {
         });
       }
       $.ajax({
-        url: BASE_URL + "auth/logout",
+        url: BASE_URL + "logout",
         method: "post",
         success: function (response) {
           if (response.result == "success") {

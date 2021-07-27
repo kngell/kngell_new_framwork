@@ -28,13 +28,8 @@ class View
      * @param string $file_path
      * @param Object $ressources
      */
-    public function __construct(string $view_file = '', array $view_data = [], string $file_path = '')
+    public function __construct()
     {
-        $this->view_file = $view_file;
-        $this->view_data = $view_data;
-        $this->ressources = json_decode(file_get_contents(APP . 'assets.json'));
-        ;
-        $this->file_path = $file_path;
     }
 
     /**
@@ -56,22 +51,39 @@ class View
         $this->page_title = null;
     }
 
+    public function initParams(string $view_file = '', array $view_data = [], string $file_path = '') : self
+    {
+        $this->view_file = $view_file;
+        $this->view_data = $view_data;
+        $this->ressources = json_decode(file_get_contents(APP . 'assets.json'));
+        $this->file_path = $file_path;
+        return $this;
+    }
+
     /**
      * Render View
      * ======================================================================================
      * @param string $viewname
      * @return void
      */
-    public function render(string $viewname)
+    public function render(string $viewname = '', array $params = [])
     {
-        if ($this->view_file != $viewname) {
+        if (!empty($viewname)) { //$this->view_file != $viewname
             $this->view_file = preg_replace("/\s+/", '', $viewname);
         }
         if (file_exists(VIEW . strtolower($this->file_path) . $this->view_file . '.php')) {
-            include VIEW . strtolower($this->file_path) . $this->view_file . '.php';
+            $this->renderViewContent(VIEW . strtolower($this->file_path) . $this->view_file . '.php', $params);
         } else {
             Rooter::redirect('restricted' . DS . 'index');
         }
+    }
+
+    protected function renderViewContent($view, array $params = []) :void
+    {
+        foreach ($params as $key => $value) {
+            $$key = $value;
+        }
+        include_once $view;
     }
 
     /**
@@ -144,9 +156,10 @@ class View
      * @param string $path
      * @return void
      */
-    public function set_Layout(string $path)
+    public function set_Layout(string $path) : self
     {
         $this->_layout = $path;
+        return $this;
     }
 
     /**

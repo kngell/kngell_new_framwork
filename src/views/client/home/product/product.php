@@ -1,6 +1,6 @@
 <?php $this->start('head'); ?>
 <!-------Accueil-------->
-<link href="<?= $this->asset('css/custom/client/home/product', 'css') ?? ''?>" rel="stylesheet" type="text/css">
+<link href="<?= $this->asset('css/custom/client/home/product/product', 'css') ?? ''?>" rel="stylesheet" type="text/css">
 <?php $this->end(); ?>
 <?php $this->start('body'); ?>
 <!-- Start Main -->
@@ -23,6 +23,6 @@
 <?php $this->end(); ?>
 <?php $this->start('footer')?>
 <!-- Html visitors -->
-<script type="text/javascript" src="<?= $this->asset('js/custom/client/home/product', 'js') ?? ''?>">
+<script type="text/javascript" src="<?= $this->asset('js/custom/client/home/product/product', 'js') ?? ''?>">
 </script>
 <?php $this->end();

@@ -11,7 +11,7 @@
     foreach ($this->products as $product) :?>
             <div class="item py-2 bg-light">
                 <div class="product font-rale ">
-                    <a href="<?=PROOT?>home/product/<?=$product->pdtID?>"><img
+                    <a href="<?=PROOT?>product/<?=$product->p_slug?>"><img
                             src="<?= $product->p_media != '' ? IMG . unserialize($product->p_media)[0] : ImageManager::asset_img('products/1.png') ?>"
                             alt="<?=$product->p_title ?? 'Unknown'?>" class="img-fluid"></a>
                     <div class="text-center">
@@ -26,7 +26,7 @@
                         </div>
                         <div class="price py-2">
                             <span
-                                class="product_regular_price"><?=$product->get_currency($product->p_regular_price) ?? 0?></span>
+                                class="product_regular_price"><?=$product->get_money()->getAmount($product->p_regular_price) ?? 0?></span>
                         </div>
                         <form class="add_to_cart_frm">
                             <input type="hidden" name="item_id" value="<?=$product->pdtID ?? 1 ?>">

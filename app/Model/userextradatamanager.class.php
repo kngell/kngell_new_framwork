@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class UserExtraDataManager extends Model
 {
     protected string $_colID = 'usdID';
@@ -9,9 +10,13 @@ class UserExtraDataManager extends Model
     //construct
     //=======================================================================
 
-    public function __construct($user = '')
+    public function __construct()
     {
         parent::__construct($this->_table, $this->_colID);
+    }
+
+    public function initUserParams(string $user = '') : void
+    {
         if ($user) {
             if (is_int($user)) {
                 $cond = ['where' => ['userID' => $user], 'return_mode' => 'class', 'class' => 'UsersManager'];

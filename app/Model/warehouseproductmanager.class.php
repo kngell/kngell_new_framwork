@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 class WarehouseProductManager extends Model
 {
     protected $_colID = 'whpID';

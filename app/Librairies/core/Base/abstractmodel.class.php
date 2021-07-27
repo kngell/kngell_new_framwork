@@ -1,9 +1,6 @@
 <?php
 
 declare(strict_types=1);
-use Brick\Money\Money;
-use Brick\Money\Context\AutoContext;
-use Brick\Math\RoundingMode;
 
 abstract class AbstractModel implements ModelInterface
 {
@@ -31,6 +28,25 @@ abstract class AbstractModel implements ModelInterface
             }
         }
         return $params;
+    }
+
+    protected function setQueryParams(array $params)
+    {
+        if (!$limit = ModelHelper::array_search_recursive('limit', $params)) {
+            $limit = [];
+        };
+        return $limit;
+    }
+
+    public function get_defaultShippingClass()
+    {
+        if (!isset($this->p_shipping_class) || is_null($this->p_shipping_class) || $this->p_shipping_class == '[]') {
+            $defaultShippingClass = $this->container->make(ShippingClassManager::class)->getAllItem(['where' => ['default_shipping_class' => ['value' => 0, 'operator' => '!=']]]);
+            if ($defaultShippingClass->count() === 1) {
+                return current($defaultShippingClass->get_results());
+            }
+            return null;
+        }
     }
 
     /**
@@ -71,7 +87,7 @@ abstract class AbstractModel implements ModelInterface
     public function setselect2Data(array $params = []) : self
     {
         if (isset($this->select2_field)) {
-            $field = in_array($this->get_tableName(), ['products']) ? 'id' : 'text';
+            $field = in_array($this->get_tableName(), ['products', 'warehouse']) ? 'id' : 'text';
             foreach ($this->select2_field as $select2) {
                 $select2_data = isset($params[$select2]) ? json_decode($this->htmlDecode($params[$select2]), true) : [];
                 if ($select2_data && $select2_data[0]) {
@@ -113,17 +129,6 @@ abstract class AbstractModel implements ModelInterface
         return $this->_count;
     }
 
-    /**
-     * Get Currencies
-     * =========================================================================================================
-     * @param [type] $p
-     * @return mixed
-     */
-    public function get_currency($p)
-    {
-        return Money::of($p, 'EUR', new AutoContext())->getAmount();
-    }
-
     //Find first corresponding record
     public function findFirst($params = []) : self
     {
@@ -131,8 +136,10 @@ abstract class AbstractModel implements ModelInterface
             $params = array_merge($params, ['class' => get_class($this)]);
         }
         $params = $this->set_deleted_Params($params);
-        $resultQuery = $this->repository->findOneBy($params['where'], $params);
-        if ($resultQuery <= 0) {
+        $cond = $params['where'];
+        unset($params['where']);
+        $resultQuery = $this->repository->findOneBy($cond, $params);
+        if ($resultQuery->count() <= 0) {
             $this->_count = 0;
             return $this;
         }
@@ -256,7 +263,7 @@ abstract class AbstractModel implements ModelInterface
 
     public function afterSave(array $params = [])
     {
-        return $params;
+        return $params['saveID'] ?? null;
     }
 
     //Before delete
@@ -297,7 +304,7 @@ abstract class AbstractModel implements ModelInterface
 
     public function get_unique(string $colid_name = '', string $prefix = '', string $suffix = '', int $token_length = 24)
     {
-        $token = $this->get_container()->load([Token::class => []])->Token;
+        $token = $this->get_container()->make(Token::class);
         $output = $prefix . $token->generate($token_length) . $suffix;
         while ($this->getDetails($output, $colid_name)->count() > 0) :
             $output = $prefix . $token->generate($token_length) . $suffix;
@@ -368,9 +375,9 @@ abstract class AbstractModel implements ModelInterface
         return isset($del_actions) ? $del_actions : $delete;
     }
 
-    public function set_container(ContainerInterface $container)
+    public function set_container()
     {
-        $this->container = $container;
+        $this->container = Container::getInstance();
         return $this;
     }
 
@@ -378,19 +385,30 @@ abstract class AbstractModel implements ModelInterface
     public function get_selectedOptions(Object $m = null)
     {
         $response = [];
-        $colID = $m->get_colID();
-        $colTitle = $m->_colTitle;
+        $colTitle = $m->get_colTitle();
         $selected_option = null;
         if (isset($this->parentID) && $m->get_modeName() == $this->get_modeName()) {
             $selected_option = $m->getDetails($this->parentID);
         } else {
-            $selected_option = $m->getDetails($this->$colID);
+            $selected_option = $m->getDetails($this->{$m->colOptions});
         }
         if ($selected_option->count() === 1) {
             $selected_option = current($selected_option->get_results());
-            $response[$selected_option->$colID] = $this->htmlDecode($selected_option->$colTitle);
+            $response[$selected_option->{$m->get_colID()}] = !empty($colTile) ? $this->htmlDecode($selected_option->$colTitle) : $this->get_customTitle($this);
         }
         return $response;
+    }
+
+    public function get_customTitle(Object $m = null)
+    {
+        switch (true) {
+            case $this->get_tableName() == 'orders' || $this->colOptions == 'ord_userID':
+                return $m->lastName . ' ' . $m->firstName;
+                break;
+            default:
+                // code...
+                break;
+        }
     }
 
     //Update status
@@ -438,7 +456,7 @@ abstract class AbstractModel implements ModelInterface
     }
 
     //Get countrie
-    public function get_countrie($ctr = '')
+    public function get_countrie(string $ctr = '')
     {
         $data = file_get_contents(FILES . 'json' . DS . 'data' . DS . 'countries.json');
         $country = array_filter(array_column(json_decode($data, true), 'name'), function ($countrie) use ($ctr) {
@@ -457,6 +475,26 @@ abstract class AbstractModel implements ModelInterface
 
     public function getDate($date, $format = 'd-m-y'): string
     {
-        return (new DateTime($date))->format($format);
+        return !is_null($date) ? (new DateTime($date))->format($format) : '';
+    }
+
+    public function getLabel($attribute)
+    {
+        return $this->labels()[$attribute] ?? $attribute;
+    }
+
+    public function labels() : array
+    {
+        return [];
+    }
+
+    public function getFirstError($attribute)
+    {
+        return $this->validationErr[$attribute][0] ?? false;
+    }
+
+    public function hasError($attribute)
+    {
+        return $this->validationErr[$attribute] ?? false;
     }
 }

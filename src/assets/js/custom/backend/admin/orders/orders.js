@@ -22,7 +22,7 @@ class Orders {
   _setupVariables = () => {
     this.wrapper = this.element.find(".card");
     this.modalbox = this.element.find("#modal-box");
-    this.modalform = this.element.find("#modal-box #taxes-frm");
+    this.modalform = this.element.find("#modal-box #order-frm");
   };
 
   /**
@@ -37,7 +37,7 @@ class Orders {
       wrapper: phpPlugin.wrapper,
       form: phpPlugin.modalform,
       modal: phpPlugin.modalbox,
-      select_tag: ["#categorieID"],
+      select_tag: ["#ord_status", "customer"],
       bsmodal: document.getElementById("modal-box"),
     });
 
@@ -60,11 +60,23 @@ class Orders {
      */
     const select = new select2();
     select._init({
-      element: phpPlugin.modalform.find("#categorieID"),
-      tbl_options: "categories",
-      placeholder: "Please select a associate Categorie",
+      element: phpPlugin.modalbox.find("#ord_status"),
+      tbl_options: "order_status",
+      placeholder: "Please select status",
       url: "forms/showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
+
+    select._init({
+      element: phpPlugin.modalbox.find("#customer"),
+      tbl_options: "users",
+      placeholder: "Please select status",
+      url: "forms/showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
+    });
+
     //set create/add function
     cruds._set_addBtn();
     //Add or update
@@ -79,19 +91,26 @@ class Orders {
     });
     //edit
     cruds._edit({
-      tbl_options: ["categories"],
-      table: "taxes",
+      table: "orders",
+      tbl_options: ["order_status", "users"],
+      custom_method: "getOrdercustomDetails",
       std_fields: [
-        "tID",
-        "t_name",
-        "t_descr",
-        "t_rate",
-        "t_class",
-        "status",
+        "ordID",
+        "ord_number",
+        "ord_userID",
+        "ord_pmt_mode",
+        "ord_pmt_ID",
+        "ord_date",
+        "ord_status",
+        "customer",
+        "billing_address",
+        "shipping_address",
+        "u_comment",
+        "order_details_summary",
+        "order_details_total",
         "created_at",
         "updated_at",
         "deleted",
-        "categorieID",
       ],
     });
     //clean form
@@ -110,5 +129,5 @@ class Orders {
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
-  new Orders($(".page-container"))._init();
+  new Orders($("#main-site"))._init();
 });

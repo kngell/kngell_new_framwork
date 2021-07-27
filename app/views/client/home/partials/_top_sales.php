@@ -3,15 +3,14 @@
         <h4 class="font-rubik font-size-20">Top Sale</h4>
         <hr class="divider mx-auto mt-0">
         <!-- Owl carousel -->
-        <?php isset($this->products) && $this->products ? shuffle($this->products) : ''?>
+        <?php if (isset($this->products) && count($this->products)) : shuffle($this->products);?>
         <div class="owl-carousel owl-theme">
-            <?php if (isset($this->products)) {
-    foreach ($this->products as $product) : ?>
+            <?php foreach ($this->products as $product) : ?>
             <div class="item py-2">
                 <div class="product font-rale ">
-                    <a href="<?= PROOT ?>home/product/<?= $product->p_slug ?>">
+                    <a href="<?= PROOT ?>product/<?= $product->p_slug ?>">
                         <div style="overflow:hidden;"><img
-                                src="<?= $product->p_media != '' ? IMG . unserialize($product->p_media)[0] : ImageManager::asset_img('products/1.png') ?>"
+                                src="<?= $product->p_media != '' ? ImageManager::asset_img(unserialize($product->p_media)[0]) : ImageManager::asset_img('products/1.png') ?>"
                                 alt="<?= $product->p_title ?? 'Unknown' ?>" class="img-fluid">
                         </div>
                     </a>
@@ -27,7 +26,7 @@
                         </div>
                         <div class="price py-2">
                             <span
-                                class="product_regular_price"><?= $product->get_currency($product->p_regular_price) ?? 0 ?></span>
+                                class="product_regular_price"><?= $product->get_money()->getAmount($product->p_regular_price) ?? 0 ?></span>
                         </div>
                         <form class="add_to_cart_frm">
                             <input type="hidden" name="item_id" value="<?= $product->pdtID ?? 1 ?>">
@@ -51,8 +50,8 @@
                     </div>
                 </div>
             </div>
-            <?php endforeach;
-}?>
+            <?php endforeach;?>
             <!-- End Owl Carousel -->
         </div>
+        <?php endif;?>
 </section>

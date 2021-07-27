@@ -54,6 +54,45 @@ class GroupsManager extends Model
     //Operations
     //=======================================================================
 
+    /**
+     * Add new role
+     * ===============================================================================================
+     * @param string $group
+     * @return boolean
+     */
+    public function createGroup(string $group) : bool
+    {
+        if ($this->getDetails($group, 'name')->count() <= 0) {
+            $this->name = $group;
+            if (!$this->save()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function setUserGroup(string $group, int $userID = -1) : bool
+    {
+        $grp = $this->getDetails($group, 'name');
+        if ($grp->count() <= 0) {
+            if (!$this->createGroup($group)) {
+                return false;
+            }
+        } elseif ($grp->count() === 1) {
+            $grp = current($grp->get_results()) ;
+            if (!$this->container->make(GroupUserManager::class)->createUserRole((int)$grp->grID, !$userID < 0 ? $userID : AuthManager::currentUser()->userID)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function updateGroup(string $grID = '')
+    {
+    }
+
     // Insert
     public function beforeSave(array $params = [])
     {

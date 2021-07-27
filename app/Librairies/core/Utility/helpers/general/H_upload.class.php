@@ -46,7 +46,7 @@ class H_upload
     {
         $paths = [];
         $status = [];
-        $imageManager = $container->load([ImageManager::class => []])->Image;
+        $imageManager = $container->singleton(ImageManager::class, fn () => new ImageManager())->make(ImageManager::class);
         if ($files) {
             foreach ($files as $file) {
                 $result = self::validate_and_upload_file($file, $model, $imageManager);

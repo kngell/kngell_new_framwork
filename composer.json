@@ -24,7 +24,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": "^8.0",
+     "php": "^8.0",
     "ext-mbstring": "*",
     "ext-iconv": "*",
     "ext-pdo": "*",
@@ -38,7 +38,8 @@
     "symfony/var-dumper": "^5.3",
     "sendgrid/sendgrid": "^7",
     "brick/money": "^0.5.2",
-    "phpmailer/phpmailer": "^6.4"
+    "phpmailer/phpmailer": "^6.4",
+    "stripe/stripe-php": "^7.87"
   },
   "autoload": {
     "classmap": [
@@ -52,6 +53,5 @@
     "classmap": [
       "tests"
     ]
-  },
-  "require-dev": {}
+  }
 }

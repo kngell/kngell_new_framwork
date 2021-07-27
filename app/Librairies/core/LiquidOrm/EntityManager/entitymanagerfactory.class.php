@@ -13,7 +13,7 @@ class EntityManagerFactory
      */
     protected QueryBuilderInterface $querybuilder;
 
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
 
     /**
     * =====================================================================
@@ -25,6 +25,7 @@ class EntityManagerFactory
      */
     public function __construct(DataMapperInterface $datamapper, QueryBuilderInterface $querybuilder)
     {
+        $this->set_container();
         $this->datamapper = $datamapper;
         $this->querybuilder = $querybuilder;
     }
@@ -42,11 +43,12 @@ class EntityManagerFactory
      */
     public function create(string $crudString = '', string $tableSchma = '', string $tableShameID = '', array $options = []) : EntityManagerInterface
     {
-        $crudObject = self::$container->load([$crudString => ['datamapper' => $this->datamapper, 'querybuilder' => $this->querybuilder, 'tableSchema' => $tableSchma, 'tableSchmaID' => $tableShameID, 'options' => $options]])->$crudString;
+        $crudObject = $this->container->bind($crudString, fn () => new $crudString($this->datamapper, $this->querybuilder, $tableSchma, $tableShameID, $options))->make($crudString);
         if (!$crudObject instanceof CrudInterface) {
             throw new CrudExceptions($crudString . ' is not a valid crud object!');
         }
-        return self::$container->load([EntityManager::class => ['crud' => $crudObject]])->Entity;
+        $this->container->bind(CrudInterface::class, fn () => $crudObject);
+        return $this->container->bind(EntityManager::class)->make(EntityManager::class);
     }
 
     /**
@@ -55,9 +57,11 @@ class EntityManagerFactory
      * @param ContainerInterface $container
      * @return self
      */
-    public function set_container(ContainerInterface $container) :self
+    public function set_container() :self
     {
-        $this->container = $container;
+        if (!isset($this->container)) {
+            $this->container = Container::getInstance();
+        }
         return $this;
     }
 }

@@ -4,8 +4,8 @@ class Input_Manager {
     form.find("div.invalid-feedback").html("");
   };
   //remove invalid input on focus
-  removeInvalidInput(Myform) {
-    Myform.on("focus", "input,textarea, .ck, .note-editor", function () {
+  removeInvalidInput(myform) {
+    myform.on("focus", "input,textarea, .ck, .note-editor", function () {
       $(this).removeClass("is-invalid");
       $(this).parent().children("div.invalid-feedback").html("");
     });
@@ -14,7 +14,6 @@ class Input_Manager {
     var arrErr = [];
     for (const [key, value] of Object.entries(InputErr)) {
       var input = form.find("#" + key).addClass("is-invalid");
-      console.log(input.parent());
       input.parent().children("div.invalid-feedback").html(value);
       arrErr.push(key);
     }

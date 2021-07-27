@@ -20,14 +20,18 @@ class Session implements SessionInterface
      * @param SessionStorageInterface $storage
      * @throws SessionInvalidArgumentException
      */
-    public function __construct(string $sessionIdentifier, SessionStorageInterface $storage = null)
+    public function __construct(SessionStorageInterface $storage = null)
+    {
+        $this->storage = $storage;
+    }
+
+    public function iniSession(string $sessionIdentifier)
     {
         if ($this->isSessionKeyValid($sessionIdentifier) === false) {
             throw new SessionStorageInvalidArgument($sessionIdentifier . ' is not a valid session name');
         }
-
         $this->sessionIdentifier = $sessionIdentifier;
-        $this->storage = $storage;
+        return $this;
     }
 
     /**

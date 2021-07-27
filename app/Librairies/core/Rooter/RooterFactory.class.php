@@ -5,15 +5,14 @@ class RooterFactory
     /**
      * @var RooterInterface $router
      */
-    protected RooterInterface $router;
-    /**
-    * @var string $dispatchedUrl
-    */
-    protected ?string $dispatchedUrl;
+    protected RooterInterface $rooter;
+    // /**
+    // * @var string $dispatchedUrl
+    // */
+    // protected ?string $dispatchedUrl;
     /**
      *
      */
-    protected static ContainerInterface $container;
 
     /**
      * @var array $routes
@@ -28,12 +27,13 @@ class RooterFactory
      * @param array $routes
      * @param string $filePath
      */
-    public function __construct(string $dispatchedUrl = null, array $routes = [])
+    public function __construct(Rooter $rooter)
     {
         // if (empty($dispatchedUrl)) {
         //     throw new BaseNoValueException('Url is not define!');
         // }
-        $this->dispatchedUrl = $dispatchedUrl;
+        // $this->dispatchedUrl = $request->getGet('url');
+        $this->rooter = $rooter;
     }
 
     /**
@@ -42,13 +42,19 @@ class RooterFactory
      * @param string|null $routeString
      * @return self
      */
-    public function create(?string $routeString) :self
+    public function create(array $routes = []) : RooterInterface
     {
-        $this->router = self::$container->load([$routeString => []])->$routeString;
-        if (!$this->router instanceof RooterInterface) {
-            throw new BaseUnexpectedValueException($routeString . 'is not a valid router object!');
+        if (!$this->rooter instanceof RooterInterface) {
+            throw new BaseUnexpectedValueException($this->rooter . 'is not a valid rooter object!');
         }
-        return $this;
+        if (count($routes) > 0) {
+            foreach ($routes as $method => $routes) {
+                foreach ($routes as $route => $param) {
+                    $this->rooter->{$method}(strtolower($route), $param);
+                }
+            }
+        }
+        return $this->rooter;
     }
 
     /**
@@ -57,10 +63,19 @@ class RooterFactory
      * @param string $url
      * @return void
      */
-    public function buildRoutes()
+    public function buildRoutes(array $routes = [])
     {
-        if ($this->router->IsvalidController($this->router->parseUrl($this->dispatchedUrl))) {
-            $this->router->dispatch();
-        };
+        // if ($this->rooter->IsvalidController($this->rooter->parseUrl($this->dispatchedUrl))) {
+        //     $this->rooter->dispatch();
+        // };
+
+        // if ($this->rooter->IsvalidController($this->rooter->parseUrl($this->dispatchedUrl))) {
+        //     $this->rooter->dispatch();
+        // };
+    }
+
+    public function getRooter()
+    {
+        return $this->rooter;
     }
 }

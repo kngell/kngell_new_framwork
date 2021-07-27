@@ -24,7 +24,7 @@ class THShippingClass
     public function shippingclassTable(array $data, ) : string
     {
         $output = '<div id="tbl-alertErr"></div>';
-        $output .= '<table class="table table-striped text-center">
+        $output .= '<table class="table table-striped text-center" id="ecommerce-datatable">
                     <thead>
                         <tr>
                             <th scope="col" style="width:2%" class="text-center">#</th>

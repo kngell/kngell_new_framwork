@@ -6,16 +6,40 @@ declare(strict_types=1);
 interface ContainerInterface
 {
     /**
-     * Finds an entry of the container by its identifier and returns it.
+     * Bind Classes, string into to container protected bindings
      * --------------------------------------------------------------------------------------------------
-     * @param string $id Identifier of the entry to look for.
-     *
-     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
-     * @throws ContainerExceptionInterface Error while retrieving the entry.
-     *
-     * @return mixed Entry.
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     * @param bool $shared
+     * @return void
      */
-    public function get(string $id, array $args = []);
+    public function bind(string $abstract, Closure | string | null $concrete = null, bool $shared = false): self;
+
+    /**
+     * Make a unique instance of a class or Closure
+     * --------------------------------------------------------------------------------------------------
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     * @return self
+     */
+    public function singleton(string $abstract, Closure | string | null $concrete = null): self;
+
+    /**
+     * Create a container instance with existing instance
+     * --------------------------------------------------------------------------------------------------
+     * @param string $abstract
+     * @param mixed $instance
+     * @return void
+     */
+    public function instance(string $abstract, mixed $instance): mixed;
+
+    /**
+     * Make and resolve dependancies
+     * --------------------------------------------------------------------------------------------------
+     * @param string $abstract
+     * @return mixed
+     */
+    public function make(string $abstract): mixed;
 
     /**
      * Returns true if the container can return an entry for the given identifier.
@@ -28,10 +52,11 @@ interface ContainerInterface
     public function has(string $id);
 
     /**
-     * Load container
+     * empty container
      * --------------------------------------------------------------------------------------------------
-     * @param array $args
-     * @return stdClass
+     * @return void
      */
-    public function load(array $args = []) : stdClass;
+    public function flush(): void;
+
+    public function getRooter();
 }

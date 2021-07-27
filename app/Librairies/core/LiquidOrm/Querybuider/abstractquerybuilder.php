@@ -177,7 +177,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         if (isset($this->key['extras']) && array_key_exists('group_by', $this->key['extras'])) {
             $groupBy .= ' GROUP BY ';
             $i = 0;
-            $op = isset($this->key['extras']['op']) ? $this->key['params']['op'] : ' AND ';
+            $op = isset($this->key['extras']['op']) ? $this->key['extras']['op'] : ' AND ';
             if (is_array($this->key['extras']['group_by'])) {
                 foreach ($this->key['extras']['group_by'] as $key => $value) {
                     $add = ($i > 0) ? ' ' . $op . ' ' : '';
@@ -208,8 +208,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function queryOffset()
     {
         // Append the limit and offset statement for adding pagination to the query
-        if (isset($this->key['params']['limit']) && $this->key['params']['offset'] != -1) {
+        if (isset($this->key['params']['limit']) && isset($this->key['params']['offset']) && $this->key['params']['offset'] != -1) {
             $this->sql .= ' LIMIT :offset, :limit';
+        }
+        if (isset($this->key['params']['limit']) && !isset($this->key['params']['offset'])) {
+            $this->sql .= ' LIMIT :limit';
         }
     }
 

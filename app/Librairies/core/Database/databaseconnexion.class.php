@@ -13,26 +13,21 @@ class DatabaseConnexion implements DatabaseConnexionInterface
      * @var array
      */
     protected array $credentials;
-    //=======================================================================
-    //Main contructor
-    //=======================================================================
 
     /**
-     * Main contructor method
+     * Main constructor
+     * ===========================================================================================
      * @param array $credentials
-     * @return void
      */
     public function __construct(array $credentials)
     {
         $this->credentials = $credentials;
     }
 
-    //=======================================================================
-    //Create a new data base connexion
-    //=======================================================================
-
     /**
      * @inheritDoc
+     * ===========================================================================================
+     * @return PDO
      */
     public function open() :PDO
     {
@@ -57,15 +52,21 @@ class DatabaseConnexion implements DatabaseConnexionInterface
         return $this->con;
     }
 
-    //=======================================================================
-    //close database connexion
-    //=======================================================================
-
     /**
-    * @inheritDoc
-    */
+     * @inheritDoc
+     * ===========================================================================================
+     * @return void
+     */
     public function close():void
     {
         $this->con = null;
+    }
+
+    public function applyMigrations()
+    {
+    }
+
+    public function createMigrationsTable()
+    {
     }
 }

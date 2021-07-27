@@ -70,15 +70,14 @@ class Home {
 
     function equal_height() {
       var maxHeight = 0;
-
-      phpPlugin.wrapper.find(".grid-item").each(function () {
+      phpPlugin.specialPrice.find(".grid-item").each(function () {
         var thisH = $(this).height();
         if (thisH > maxHeight) {
           maxHeight = thisH;
         }
       });
 
-      phpPlugin.wrapper.find(".grid-item").height(maxHeight);
+      phpPlugin.specialPrice.find(".grid-item").height(maxHeight);
     }
     //=======================================================================
     //Isotope Filter

@@ -17,9 +17,18 @@ class CategoriesManager extends Model
         $this->_modelName = str_replace(' ', '', ucwords(str_replace('_', ' ', $this->_table))) . 'Manager';
     }
 
-    //=======================================================================
-    //Gets
-    //=======================================================================
+    public function getAllCategories()
+    {
+        $tables = ['table_join' => ['categories' => ['*'], 'brand' => ['br_name']]];
+        $data = [
+            'join' => 'LEFT JOIN',
+            'rel' => [['brID', 'brID']],
+            'return_mode' => 'class'
+        ];
+        $uc = $this->getAllItem($data, $tables);
+        return $uc->count() > 0 ? $uc->get_results() : [];
+    }
+
     public function getPostsFromCategories()
     {
         $this->_table = 'SELECT p.* FROM posts p INNER JOIN post_categorie pc ON pc.postID = p.postID ';

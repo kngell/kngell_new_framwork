@@ -109,5 +109,5 @@ class Taxes {
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
-  new Taxes($(".page-container"))._init();
+  new Taxes($(".page-content"))._init();
 });

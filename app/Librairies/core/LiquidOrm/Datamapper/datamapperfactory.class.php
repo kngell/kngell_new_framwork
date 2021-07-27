@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class DataMapperFactory
 {
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
 
     /**
      * Main constructor
@@ -13,6 +13,7 @@ class DataMapperFactory
      */
     public function __construct()
     {
+        $this->set_container();
     }
 
     /**
@@ -23,19 +24,18 @@ class DataMapperFactory
      * @param string $dataMapperEnvConfigObject
      *@return DataMapperInterface
      */
-    public function create(string $databaseConnexionString, Object $dataMapperEnvConfig) : DataMapperInterface
+    public function create(string $databaseConnexionString) : DataMapperInterface
     {
-        $credentials = $dataMapperEnvConfig->getDatabaseCredentials('mysql');
-        $databaseConnexionObject = self::$container->load([$databaseConnexionString => ['credentials' => $credentials]])->$databaseConnexionString;
+        $databaseConnexionObject = $this->container->make($databaseConnexionString);
         if (!$databaseConnexionObject instanceof DatabaseConnexionInterface) {
             throw new DataMapperExceptions($databaseConnexionString . ' is not a valid database connexion Object!');
         }
-        return self::$container->load([DataMapper::class => ['_con' => $databaseConnexionObject]])->DataMapper;
+        return $this->container->make(DataMapper::class);
     }
 
-    public function set_container(ContainerInterface $container) : self
+    public function set_container() : self
     {
-        $this->container = $container;
+        $this->container = Container::getInstance();
         return $this;
     }
 }

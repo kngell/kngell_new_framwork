@@ -50,6 +50,8 @@ class Shipping {
       tbl_options: "shipping_class",
       placeholder: "Please select a shipping class",
       url: "forms/showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
 
     /**
@@ -69,6 +71,7 @@ class Shipping {
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page", // page csrf name
       select: ["sh_name"],
+      data_type: "values",
     });
     /**
      * Edit
@@ -97,6 +100,7 @@ class Shipping {
       delete_frm_class: ".delete-shipping-class",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //Activate item
     cruds._active_inactive_elmt({ table: "shipping_class" });

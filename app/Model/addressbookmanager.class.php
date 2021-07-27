@@ -19,10 +19,50 @@ class AddressBookManager extends Model
     //=======================================================================
     //Getters & setters
     //=======================================================================
+    public function get_userAddress()
+    {
+        $tables = ['table_join' => ['users' => ['firstName', 'lastName', 'phone'], 'address_book' => ['*']]];
+        $data = [
+            'join' => 'LEFT JOIN',
+            'rel' => [['userID', 'relID']],
+            'where' => ['tbl' => ['value' => 'users', 'tbl' => 'address_book'], 'userID' => AuthManager::$currentLoggedInUser->userID],
+            'return_mode' => 'class'
+        ];
+        $uc = $this->getAllItem($data, $tables);
+        return $uc->count() > 0 ? $uc->get_results() : [];
+    }
 
-    //=======================================================================
-    //Operations
-    //=======================================================================
+    /**
+     * Output address Content for Template
+     * ========================================================================
+     * @return string
+     */
+    public function get_userAddressHtml(array $params = []) : string
+    {
+        $adds = empty($params) ? $this->get_userAddress() : $params;
+        $output = '';
+        if (!empty($adds)) {
+            foreach ($adds as $add) {
+                $template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'account' . DS . 'addressTemplateContent.php');
+                $template = str_replace('{{prenom}}', $add->firstName ?? AuthManager::$currentLoggedInUser->firstName, $template);
+                $template = str_replace('{{nom}}', $add->lastName ?? AuthManager::$currentLoggedInUser->lastName, $template);
+                $template = str_replace('{{address}}', $this->htmlDecode($add->address1 ?? '') . ' ' . $this->htmlDecode($add->address2 ?? ''), $template);
+                $template = str_replace('{{code_postal}}', $add->zip_code, $template);
+                $template = str_replace('{{ville}}', $add->ville, $template);
+                $template = str_replace('{{region}}', $add->region, $template);
+                $template = str_replace('{{pays}}', $add->pays, $template);
+                $template = str_replace('{{telephone}}', $add->phone ?? AuthManager::$currentLoggedInUser->phone, $template);
+                $template = str_replace('{{id}}', (string) $add->abID ?? $add->id, $template);
+                $template = str_replace('{{active}}', $add->principale == 1 ? 'card--active' : '', $template);
+                $template = str_replace('{{tokenmodify}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'modify-frm' . $add->abID ?? $add->id)), $template);
+                $template = str_replace('{{tokenerase}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'erase-frm' . $add->abID ?? $add->id)), $template);
+                $template = str_replace('{{tokenselect}}', FH::csrfInput('csrftoken', $this->container->make(Token::class)->generate_token(8, 'select-frm' . $add->abID ?? $add->id)), $template);
+                $output .= $template;
+            }
+        }
+        return $output;
+    }
+
     public function getHtmlData($item = [])
     {
         $template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'account' . DS . 'addessTemplate.php');
@@ -44,8 +84,8 @@ class AddressBookManager extends Model
             'billing-region' => 'region',
             'billing-zip-postal' => 'zip_code'
         ];
-        $data = self::$container->load([Input::class => []])->Input->transform_keys($params, $item);
-        $u_related_profile = self::$container->load([UsersRelatedProfileManager::class => []])->UsersRelatedProfile;
+        $data = $this->container->make(Input::class)->transform_keys($params, $item);
+        $u_related_profile = $this->container->make(UsersRelatedProfileManager::class);
         $u_related_profile->assign($data);
         $u_related_profile->userID = $m->id;
         method_exists('Form_rules', $table) ? $u_related_profile->validator($data, Form_rules::$table(false)) : '';
@@ -63,7 +103,7 @@ class AddressBookManager extends Model
      * @param array $params
      * @return void
      */
-    public function get_address_fields(array $params = []) : self
+    public function get_address_fields(array $params = []) : mixed
     {
         if (!empty($params)) {
             $ad = [];
@@ -75,13 +115,15 @@ class AddressBookManager extends Model
             $ad['pays'] = isset($params['pays']) ? $params['pays'] : '';
             $ad['principale'] = isset($params['principale']) ? $params['principale'] : '';
             $ad['billing_addr'] = isset($params['billing_addr']) ? $params['billing_addr'] : '';
-            $this->assign($ad);
-            method_exists('Form_rules', 'address_book') ? $this->validator($ad, Form_rules::address_book()) : '';
-            foreach ($ad as $param) {
-                if (empty($param) && $param != '0') {
-                    continue;
-                } else {
-                    return $this;
+            if (!empty($ad)) {
+                $this->assign($ad);
+                method_exists('Form_rules', 'address_book') ? $this->validator($ad, Form_rules::address_book()) : '';
+                foreach ($ad as $param) {
+                    if (empty($param) && $param != '0') {
+                        continue;
+                    } else {
+                        return $this;
+                    }
                 }
             }
         }
@@ -101,5 +143,6 @@ class AddressBookManager extends Model
                 return ['errors' => $add->getErrorMessages()];
             }
         }
+        return false;
     }
 }

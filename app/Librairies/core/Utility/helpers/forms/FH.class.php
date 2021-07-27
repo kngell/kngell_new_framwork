@@ -100,7 +100,7 @@ class FH
 
     //Error & Sucess messages alert
 
-    public static function showMessage($type, $message)
+    public static function showMessage(string $type, mixed $message) : string
     {
         if (is_array($message)) {
             $output = '<div class="align-self-center text-center alert alert-' . $type . ' alert-dismissible">
@@ -116,6 +116,15 @@ class FH
                     <button type="button" class="btn-close" data-bs-dismiss="alert"><span class="float-end"></span></button>
                     <strong class="text-center">' . $message . '</strong>
               </div>';
+    }
+
+    public static function checkoutSuccessMsg($intentResponse)
+    {
+        $template = file_get_contents(FILES . 'template' . DS . 'e_commerce' . DS . 'payment' . DS . 'successMessageTemplate.php');
+        $template = str_replace('{{transactionID}}', $intentResponse->id, $template);
+        $template = str_replace('{{link1}}', PROOT . 'home' . US . 'cart', $template);
+        $template = str_replace('{{link2}}', PROOT . 'home' . US . 'boutique', $template);
+        return $template;
     }
 
     public static function AssignErrors($source, $errors)
@@ -150,29 +159,29 @@ class FH
             if (isset($source[$item])) {
                 foreach ($rules as $rule => $rule_value) {
                     $value = $source[$item];
-                    if ($rule === 'required' && empty($value)) {
+                    if ($rule === 'required' && (empty($value) || $value == '[]')) {
                         $requireMsg = ($item == 'terms') ? 'Please accept terms & conditions' : "{$display} is require";
-                        property_exists($obj, $item) ? $obj->runValidation($obj->get_container()->load([Requirevalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => $requireMsg]])->Requirevalidator) : '';
+                        property_exists($obj, $item) ? $obj->runValidation($obj->get_container()->make(Requirevalidator::class)->setParams($obj, $item, $rule_value, $requireMsg)) : '';
                     } elseif (!empty($value)) {
                         switch ($rule) {
                         case 'min':
-                            $obj->runValidation($obj->get_container()->load([Minvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a minimum of {$rule_value} characters"]])->Minvalidator);
+                            $obj->runValidation($obj->get_container()->make(Minvalidator::class)->setParams($obj, $item, $rule_value, "{$display} must be a minimum of {$rule_value} characters"));
                             break;
                         case 'max':
-                            $obj->runValidation($obj->get_container()->load([Maxvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} must be a maximum of {$rule_value} caracters"]])->Maxvalidator);
+                            $obj->runValidation($obj->get_container()->make(Maxvalidator::class)->setParams($obj, $item, $rule_value, "{$display} must be a maximum of {$rule_value} caracters"));
                             break;
                         case 'valid_email':
-                            $obj->runValidation($obj->get_container()->load([ValidEmailvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} is not valid"]])->ValidEmailvalidator);
+                            $obj->runValidation($obj->get_container()->make(ValidEmailvalidator::class)->setParams($obj, $item, $rule_value, "{$display} is not valid"));
                             break;
                         case 'is_numeric':
-                            $obj->runValidation($obj->get_container()->load([Numericvalidator::class => ['model' => $obj, 'field' => $item, 'rule' => $rule_value, 'msg' => "{$display} has to be a number. Please use a numeric value"]])->Numericvalidator);
+                            $obj->runValidation($obj->get_container()->make(Numericvalidator::class)->setParams($obj, $item, $rule_value, "{$display} has to be a number. Please use a numeric value"));
                             break;
                         case 'matches':
                             $mathdisplay = $items[$rule_value]['display'];
-                            $obj->runValidation($obj->get_container()->load([MatchesValidator::class => ['model' => $obj, 'field' => $item, 'rule' => $obj->getConfirm(), 'msg' => "{$display} does not math {$mathdisplay}"]])->MatchesValidator);
+                            $obj->runValidation($obj->get_container()->make(MatchesValidator::class)->setParams($obj, $item, $obj->getConfirm(), "{$display} does not math {$mathdisplay}"));
                             break;
                         case 'unique':
-                            $obj->runValidation($obj->get_container()->load([UniqueValidator::class => ['model' => $obj, 'field' => $item, 'rule' => [$rule_value, $obj->get_colID()], 'msg' => "This {$display} already exist."]])->UniqueValidator);
+                            $obj->runValidation($obj->get_container()->make(UniqueValidator::class)->setParams($obj, $item, [$rule_value, $obj->get_colID()], "This {$display} already exist."));
                             break;
                         }
                     }

@@ -11,7 +11,16 @@ abstract class AbstractSessionStorage implements SessionStorageInterface
      * =====================================================================
      * @param array $options
      */
-    public function __construct(array $options = [])
+    public function __construct()
+    {
+    }
+
+    /**
+     * init options for session
+     * =====================================================================
+     * @param array $options
+     */
+    public function initOptions(array $options = [])
     {
         $this->options = $options;
         $this->iniSet();
@@ -20,6 +29,7 @@ abstract class AbstractSessionStorage implements SessionStorageInterface
             session_destroy();
         }
         $this->start();
+        return $this;
     }
 
     /**

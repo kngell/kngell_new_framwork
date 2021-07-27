@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class SessionFactory
 {
+    protected ContainerInterface $container;
+
     /**
      * Main constructor
      *  =====================================================================
@@ -22,10 +24,10 @@ class SessionFactory
      */
     public function create(string $sessionName, string $storageString, array $options = []) :SessionInterface
     {
-        $storageObject = new $storageString($options);
+        $storageObject = $this->container->make($storageString)->initOptions($options);
         if (!$storageObject instanceof SessionStorageInterface) {
             throw new SessionStorageInvalidArgument($storageString . ' is not a valid session storage object!');
         }
-        return new Session($sessionName, $storageObject);
+        return $this->container->make(SessionInterface::class)->iniSession($sessionName);
     }
 }

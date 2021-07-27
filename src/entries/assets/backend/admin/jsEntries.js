@@ -98,5 +98,10 @@ module.exports = {
       import: ["js/custom/backend/admin/orders/orders"],
       dependOn: "js/librairies/adminlib",
     },
+    //WareHouses
+    "js/custom/backend/admin/warehouse/warehouse": {
+      import: ["js/custom/backend/admin/warehouse/warehouse"],
+      dependOn: "js/librairies/adminlib",
+    },
   },
 };

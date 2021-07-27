@@ -12,7 +12,7 @@ interface ModelInterface
      * @param array $tables
      * @return self|Null
      */
-    public function getAllItem(array $data = [], array $tables = [], array $params = []) : ?self;
+    public function getAllItem(array $data = [], array $tables = []) : ?self;
 
     /**
      * Count num rows
@@ -20,14 +20,6 @@ interface ModelInterface
      * @return void
      */
     public function count();
-
-    /**
-     * Get String décode
-     * --------------------------------------------------------------------------------------------------
-     * @param string $str
-     * @return string
-     */
-    public function htmlDecode(string $str) : string;
 
     /**
      * Get Details Values
@@ -69,4 +61,12 @@ interface ModelInterface
      * @return ContainerInterface
      */
     public function get_container() : ContainerInterface;
+
+    /**
+     * Html Decode
+     * --------------------------------------------------------------------------------------------------
+     * @param string $str
+     * @return string
+     */
+    public function htmlDecode(string $str) : string;
 }

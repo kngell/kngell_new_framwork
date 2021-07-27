@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class TaxeRegionManager extends Model
 {
     protected $_colID = 'trID';

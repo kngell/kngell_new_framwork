@@ -21,40 +21,42 @@ export default class Cruds {
   //Display All Plugins
   //=======================================================================
   _displayAll = (params) => {
+    const plugin = this;
     let wrapper = this.wrapper;
     var data = {
-      url: "forms/showAll",
+      url: "showAll",
       table: this.table,
       user: "admin",
-      data_type: params.data_type,
-      csrftoken: params.csrftoken ? params.csrftoken : "",
-      frm_name: params.frm_name ? params.frm_name : "",
     };
-    Call_controller(data, manageR);
+    Call_controller({ ...data, ...params }, manageR);
     function manageR(response) {
       if (response.result == "success") {
         wrapper.find("#showAll").html(response.msg);
         if (params.datatable) _loadDatatables();
-        const operation = new OP();
-        operation._format_money({
-          wrapper: wrapper,
-          fields: [".price"],
-        });
+        plugin._money_format(wrapper);
       } else {
         wrapper.find("#globalErr").html(response.msg);
       }
     }
+
     async function _loadDatatables() {
       const DataTable = await import(
         /* webpackChunkName: "datatables" */ "datatables.net-responsive-dt"
       );
-      $("table").DataTable({
+      plugin.wrapper.find("#ecommerce-datatable").DataTable({
         order: [0, "desc"],
         pagingType: "full_numbers",
         stateSave: true,
         responsive: true,
       });
     }
+  };
+  _money_format = (wrapper) => {
+    const operation = new OP();
+    operation._format_money({
+      wrapper: wrapper,
+      fields: [".price"],
+    });
   };
   //=======================================================================
   //Add or update table
@@ -102,10 +104,7 @@ export default class Cruds {
       e.preventDefault();
       plugin.form.find("#submitBtn").val("Please wait...");
       var data = {
-        url:
-          plugin.form.find("#operation").val() === "add"
-            ? "forms/Add"
-            : "forms/update",
+        url: plugin.form.find("#operation").val() === "add" ? "Add" : "update",
         frm: plugin.form,
         frm_name: $(this).attr("id"),
         table: plugin.table,
@@ -194,7 +193,22 @@ export default class Cruds {
     }
     return result;
   };
-
+  _clean_params = (params) => {
+    let ajax_param = {};
+    const exclude = [
+      "std_fields",
+      "inputElement",
+      "dropzone",
+      "categorieElement",
+    ];
+    for (const [k, v] of Object.entries(params)) {
+      if (!exclude.includes(k)) {
+        ajax_param[k] = v;
+      }
+    }
+    console.log(ajax_param);
+    return ajax_param;
+  };
   //=======================================================================
   //Edit form
   //=======================================================================
@@ -206,20 +220,17 @@ export default class Cruds {
       e.stopPropagation();
       plugin.modal.find("#operation").val("update");
       var data = {
-        url: "forms/edit",
-        table: params.table,
+        url: "edit",
         frm: $(this).parents("form").length != 0 ? $(this).parents("form") : "",
+        id: plugin._get_Edit_id($(this)),
+        table: params.table,
         frm_name: params.frm_name
           ? params.frm_name
           : $(this).parents("form").attr("id"),
-        tbl_options: params.hasOwnProperty("tbl_options")
-          ? params.tbl_options
-          : "",
-        params: params.std_fields,
-        token: params.csrftoken ? params.csrftoken : "",
-        id: plugin._get_Edit_id($(this)),
+        params: params.hasOwnProperty("std_fields") ? params.std_fields : "",
       };
-      Call_controller(data, manageR);
+      const ajax_params = plugin._clean_params(params);
+      Call_controller({ ...data, ...ajax_params }, manageR);
       function manageR(response, std_fields) {
         if (response.result === "success") {
           $(std_fields).each(function (i, field) {
@@ -277,14 +288,18 @@ export default class Cruds {
                   .attr("src", IMG + response.msg.items[field]);
                 break;
               default:
-                if ($("#" + this).is(":checkbox")) {
-                  if (response.msg.items[field] == "on") {
-                    $("#" + this).prop("checked", true);
+                if ($("#" + this).is("input")) {
+                  if ($("#" + this).is(":checkbox")) {
+                    if (response.msg.items[field] == "on") {
+                      $("#" + this).prop("checked", true);
+                    } else {
+                      $("#" + this).prop("checked", false);
+                    }
                   } else {
-                    $("#" + this).prop("checked", false);
+                    $("#" + this).val(response.msg.items[field]);
                   }
                 } else {
-                  $("#" + this).val(response.msg.items[field]);
+                  $("#" + this).html(response.msg.items[field]);
                 }
                 break;
             }
@@ -301,6 +316,7 @@ export default class Cruds {
               }
             }
           }
+          if (plugin.form) plugin._money_format(plugin.form);
         } else {
           if (plugin.form.find("#tbl-alertErr").length != 0) {
             plugin.form.find("#tbl-alertErr").html(response.msg);
@@ -353,7 +369,7 @@ export default class Cruds {
     plugin.wrapper.on("submit", params.delete_frm_class, function (e) {
       e.preventDefault();
       var data = {
-        url: "forms/delete",
+        url: "delete",
         url_check: params.url_check != "" ? params.url_check : "",
         swal: params.hasOwnProperty("swal") && params.swal ? Swal : false,
         serverData: plugin._get_delete_data($(this), params),
@@ -364,11 +380,7 @@ export default class Cruds {
           if (params.hasOwnProperty("swal") && params.swal) {
             Swal.fire("Deleted!", response.msg, "success").then(() => {
               if (params.hasOwnProperty("datatable") && params.datatable) {
-                plugin._displayAll({
-                  datatable: params.datatable,
-                  csrftoken: params.csrftoken ? params.csrftoken : "",
-                  frm_name: params.frm_name ? params.frm_name : "",
-                });
+                plugin._displayAll(params);
               } else {
                 location.reload();
               }
@@ -395,7 +407,7 @@ export default class Cruds {
       e.preventDefault();
       console.log($(this).attr("id"), params.resto_class);
       var data = {
-        url: "forms/delete",
+        url: "delete",
         swal: Swal,
         swal_button: params.swal_button,
         swal_message: params.swal_message,
@@ -472,7 +484,7 @@ export default class Cruds {
       console.log("go");
       e.preventDefault();
       var data = {
-        url: "tables/update",
+        url: "updateFromTable",
         table: params.table,
         frm: $(this).parents("form"),
         frm_name: $(this).parents("form").attr("id"),

@@ -25,7 +25,7 @@ class THCategories
     public function categoriesTable(array $data = []) : ?string
     {
         $output = '<div id="tbl-alertErr"></div>';
-        $output .= '<table class="table table-bordered text-center table-hover table-striped">
+        $output .= '<table class="table table-bordered text-center table-hover table-striped" id="ecommerce-datatable">
                     <thead class="mt-2">
                         <tr>
                             <th scope="col" style="width:2%" class="text-center">#</th>
@@ -33,12 +33,13 @@ class THCategories
                             <th scope="col">Description</th>
                             <th scope="col" style="width:15%">Photo</th>
                             <th scope="col" style="width:20%">Parent Categorie</th>
+                            <th scope="col" style="width:20%">Brand</th>
                             <th scope="col" style="width:20%">Opérations</th>
                         </tr>
                     </thead>
                     <tbody>';
         foreach ($data as $cat) {
-            $catgorie = ((int)$cat->parentID != 0) ? current($cat->getDetails($cat->parentID)->get_results())->categorie : '';
+            $catgorie = ((int)$cat->parentID != 0) ? $this->getParentCategorie($data, $cat->parentID) : '';
             $active = $cat->status == 'on' ? "style='color:green'" : '';
             $txtactive = $cat->status == 'on' ? 'Deactivate Category' : 'Activate Category';
             $output .= ' <tr>
@@ -47,6 +48,7 @@ class THCategories
                             <td>' . $cat->description . '</td>
                             <td>' . $cat->photo . '</td>
                             <td>' . $catgorie . '</td>
+                            <td>' . $cat->br_name . '</td>
                             <td class="d-flex flex-row justify-content-center">
                             <form class="categorie-status" id="categorie-status' . $cat->catID . '"/>'
                                 . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'categorie-status' . $cat->catID)) . '
@@ -71,5 +73,16 @@ class THCategories
         $output .= '</tbody></table>';
 
         return $output;
+    }
+
+    public function getParentCategorie(array $categories = [], int $parentID) : string
+    {
+        $Parentscategories = array_filter($categories, function ($categorie) use ($parentID) {
+            return $categorie->catID == $parentID;
+        });
+        if (count($Parentscategories) === 1) {
+            return current($Parentscategories)->categorie;
+        }
+        return '';
     }
 }

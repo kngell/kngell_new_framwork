@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 class VisitorsManager extends Model
 {
     protected $_table = 'visitors';
@@ -102,7 +102,7 @@ class VisitorsManager extends Model
     {
         $cookies = $this->get_unique('cookies');
         Cookies::set(VISITOR_COOKIE_NAME, $cookies, COOKIE_EXPIRY);
-        $this->clean_visitor_data('ip', $this->assign(self::$container->load([Input::class => []])->Input->transform_keys($data, H_visitors::new_IpAPI_keys())));
+        $this->clean_visitor_data('ip', $this->assign($this->container->make(Input::class)->transform_keys($data, H_visitors::new_IpAPI_keys())));
         $this->cookies = $cookies;
         $this->useragent = Session::uagent_no_version();
         $this->hits++;

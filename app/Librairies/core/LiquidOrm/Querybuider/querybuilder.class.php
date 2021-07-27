@@ -125,20 +125,9 @@ class QueryBuilder extends AbstractQueryBuilder
                     $keyValues .= "$add" . "$key=:$key";
                     $i++;
                 }
-                $whereCond = '';
-                //Where Conditiond
-                if (isset($this->key['where']) && count($this->key['where']) > 0) {
-                    $whereCond .= ' WHERE ';
-                    $i = 0;
-                    foreach ($this->key['where'] as $key => $val) {
-                        $add = ($i > 0) ? ' AND ' : '';
-                        $whereCond .= "$add" . "$key=:$key";
-                        $i++;
-                    }
-                }
                 //Query
-                $this->sql = 'UPDATE ' . $this->key['table'] . ' SET ' . $keyValues . $whereCond;
-                return $this->sql;
+                $this->sql = 'UPDATE ' . $this->key['table'] . ' SET ' . $keyValues . $this->where();
+                return $this->sql . (isset($this->key['where']['bind_array']) ? '&' . serialize($this->key['where']['bind_array']) : '');
             }
         }
         return false;
@@ -155,15 +144,8 @@ class QueryBuilder extends AbstractQueryBuilder
     {
         if ($this->isValidquerytype('delete')) {
             if (is_array($this->key['conditions']) && count($this->key['conditions']) > 0) {
-                $whereCond = ' WHERE ';
-                $i = 0;
-                foreach ($this->key['conditions'] as $key => $val) {
-                    $add = ($i > 0) ? ' AND ' : '';
-                    $whereCond .= "$add" . "$key=:$key";
-                    $i++;
-                }
-                $this->sql = 'DELETE FROM ' . $this->key['table'] . $whereCond;
-                return $this->sql;
+                $this->sql = 'DELETE FROM ' . $this->key['table'] . $this->where();
+                return $this->sql . (isset($this->key['where']['bind_array']) ? '&' . serialize($this->key['where']['bind_array']) : '');
             }
         }
         return false;

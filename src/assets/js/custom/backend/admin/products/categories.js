@@ -50,6 +50,7 @@ class AllCategories {
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
       data_type: "values",
+      model_method: "getAllCategories",
     });
 
     /**
@@ -62,14 +63,18 @@ class AllCategories {
       element: phpPlugin.modalform.find("#parentID"),
       tbl_options: "categories",
       placeholder: "Please select a parent Categorie",
-      url: "forms/showDetails",
+      url: "showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
 
     select._init({
       element: phpPlugin.modalform.find("#brID"),
       tbl_options: "brand",
       placeholder: "Please select a brand",
-      url: "forms/showDetails",
+      url: "showDetails",
+      csrftoken: phpPlugin.modalform.find("input[name='csrftoken']").val(),
+      frm_name: phpPlugin.modalform.attr("id"),
     });
 
     //set create/add function
@@ -83,6 +88,8 @@ class AllCategories {
       modal: true,
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page", // page csrf name
+      data_type: "values",
+      model_method: "getAllCategories",
     });
     //edit
     cruds._edit({
@@ -105,10 +112,11 @@ class AllCategories {
     cruds._delete({
       swal: true,
       datatable: true,
-      url_check: "forms/checkdelete",
+      url_check: "checkdelete",
       delete_frm_class: ".delete-categorie-frm",
       csrftoken: csrftoken ? csrftoken.getAttribute("content") : "",
       frm_name: "all_product_page",
+      data_type: "values",
     });
     //Activate item
     cruds._active_inactive_elmt({ table: "categories" });

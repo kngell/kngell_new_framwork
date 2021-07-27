@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 class ProductsManager extends Model
 {
     protected string $_colID = 'pdtID';
@@ -48,9 +49,10 @@ class ProductsManager extends Model
     {
         parent::beforeSave($params);
         // Manage prices
-        $this->p_regular_price = (double)$this->p_regular_price;
-        $this->p_compare_price = (double)$this->p_compare_price;
-        $this->p_cost_per_item = (double)$this->p_cost_per_item;
+        $this->p_regular_price = $this->money->setPrice($this->p_regular_price);
+        $this->p_compare_price = $this->money->setPrice($this->p_compare_price);
+        $this->p_cost_per_item = $this->money->setPrice($this->p_cost_per_item);
+        $this->p_shipping_class = (int) $this->get_defaultShippingClass()['shcID'];
         // User Salt
         $this->user_salt = AuthManager::$currentLoggedInUser->salt;
         // product slag
@@ -79,7 +81,7 @@ class ProductsManager extends Model
             $colID = $this->get_colID();
             $lastID = $this->$colID == null ? $params['saveID']->get_lastID() : $this->$colID;
             if ($categories) {
-                $product_categorie = self::$container->load([ProductCategorieManager::class => []])->ProductCategorie->getAllbyIndex($lastID, ['return_mode' => 'class']);
+                $product_categorie = $this->container->make(ProductCategorieManager::class)->getAllbyIndex((string)$lastID, ['return_mode' => 'class']);
                 if ($product_categorie->count() > 0) {
                     foreach ($product_categorie->get_results() as $pc) {
                         if (!$pc->delete()) {
@@ -167,27 +169,27 @@ class ProductsManager extends Model
                     'where' => ['pdtID' => ['value' => $this->pdtID, 'tbl' => 'product_categorie']],
                     'group_by' => 'categorie',
                     'return_mode' => 'class'];
-                $r = self::$container->load([ProductCategorieManager::class => []])->ProductCategorie->getAllItem($data, $tables)->get_results();
+                $r = $this->container->make(ProductCategorieManager::class)->getAllItem($data, $tables)->get_results();
                 $r['colID'] = 'catID';
                 $r['colTitle'] = 'categorie';
             break;
             case 'warehouse':
-                $r = self::$container->load([WarehouseManager::class => []])->Warehouse->getAllItem(['where' => ['whID' => $this->p_warehouse], 'return_mode' => 'class'])->get_results();
+                $r = $this->container->make(WarehouseManager::class)->getAllItem(['where' => ['whID' => $this->p_warehouse], 'return_mode' => 'class'])->get_results();
                 $r['colID'] = 'whID';
                 $r['colTitle'] = 'wh_name';
             break;
             case 'company':
-                $r = self::$container->load([CompanyManager::class => []])->Company->getAllItem(['where' => ['compID' => $this->p_company], 'return_mode' => 'class'])->get_results();
+                $r = $this->container->make(CompanyManager::class)->getAllItem(['where' => ['compID' => $this->p_company], 'return_mode' => 'class'])->get_results();
                 $r['colID'] = 'compID';
                 $r['colTitle'] = 'sigle';
             break;
             case 'shipping_class':
-                $r = self::$container->load([ShippingClassManager::class => []])->ShippingClass->getAllItem(['where' => ['shcID' => $this->p_shipping_class], 'return_mode' => 'class'])->get_results();
+                $r = $this->container->make(ShippingClassManager::class)->getAllItem(['where' => ['shcID' => $this->p_shipping_class], 'return_mode' => 'class'])->get_results();
                 $r['colID'] = 'shcID';
                 $r['colTitle'] = 'sh_name';
             break;
             case 'units':
-                $r = self::$container->load([UnitsManager::class => []])->Units->getAllItem(['where' => ['unID' => $this->p_unitID], 'return_mode' => 'class'])->get_results();
+                $r = $this->container->make(UnitsManager::class)->getAllItem(['where' => ['unID' => $this->p_unitID], 'return_mode' => 'class'])->get_results();
                 $r['colID'] = 'unID';
                 $r['colTitle'] = 'unit';
             break;
@@ -204,11 +206,30 @@ class ProductsManager extends Model
      * ==========================================================================================================
      * @return void
      */
-    public function get_Products()
+    public function get_Products(mixed $brand = 2) : array
     {
-        $tables = ['table_join' => ['products' => ['*'], 'product_categorie' => ['pdtID', 'catID'], 'categories' => ['categorie']]];
-        $data = ['join' => 'LEFT JOIN', 'rel' => [['pdtID', 'pdtID'], ['catID', 'catID']], 'where' => ['brID' => ['value' => 2, 'tbl' => 'categories']], 'return_mode' => 'class'];
-        $pdt = self::$container->load([ProductCategorieManager::class => []])->ProductCategorie->getAllItem($data, $tables);
+        $tables = [
+            'table_join' => [
+                'products' => ['*'],
+                'product_categorie' => ['pdtID AS pcatID', 'catID AS pc_catID'],
+                'categories' => ['categorie'],
+                'brand' => ['br_name']
+            ]
+        ];
+        $where['where'] = ['brID' => ['value' => $brand, 'tbl' => 'categories']];
+        if (is_array($brand)) {
+            $where = [];
+        }
+        $data = [
+            'join' => 'LEFT JOIN',
+            'rel' => [['pdtID', 'pdtID'], ['catID', 'catID'], ['brID', 'brID']],
+            'group_by' => ['pdtID DESC' => ['tbl' => 'product_categorie']],
+            'return_mode' => 'class'
+        ];
+        if (!empty($where)) {
+            $data = array_merge($where, $data);
+        }
+        $pdt = $this->container->make(ProductCategorieManager::class)->getAllItem($data, $tables);
         return $pdt->count() > 0 ? $pdt->get_results() : false;
     }
 

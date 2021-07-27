@@ -42,7 +42,7 @@ class CompanyManager extends Model
     public function getAllAddress($id)
     {
         $params = ['where' => ['relID' => $id], 'return_mode' => 'class'];
-        return !empty($id) ? self::$container->load([AddressBookManager::class => []])->AddressBook->getAllItem($params)->get_results() : [];
+        return !empty($id) ? $this->container->make(AddressBookManager::class)->getAllItem($params)->get_results() : [];
     }
 
     //Output address html
@@ -52,7 +52,7 @@ class CompanyManager extends Model
             $addhtml = '';
             foreach ($data as $add) {
                 $addressTemplate = file_get_contents(FILES . 'template' . DS . 'admin' . DS . 'companyaddressTemplate.php');
-                $addressTemplate = str_replace('{{address}}', strval($add->address), $addressTemplate);
+                $addressTemplate = str_replace('{{address}}', strval($add->address1), $addressTemplate);
                 $addressTemplate = str_replace('{{zip_code}}', $add->zip_code, $addressTemplate);
                 $addressTemplate = str_replace('{{ville}}', $add->ville, $addressTemplate);
                 $addressTemplate = str_replace('{{pays}}', $add->pays, $addressTemplate);
@@ -70,7 +70,7 @@ class CompanyManager extends Model
     //save addresse
     public function afterSave(array $params = [])
     {
-        $add = self::$container->load([AddressBookManager::class => []])->AddressBook->getDetails($params['saveID']->abID);
+        $add = $this->container->make(AddressBookManager::class)->getDetails($params['saveID']->abID);
         if ($add->count() === 1) {
             $add = current($add->get_results());
             $colID = $add->get_colID();
@@ -91,7 +91,7 @@ class CompanyManager extends Model
     public function afterDelete($params = [])
     {
         $data = ['where' => ['relID' => $params[$this->get_colID()], 'tbl' => $this->_table]];
-        return $params[$this->get_colID()] ? self::$container->load([AddressBookManager::class => []])->AddressBook->delete('', $data) : false;
+        return $params[$this->get_colID()] ? $this->container->make(AddressBookManager::class)->delete('', $data) : false;
     }
 
     //Get Details company
@@ -121,7 +121,15 @@ class CompanyManager extends Model
 
     public function get_fieldName(string $table = '')
     {
-        return 'p_company';
+        switch ($table) {
+            case 'warehouse':
+                return 'company';
+                break;
+
+            default:
+                return 'p_company';
+                break;
+        }
     }
 
     public function beforeSaveUpadate(array $params = [])

@@ -19,13 +19,14 @@ class Account {
   setupEvents = () => {
     var phpPlugin = this;
 
-    //=======================================================================
-    //display the menu
-    //=======================================================================
-    phpPlugin.wrapper.on("click", ".card", function (e) {
+    /**
+     * display the menu
+     * ===================================================================================
+     */
+    phpPlugin.wrapper.on("click", ".transaction-item .card", function (e) {
       e.preventDefault();
       let data = {
-        url: "forms/showDetails",
+        url: "showDetails",
         table: $(this).attr("id"),
         id: $(this).find("form input[name=userID]").val(),
         data_type: "template",
@@ -55,19 +56,23 @@ class Account {
             case "users":
               manageUsers(table);
               break;
+            case "orders":
+              manageOrders(table);
+              break;
             default:
               break;
           }
         }
       }
     });
+
     //=======================================================================
     //Remove Account
     //=======================================================================
     phpPlugin.profile.find(".remove-account-frm").on("submit", function (e) {
       e.preventDefault();
       const data = {
-        url: "auth/deleteUserAccount",
+        url: "deleteUserAccount",
         table: "users",
         frm: phpPlugin.profile.find(".remove-account-frm"),
         frm_name: "remove-account-frm",
@@ -99,7 +104,7 @@ class Account {
         e.preventDefault();
         console.log($(this));
         let data = {
-          url: "forms/update",
+          url: "update",
           table: table,
           params: $(this).find("#alertErr"),
           frm_name: "user-profile-frm",
@@ -125,8 +130,28 @@ class Account {
         allowClear: true,
         width: "100%",
         ajax: select2AjaxParams({
-          url: "guests/get_countries",
+          url: "get_countries",
         }),
+      });
+    }
+    function manageOrders(table = "") {
+      /**
+       * Expand/hide accordion for orders display
+       * =======================================================================================
+       */
+      document.querySelectorAll(".accordion__button").forEach((button) => {
+        button.addEventListener("click", () => {
+          // const accordionContent = button.nextElementSibling;
+          button.classList.toggle("accordion__button--active");
+          // if (button.classList.contains("accordion__button--active")) {
+          //   accordionContent.style.maxHeight =
+          //     accordionContent.scrollHeight + "px";
+          //   // accordionContent.style.paddingTop = "1rem";
+          //   // accordionContent.style.paddingBottom = "1rem";
+          // } else {
+          //   accordionContent.style.maxHeight = 0;
+          // }
+        });
       });
     }
   };

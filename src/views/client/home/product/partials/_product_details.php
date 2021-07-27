@@ -1,19 +1,21 @@
 <section id="product" class="py-3">
     <div class="container w-75">
         <div class="row product-details">
+            <?php if ($this->p_details->count() === 1) :?>
+            <?php $p = current($this->p_details->get_results())?>
             <div class="col-sm-6 pt-2">
                 <div class="product-image-box text-center pt-3 px-3rounded">
-                    <img src="<?= isset($this->p_details->p_media) ? $this->p_details->p_media[0] : ImageManager::asset_img('products/product-540x60.jpg') ?>"
+                    <img src="<?= isset($p->p_media) ? $p->p_media[0] : ImageManager::asset_img('products/product-540x60.jpg') ?>"
                         alt="Product" class="img-fluid">
                 </div>
                 <!-- begin product-gallery -->
-                <?php if (isset($this->p_details->p_media) && count($this->p_details->p_media) > 1):?>
+                <?php if (isset($p->p_media) && count($p->p_media) > 1):?>
                 <div class="product-gallery d-flex justify-content-center mb-1 mx-auto owl-carousel owl-theme">
-                    <?php for ($i = 1; $i < count($this->p_details->p_media); $i++) {?>
+                    <?php for ($i = 1; $i < count($p->p_media); $i++) {?>
                     <div class="product-gallery-item">
                         <div class="product-img">
                             <a href="javascript: void(0);" class="">
-                                <img src="<?=isset($this->p_details->p_media[$i]) ? $this->p_details->p_media[$i] : ImageManager::asset_img('products/product-540x60.jpg')?>"
+                                <img src="<?=isset($p->p_media[$i]) ? $p->p_media[$i] : ImageManager::asset_img('products/product-540x60.jpg')?>"
                                     class="img-fluid img-thumbnail p-2" style="max-width: 60px;" alt="Product-img">
                             </a>
                         </div>
@@ -32,13 +34,12 @@
                     </div>
                     <div class="col">
                         <form class="add_to_cart_frm">
-                            <input type="hidden" name="item_id"
-                                value="<?= $this->p_details->pdtID ?? 1 ?>">
+                            <input type="hidden" name="item_id" value="<?= $p->pdtID ?? 1 ?>">
                             <input type="hidden" name="user_id" value="1">
-                            <?php $pdtID = $this->p_details->pdtID ?? 1?>
-                            <?= FH::csrfInput('csrftoken', hash_hmac('sha256', 'add_to_cart_frm' . $pdtID, $_SESSION[TOKEN_NAME])); ?>
+                            <?php $pdtID = $p->pdtID ?? 1?>
+                            <?= FH::csrfInput('csrftoken', $this->token->generate_token(8, 'add_to_cart_frm')); ?>
                             <?php
-                            if (isset($this->p_details->pdtID) && in_array($this->p_details->pdtID, $this->user_cart)) {
+                            if (isset($p->pdtID) && in_array($p->pdtID, $this->user_cart)) {
                                 echo ' <button type="submit" class="btn btn-success font-size-14 form-control">In the cart</button>';
                             } else {
                                 echo '<button type="submit" class="btn btn-warning font-size-14 form-control">Add to
@@ -51,9 +52,9 @@
 
             </div>
             <div class="col-sm-6 pt-5 pb-4">
-                <h5 class="font-baloo font-size-20"><?= $this->p_details->p_title ?? 'Unknown' ?>
+                <h5 class="font-baloo font-size-20"><?= $p->p_title ?? 'Unknown' ?>
                 </h5>
-                <small>By <?= $this->p_details->item_brand ?? 'Brand' ?></small>
+                <small>By <?= $p->item_brand ?? 'Brand' ?></small>
                 <div class="d-flex">
                     <div class="rating text-warning font-size-12">
                         <span><i class="fas fa fa-star"></i></span>
@@ -70,21 +71,22 @@
                 <table class="my-3">
                     <tr class="font-rale font-size-14">
                         <td>M.R.P : </td>
-                        <td><strike><?=$this->p_details->get_currency($this->p_details->p_compare_price)?>
+                        <td><strike><?=$p->get_money()->getAmount($p->p_compare_price)?>
                             </strike></td>
                     </tr>
                     <tr class="font-rale font-size-14">
                         <td>Deal Price :</td>
-                        <td class="font-size-20 text-danger">$<span><?= $this->p_details->get_currency($this->p_details->p_regular_price) ?? 0 ?></span><small
+                        <td class="font-size-20 text-danger">
+                            $<span><?= $p->get_money()->getAmount($p->p_regular_price) ?? 0 ?></span><small
                                 class="text-dark font-size-12">&nbsp;&nbsp;inclusive of
                                 all
                                 taxes</small>
                         </td>
                     </tr>
-                    <?php $save = $this->p_details->p_compare_price - $this->p_details->p_regular_price?>
+                    <?php $save = $p->p_compare_price - $p->p_regular_price?>
                     <tr class="font-rale font-size-14">
                         <td>You Save : </td>
-                        <td><span class="font-size-16 text-danger"><?=$this->p_details->get_currency($save)?></span>
+                        <td><span class="font-size-16 text-danger"><?=$p->get_money()->getAmount($save)?></span>
                         </td>
                     </tr>
                 </table>
@@ -172,6 +174,7 @@
                 </div>
                 <!-- !Mobile size -->
             </div>
+            <?php endif;?>
         </div>
         <div class="row" id="product-description">
             <div class="col-12">

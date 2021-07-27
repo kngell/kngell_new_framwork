@@ -45,8 +45,12 @@ module.exports = {
     new BrowserSyncPlugin({
       host: "localhost",
       port: 3003,
-      proxy: "localhost:80/kngell/home",
+      proxy: "https://localhost/kngell/home",
       browser: "chrome",
+      https: {
+        key: "D:\\xampp\\apache\\crt\\localhost/server.key",
+        cert: "D:\\xampp\\apache\\crt\\localhost/server.crt",
+      },
     }),
     // new CKEditorWebpackPlugin({ language: "fr" }),
     new FileManagerPlugin({

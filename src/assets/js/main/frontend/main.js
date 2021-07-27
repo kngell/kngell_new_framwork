@@ -4,6 +4,7 @@ import "select2";
 import OP from "corejs/operator";
 import favicon from "img/favicon.ico";
 import user_cart from "corejs/user_cart";
+import { BASE_URL } from "corejs/config";
 class Main {
   constructor(element) {
     this.element = element;
@@ -38,7 +39,7 @@ class Main {
     phpPlugin.wrapper.on("submit", ".add_to_cart_frm", function (e) {
       e.preventDefault();
       var data = {
-        url: "guests/Add",
+        url: "AddFromGuestCart",
         frm: $(this),
         frm_name: "add_to_cart_frm" + $(this).find("input[name=item_id]").val(),
         table: "cart",
@@ -47,7 +48,7 @@ class Main {
       Call_controller(data, ManageR);
       function ManageR(response, button) {
         if (response.result == "success") {
-          if (document.location.pathname != "/kngell/home/cart") {
+          if (document.location.pathname != BASE_URL + "cart") {
             phpPlugin.header.find(".cart_nb_elt").html(function () {
               return (
                 response.msg[0] +
@@ -66,7 +67,8 @@ class Main {
               .addClass("btn-success")
               .html("In the cart");
           }
-          if (document.location.pathname == "/kngell/home/cart") {
+          console.log(BASE_URL);
+          if (document.location.pathname == BASE_URL + "cart") {
             console.log("add");
             new user_cart(phpPlugin.wrapper, phpPlugin.header)._display_cart();
           }

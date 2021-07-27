@@ -11,23 +11,16 @@
     <meta name="description"
         content="K'nGELL est un cabinet de conseil et d'ingénierie Logistique spécialisé dans la maitrise des process logistique et production grâce à l'usage de stratégies et tactiques Lean Management et six Sigma (6Sigma">
     <meta name="robots" content="index,follow">
-    <link rel="stylesheet" type="image/ico"
-        href="<?=$this->asset('img/favicon.ico')?>">
+    <link rel="stylesheet" type="image/ico" href="<?=$this->asset('img/favicon.ico')?>">
     <title>
         <?= $this->get_siteTitle()?>
     </title>
     <!-- Main style -->
-    <link
-        href="<?= $this->asset('css/librairies/frontlib', 'css') ?? '' ?>"
-        rel="stylesheet" type="text/css">
+    <link href="<?= $this->asset('css/librairies/frontlib', 'css') ?? '' ?>" rel="stylesheet" type="text/css">
     <!-- Plugins css -->
-    <link
-        href="<?= $this->asset('css/plugins/homeplugins', 'css') ?? '' ?>"
-        rel="stylesheet" type="text/css">
+    <link href="<?= $this->asset('css/plugins/homeplugins', 'css') ?? '' ?>" rel="stylesheet" type="text/css">
     <!-- Main style -->
-    <link
-        href="<?= $this->asset('css/main/frontend/main', 'css') ?? '' ?>"
-        rel="stylesheet" type="text/css">
+    <link href="<?= $this->asset('css/main/frontend/main', 'css') ?? '' ?>" rel="stylesheet" type="text/css">
 
     <script crossorigin="anonymous"
         src="https://polyfill.io/v3/polyfill.min.js?features=default,Array.prototype.includes,Array.prototype.find,Number.parseFloat%2CNumber.parseInt">

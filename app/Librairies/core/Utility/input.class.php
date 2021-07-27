@@ -2,18 +2,27 @@
 declare(strict_types=1);
 class Input
 {
-    protected static ContainerInterface $container;
+    protected ContainerInterface $container;
 
     /**
      * Main Constructor
      */
-    public function __construct()
+    public function __construct(Sanitizer $sanitizer)
     {
+        $this->sanitizer = $sanitizer;
+    }
+
+    public function set_container() : self
+    {
+        if (!isset($this->container)) {
+            $this->container = Container::getInstance();
+        }
+        return $this;
     }
 
     public function exists($type)
     {
-        $global = self::$container->load([Globals::class => []])->Globals->getServer('REQUEST_METHOD');
+        $global = $this->container->make(GlobalVariables::class)->getServer('REQUEST_METHOD');
         switch ($type) {
             case 'post':
                 return ($global == 'POST') ? true : false;
@@ -40,7 +49,7 @@ class Input
      * @param array $item
      * @return void
      */
-    public function transform_keys(array $source, array $item)
+    public function transform_keys(array $source = [], array | null $item = [])
     {
         $S = $source;
         if (isset($item)) {
@@ -48,15 +57,21 @@ class Input
                 if (isset($item[$key])) {
                     $S = $this->_rename_arr_key($key, $item[$key], $S);
                 }
-                // foreach ($item as $k => $v) {
-                //     if ($key == $k) {
-                //         $S = $this->_rename_arr_key($key, $v, $S);
-                //     }
-                // }
             }
         }
 
         return $S;
+    }
+
+    /**
+     * Get Html Decode texte
+     * =========================================================================================================
+     * @param string $str
+     * @return string
+     */
+    public function htmlDecode(string $str) : string
+    {
+        return !empty($str) ? htmlspecialchars_decode(html_entity_decode($str), ENT_QUOTES) : '';
     }
 
     //internal rename keys helper
@@ -81,7 +96,7 @@ class Input
 
     public function get($input = false)
     {
-        $sanitizer = self::$container->load([Sanitizer::class => []])->Sanitizer;
+        $sanitizer = $this->container->make(Sanitizer::class);
         if (isset($_REQUEST[$input]) && is_array($_REQUEST[$input])) {
             $r = [];
             foreach ($_REQUEST[$input] as $val) {

@@ -1,6 +1,6 @@
-<div class="col-12 transaction-commandes">
-    <div class="card">
-        <div class="card-header">
+<div class="col-12 transaction-commandes pt-2">
+    <div class="card accordion">
+        <button type="button" class="card-header accordion__button">
             <div class="row">
                 <div class="col-sm-6 left-side">
                     <div class="row g-3">
@@ -29,8 +29,7 @@
                             <a href="" class="order-link">
                                 <span class="order-details">Details de la commande</span>
                             </a>
-                            <span class="separator">&nbsp;|&nbsp;
-                            </span>
+
                             <a href="" class="invoice-link">
                                 <span class="invoice">Facture</span>
                             </a>
@@ -38,8 +37,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="card-body cmd-content">
+        </button>
+        <div class="card-body cmd-content accordion__content">
             <div class="row gx-1 delivery">
                 <div class="col-md-8 delivery-infos">
                     <h5 class="card-title"><span>Livré le :</span>&nbsp;<span
