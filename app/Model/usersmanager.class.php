@@ -145,7 +145,7 @@ class UsersManager extends Model
     }
 
     // After find a user manage image profile
-    public function afterFind($m = null)
+    public function afterFind(DataMapper $m = null) : DataMapper
     {
         if ($m->count() === 1) {
             $model = current($m->get_results());

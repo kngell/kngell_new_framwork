@@ -76,7 +76,7 @@ class DataMapper extends AbstractDataMapper
             case intval($value):
                 $type = PDO::PARAM_INT;
             break;
-            case is_null($value):
+            case $value === null:
                 $type = PDO::PARAM_NULL;
             break;
 
@@ -97,14 +97,14 @@ class DataMapper extends AbstractDataMapper
      */
     public function bind($param, $value, $type = null)
     {
-        switch (is_null($type)) {
+        switch ($type === null) {
             case is_int($value):
                 $type = PDO::PARAM_INT;
             break;
             case is_bool($value):
                 $type = PDO::PARAM_BOOL;
             break;
-            case is_null($value):
+            case $value === null:
                 $type = PDO::PARAM_NULL;
             break;
             default:

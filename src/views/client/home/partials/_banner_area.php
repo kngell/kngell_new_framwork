@@ -1,13 +1,11 @@
 <section id="banner-area">
     <div class="owl-carousel owl-theme">
+        <?php if (isset($slider->p_media) && is_array($slider->p_media)):
+        foreach ($slider->p_media as $image) :
+            ?>
         <div class="item">
-            <img src="../../../../assets/img/Banner1.png" alt="Banner1">
+            <img src="<?=$image?>" alt="<?=$slider->slider_title?>">
         </div>
-        <div class="item">
-            <img src="../../../../assets/img/Banner2.png" alt="Banner2">
-        </div>
-        <div class="item">
-            <img src="../../../../assets/img/Banner1.png" alt="Banner3">
-        </div>
+        <?php endforeach; endif;?>
     </div>
 </section>

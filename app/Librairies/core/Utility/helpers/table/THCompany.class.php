@@ -48,7 +48,7 @@ class THCompany
                 <a href="#" title="contacts utiles"
                     class="text-success text-center"><i class="fas fa-address-book fa-lg"></i></a>&nbsp;
             </td>
-            <td class="d-flex flex-row justify-content-center">
+            <td class="action">
                 <a href="' . PROOT . 'admin/company_details/' . $item->compID . '" title="view details" class="text-info"><i
                         class="fas fa-info-circle fa-lg"></i></a>&nbsp;&nbsp;
                 <form class="edit-company-frm" id="edit-company-frm' . $item->compID . '">

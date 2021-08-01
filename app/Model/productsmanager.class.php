@@ -45,7 +45,7 @@ class ProductsManager extends Model
      * @param array $params
      * @return void
      */
-    public function beforeSave($params = [])
+    public function beforeSave($params = []) : mixed
     {
         parent::beforeSave($params);
         // Manage prices
@@ -103,30 +103,6 @@ class ProductsManager extends Model
             }
         }
         return $params['saveID'];
-    }
-
-    /**
-     * After Find
-     * ==========================================================================================================
-     * @param Object $m
-     * @return void
-     */
-    public function afterFind(Object $m = null)
-    {
-        if ($m->count() === 1) {
-            $model = current($m->get_results());
-            $media_key = H_upload::get_mediaKey($model);
-            $model->$media_key = unserialize($model->$media_key);
-            if (is_array($model->$media_key)) {
-                foreach ($model->$media_key as $key => $url) {
-                    $model->$media_key[$key] = IMG . $url;//ImageManager::asset_img($url);
-                }
-            } else {
-                $model->$media_key = [IMG . 'products' . US . 'product-80x80.jpg'];//[ImageManager::asset_img('products' . US . 'product-80x80.jpg')];
-            }
-            $m->get_results()[0] = $model;
-        }
-        return $m;
     }
 
     /**

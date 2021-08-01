@@ -1,4 +1,4 @@
-<?php $form = $this->form->setModel($this->user_data)->setClass(['FieldwrapperClass' => 'input-box', 'fieldclass' => 'input-box__input', 'labelClass' => 'input-box__label']);?>
+<?php $form = $this->form->setModel($this->user_data)->setFieldClass(['FieldwrapperClass' => 'input-box', 'fieldclass' => 'input-box__input', 'labelClass' => 'input-box__label']);?>
 <div class="col-md-6">
     <?= $form->input('lastName')->Label('Nom')->id('chk-lastName')->attr(['form' => 'user-ckeckout-frm'])->req()?>
 </div>

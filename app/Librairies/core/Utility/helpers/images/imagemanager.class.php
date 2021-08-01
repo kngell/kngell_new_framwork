@@ -2,91 +2,157 @@
 
 class ImageManager
 {
-    public $sourcePath;
-    public $destinationPath;
+    protected $img_name;
+    protected string $sourcePath;
+    protected string $destinationPath;
+    protected string $img;
+    protected array $infos;
 
-    public function __construct($source = '', $destination = '')
+    /**
+     * Init Image Manager
+     * ============================================================================================
+     * @param string $img_file
+     * @param string $source
+     * @param string $destination
+     * @return self
+     */
+    public function init(string $img_name = '', string $source = '', string $destination = '') : self
     {
-        $this->sourcePath = $source != '' ? $source : $this->sourcePath;
-        $this->destinationPath = $destination != '' ? $destination : $this->destinationPath;
-    }
-
-    //=======================================================================
-    //Images infos
-    //=======================================================================
-    public function get_imagesInfos($img_file = '')
-    {
-        $img = isset($this->sourcePath) ? $this->sourcePath . $img_file : $img_file;
-        if (exif_imagetype($img)) {
-            return getimagesize($img);
+        $this->img_name = $img_name;
+        $this->img = $source != '' ? $source : $img_name;
+        $this->sourcePath = dirname($this->img);
+        $this->destinationPath = $destination == '' ? $this->sourcePath : $destination;
+        if (exif_imagetype($this->img)) {
+            $this->infos = getimagesize($this->img);
         }
-        return false;
+        return $this;
     }
 
-    //=======================================================================
-    //Image resize
-    //=======================================================================
-    public function resizeImage($img_infos = [], $img = '', $dest_w = '', $dest_h = '')
+    public function get_infos()
     {
-        if (isset($img_infos)) {
-            $width = $dest_w ? $dest_w : $img_infos[0];
-            $height = $dest_h ? $dest_h : $img_infos[1];
-            $newImg = imagecreatetruecolor($width, $height);
-            switch ($img_infos['mime']) {
-                case 'image/png':
-                    $sourceImg = imagecreatefrompng($this->sourcePath . $img);
-                    break;
-                case 'image/jpeg':
-                    $sourceImg = imagecreatefromjpeg($this->sourcePath . $img);
-                    break;
-                case 'image/gif':
-                    $sourceImg = imagecreatefromgif($this->sourcePath . $img);
-                    break;
-                default:
-                    return false;
-                    break;
+        return $this->infos;
+    }
+
+    public function resizeImage(string $width = '', string $height = '', bool $crop = false) : bool
+    {
+        if (!list($w, $h) = $this->infos) {
+            return 'Unsupported image type!';
+        }
+        $type = strtolower(substr(strrchr($this->img, '.'), 1));
+        if ($type == 'jpeg') {
+            $type = 'jpg';
+        }
+        $sourceImg = $this->open_img();
+        $width = $width != '' ? $width : $this->infos[0];
+        $height = $height != '' ? $height : $this->infos[1];
+        list($newImg, $x, $w, $h) = $this->resize($width, $height, $w, $h, $crop);
+        if ($type == 'gif' or $type == 'png') {
+            imagecolortransparent($newImg, imagecolorallocatealpha($newImg, 0, 0, 0, 127));
+            imagealphablending($newImg, false);
+            imagesavealpha($newImg, true);
+        }
+        imagecopyresampled($newImg, $sourceImg, 0, 0, $x, 0, $width, $height, $w, $h);
+        $result = $this->save_image($newImg);
+        $this->destroyImage($sourceImg);
+        $this->destroyImage($newImg);
+        return $result;
+    }
+
+    public function cropImage(string $width = '', string $height = '') : bool
+    {
+        $sourceImg = $this->open_img();
+        $newImg = imagecrop($sourceImg, [
+            'x' => 0,
+            'y' => 0,
+            'width' => $width != '' ? $width : $this->infos[0],
+            'height' => $height != '' ? $height : $this->infos[1]
+        ]);
+        $result = $this->save_image($newImg);
+        $this->destroyImage($newImg);
+        return $result;
+    }
+
+    public function RotateImage(int $rotang = 0) : bool
+    {
+        $sourceImg = $this->open_img();
+        imagealphablending($sourceImg, false);
+        imagesavealpha($sourceImg, true);
+        $newImg = imagerotate($sourceImg, $rotang, imageColorAllocateAlpha($sourceImg, 0, 0, 0, 127));
+        $result = $this->save_image($newImg);
+        $this->destroyImage($newImg);
+        $this->destroyImage($sourceImg);
+        return $result;
+    }
+
+    private function resize(string $width, string $height, string $w, string $h, bool $crop = false) : array
+    {
+        if ($crop) {
+            if ($w < $width or $h < $height) {
+                return 'Picture is too small!';
             }
-            imagecopyresampled($newImg, $sourceImg, 0, 0, 0, 0, $width, $height, $img_infos[0], $img_infos[1]);
-            $this->destroyImage($sourceImg);
-            return $newImg;
+            $ratio = max($width / $w, $height / $h);
+            $h = $height / $ratio;
+            $x = ($w - $width / $ratio) / 2;
+            $w = $width / $ratio;
+        } else {
+            if ($w < $width and $h < $height) {
+                return 'Picture is too small!';
+            }
+            $ratio = min($width / $w, $height / $h);
+            $width = $w * $ratio;
+            $height = $h * $ratio;
+            $x = 0;
         }
-        return false;
+        return [imagecreatetruecolor($width, $height), $x, $w, $h];
     }
 
-    //=======================================================================
-    //Image Save
-    //=======================================================================
-    public function saveImage($img_infos = [], $newImg = null, $img = false)
+    private function open_img()
     {
-        $black = imagecolorallocate($newImg, 0, 0, 0);
-        imagecolortransparent($newImg, $black);
-        if (isset($img_infos) && isset($img)) {
-            switch ($img_infos['mime']) {
-                case 'image/png':
-                    imagepng($newImg, $this->destinationPath . $img);
-                    return imagedestroy($newImg);
-                    break;
-                case 'image/jpeg':
-                    return imagejpeg($newImg, $this->destinationPath . $img);
-                    break;
-                case 'image/gif':
-                    return imagegif($newImg, $this->destinationPath . $img);
-                    break;
-                default:
-                    return false;
-                    break;
+        if (isset($this->infos)) {
+            switch ($this->infos['mime']) {
+            case 'image/png':
+                return imagecreatefrompng($this->img);
+                break;
+            case 'image/jpeg':
+                return imagecreatefromjpeg($this->img);
+                break;
+            case 'image/gif':
+                return imagecreatefromgif($this->img);
+                break;
+            default:
+                return false;
+                break;
             }
         }
-        return false;
+    }
+
+    private function save_image(GdImage $newImg)
+    {
+        if (isset($this->infos)) {
+            switch ($this->infos['mime']) {
+            case 'image/png':
+                return imagepng($newImg, $this->destinationPath . DS . $this->img_name);
+                break;
+            case 'image/jpeg':
+                return imagejpeg($newImg, $this->destinationPath . DS . $this->img_name);;
+                break;
+            case 'image/gif':
+                return imagegif($newImg, $this->destinationPath . DS . $this->img_name);;
+                break;
+            default:
+                return false;
+                break;
+            }
+        }
     }
 
     //=======================================================================
     //Image Destroy
     //=======================================================================
-    public function destroyImage($img = null)
+    public function destroyImage(GdImage $img = null)
     {
         if (isset($img)) {
-            imagedestroy($img);
+            return imagedestroy($img);
         }
         return true;
     }

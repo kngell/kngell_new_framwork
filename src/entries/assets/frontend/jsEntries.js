@@ -50,6 +50,11 @@ module.exports = {
       import: ["js/custom/client/home/boutique/boutique"],
       dependOn: "js/librairies/frontlib",
     },
+    //Ecommerce - Contact js
+    "js/custom/client/home/contact/contact": {
+      import: ["js/custom/client/home/contact/contact"],
+      dependOn: "js/librairies/frontlib",
+    },
     //=======================================================================
     //Users Management pages
     //=======================================================================

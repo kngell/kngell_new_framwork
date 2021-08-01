@@ -131,6 +131,7 @@ class AllProducts {
       dropzone: dropzone,
       select: phpPlugin.selectTag,
       data_type: "values",
+      model_method: "get_Products",
     });
 
     //=======================================================================

@@ -79,49 +79,71 @@ class VisitorsManager extends Model
     //=======================================================================
 
     //Manage visitors
-    public function manageVisitors($params = [])
+    public function manageVisitors(array $params = [])
     {
+        $vd = H_visitors::getVisitorData($params['ip'] ?? '91.173.88.22');
         if (Cookies::exists(VISITOR_COOKIE_NAME)) {
-            $v_data = $this->getDetails(Cookies::get(VISITOR_COOKIE_NAME), $this->_colIndex);
-            if ($v_data != null && $v_data->count() == 1) {
-                $v_data->ipAddress = $v_data->ipAddress != $params['ip'] ? $params['ip'] : $v_data->ipAddress;
+            $query_data = [
+                'where' => ['cookies' => Cookies::get(VISITOR_COOKIE_NAME), 'ipAddress' => $params['ip']],
+                'op' => 'OR',
+                'return_mode' => 'class'
+            ];
+            $v_data = $this->getAllItem($query_data);
+            if ($v_data->count() == 0) {
+                return $this->add_new_visitor($vd);
+            // $v_data->ipAddress = $v_data->ipAddress != $params['ip'] ? $params['ip'] : $v_data->ipAddress;
+            } elseif ($v_data->count() === 1) {
+                $v_data = current($v_data->get_results());
+                $v_data->id = $v_data->{$this->_colID};
                 $v_data->hits = $v_data->hits + 1;
-                $v_data->useragent = $v_data->useragent != Session::uagent_no_version() ? Session::uagent_no_version() : $v_data->useragent;
-                $colID = $this->_colID;
-                $v_data->id = $v_data->$colID;
+                if (is_array($vd) && count($vd) > 0) {
+                    $fields = H::getObjectProperties($v_data);
+                    $vd = $this->container->make(Request::class)->transform_keys($vd, H_visitors::new_IpAPI_keys());
+                    if (!$fields == $vd) {
+                        $v_data->assign($vd);
+                        $v_data->useragent = $v_data->useragent != Session::uagent_no_version() ? Session::uagent_no_version() : $v_data->useragent;
+                    }
+                } else {
+                    $v_data->ipAddress = $vd;
+                }
                 if ($save = $v_data->save()) {
                     return $save;
                 }
+            } else {
+                $this->clean_visitor_database('ip');
             }
         }
-        return $this->add_new_visitor(H_visitors::getVisitorData($params['ip'] ?? '91.173.88.22'));
+        return $this->add_new_visitor($vd);
     }
 
     //Add new visitor
-    public function add_new_visitor($data = [])
+    public function add_new_visitor(mixed $data)
     {
         $cookies = $this->get_unique('cookies');
+        if (is_array($data) && count($data) > 0) {
+            $this->assign($this->container->make(Input::class)->transform_keys($data, H_visitors::new_IpAPI_keys()));
+        } else {
+            $this->ipAddress = $data;
+        }
         Cookies::set(VISITOR_COOKIE_NAME, $cookies, COOKIE_EXPIRY);
-        $this->clean_visitor_data('ip', $this->assign($this->container->make(Input::class)->transform_keys($data, H_visitors::new_IpAPI_keys())));
         $this->cookies = $cookies;
         $this->useragent = Session::uagent_no_version();
         $this->hits++;
         if ($save = $this->save()) {
             return $save ? $this : null;
         }
-
         return false;
     }
 
     //Check visitors data on data base
-    public function clean_visitor_data($by, $params = [])
+    public function clean_visitor_database($by, $params = [])
     {
         switch ($by) {
             case 'cookies':
                 $delete = $this->delete('', ['cookies' => Cookies::get(VISITOR_COOKIE_NAME)]);
             break;
             default:
-                $delete = $this->delete('', ['ipAddress' => $this->ipAddress ?? H_visitors::getIP()]);
+                $delete = $this->delete(['ipAddress' => $this->ipAddress ?? H_visitors::getIP()]);
         }
         return $delete;
     }

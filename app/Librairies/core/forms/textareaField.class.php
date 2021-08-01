@@ -17,10 +17,10 @@ class TextareaField extends BaseField
             '<textarea name="%s" class="form-control %s %s" id="%s" row="%s">%s</textarea>',
             $this->attribute,
             $this->fieldclass ?? '',
-            $this->model->hasError($this->attribute) ? 'is-invalid' : '',
-            $this->fieldID ?? '',
+            $this->hasErrors(),
+            $this->fieldID ?? $this->attribute,
             $this->row ?? '',
-            $this->model->htmlDecode($this->model->{$this->attribute}),
+            $this->fieldAttributeValue(),
         );
     }
 
@@ -28,11 +28,9 @@ class TextareaField extends BaseField
     {
         $template = file_get_contents(FILES . 'template' . DS . 'base' . DS . 'forms' . DS . 'inputfieldTemplate.php');
         $template = str_replace('{{classwrapper}}', $this->FieldwrapperClass ?? '', $template);
-        $template = str_replace('{{classlabel}}', $this->labelClass ?? '', $template);
-        $template = str_replace('{{inputID}}', $this->fieldID, $template);
-        $template = str_replace('{{label}}', $this->label ?? '', $template);
-        $template = str_replace('{{req}}', $this->require ?? '', $template);
-        $template = str_replace('{{feedback}}', (string)$this->model->getFirstError($this->attribute), $template);
+        $template = str_replace('{{feedback}}', $this->errors(), $template);
+        $template = str_replace('{{labelTemp}}', !empty($this->labelUp) ? $this->labelUp : '%s {{label}}', $template);
+        $template = str_replace('{{label}}', $this->withLabel ? $this->fieldLabelTemplate() : '', $template);
         return $template;
     }
 }

@@ -309,29 +309,31 @@ class CartManager extends Model
         return [$product_price, $pt == [] ? false : $pt, $empty_cart_template ?? []];
     }
 
-    public function beforeSave($params = [])
+    public function beforeSave(array $params = []) : mixed
     {
         parent::beforeSave();
-        if ($params) {
-            if (Cookies::exists(VISITOR_COOKIE_NAME)) {
-                $user_data = AuthManager::$currentLoggedInUser; //? AuthManager::$currentLoggedInUser : $this->getDetails(Cookies::get(VISITOR_COOKIE_NAME), $this->get_colIndex());
-                $this->user_id = $user_data ? $user_data->user_cookie : Cookies::get(VISITOR_COOKIE_NAME);
-                $user_cart = $this->user_id ? $this->getAllbyIndex($this->user_id)->get_results() : false;
-                if ($user_cart && count($user_cart) > 0) {
-                    $cart = array_filter($user_cart, function ($item) {
-                        return $item->item_id == $this->item_id;
-                    });
-                    if ($cart && count($cart) >= 1) {
-                        return false;
-                    }
-                    return true;
+        $user_data = AuthManager::$currentLoggedInUser;
+        if (Cookies::exists(VISITOR_COOKIE_NAME)) {
+            $cookie = Cookies::get(VISITOR_COOKIE_NAME);
+            if ($user_data && $user_data->user_cookie != $cookie) {
+                $user_data->user_cookie = $cookie;
+                $user_data->id = $user_data->userID;
+                $user_data->save();
+            }
+            $this->user_id = Cookies::get(VISITOR_COOKIE_NAME);
+            $user_cart = $this->getAllbyIndex($this->user_id)->get_results();
+            if ($user_cart && count($user_cart) > 0) {
+                $cart = array_filter($user_cart, function ($item) {
+                    return $item->item_id == $this->item_id;
+                });
+                if ($cart && count($cart) >= 1) {
+                    return false;
                 }
                 return true;
             }
-            $cookies = (new Token())->generate_token(36);
-            $this->user_id = $cookies;
-            Cookies::set(VISITOR_COOKIE_NAME, $cookies, COOKIE_EXPIRY);
+            return true;
         }
+        $this->user_id = $user_data->user_cookie;
         return true;
     }
 

@@ -225,7 +225,7 @@ class AuthController extends Controller
                 $model->cpassword = $data['cpassword'];
                 $model->terms = !isset($data['terms']) ? '' : $data['terms'];
                 method_exists('Form_rules', 'users') ? $model->validator($data, Form_rules::users()) : '';
-                $file = H_upload::upload_files($_FILES, $model, $this->container);
+                $file = H_upload::upload_files($this->request->getFiles(), $model, $this->container);
                 if ($file['success']) {
                     if ($model->validationPasses()) {
                         if ($lastID = $model->register()) {

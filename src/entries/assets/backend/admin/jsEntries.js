@@ -103,5 +103,14 @@ module.exports = {
       import: ["js/custom/backend/admin/warehouse/warehouse"],
       dependOn: "js/librairies/adminlib",
     },
+    //Settings
+    "js/custom/backend/admin/settings/general": {
+      import: ["js/custom/backend/admin/settings/general"],
+      dependOn: "js/librairies/adminlib",
+    },
+    "js/custom/backend/admin/settings/sliders": {
+      import: ["js/custom/backend/admin/settings/sliders"],
+      dependOn: "js/librairies/adminlib",
+    },
   },
 };

@@ -113,6 +113,7 @@ export default class Cruds {
           ? plugin._get_select2_data(params.select)
           : "",
       };
+      console.log(data);
       switch (plugin.form.find("#operation").val()) {
         case "add":
         case "update":
@@ -206,7 +207,6 @@ export default class Cruds {
         ajax_param[k] = v;
       }
     }
-    console.log(ajax_param);
     return ajax_param;
   };
   //=======================================================================
@@ -258,12 +258,14 @@ export default class Cruds {
                   }
                 }
                 break;
-              case this == "p_media" && plugin.table == "products":
+              case this == "p_media" &&
+                ["products", "sliders"].includes(plugin.table):
                 var dz = params.dropzone;
                 $(dz.element).find(".message").hide();
                 dz.files = [];
                 $.each(response.msg.items[field], function (key, value) {
                   let gallery_item = dz._createGallery(value);
+                  console.log(key, value);
                   dz._createFile(value)
                     .then((file) => {
                       dz.files.push(file);

@@ -118,7 +118,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         if (isset($whereCond) && !empty($whereCond)) {
             $where .= ' WHERE ';
             $i = 0;
-            $op = isset($whereCond['op']) ? $whereCond['op'] : ' AND ';
+            $op = isset($this->key['extras']['op']) ? $this->key['extras']['op'] : ' AND ';
             foreach ($whereCond as $key => $value) {
                 $add = ($i > 0) ? ' ' . $op . ' ' : '';
                 if (is_array($value)) {

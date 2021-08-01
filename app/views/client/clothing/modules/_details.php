@@ -21,8 +21,8 @@
             </h6>
             <h3 class="py-4"> <?= $p->p_title ?? 'Unknown' ?>
             </h3>
-            <h2 class="price"><span class="product_regular_price"><?=$p->get_money()->getAmount($p->p_regular_price)?>
-            </h2></span>
+            <h2 class="price"><?=$p->get_money()->getAmount($p->p_compare_price)?>
+            </h2>
             <select name="" id="" class="my-3 size">
                 <option value="">Select size</option>
                 <option value="">XL</option>
@@ -39,6 +39,7 @@
                 Soluta nesciunt ab ratione, rem eos in exercitationem sint illum non accusamus natus, aspernatur
                 amet possimus mollitia iure repellat doloremque voluptate a iste eveniet itaque officiis. Fugiat
                 illo quia quibusdam.</span>
+
         </div>
         <?php endif;?>
     </div>

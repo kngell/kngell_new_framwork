@@ -214,7 +214,7 @@ class CheckoutController extends Controller
                 $checkoutSession = $this->session->get(CHECKOUT_PROCESS_NAME);
                 if (isset($data['id'])) {
                     $model = $this->container->make(AddressBookManager::class)->getDetails($data['id']);
-                    if (!is_null($model) && $model->count() === 1) {
+                    if ($model !== null && $model->count() === 1) {
                         $model = current($model->get_results());
                         $address = $this->request->htmlDecode($model->address1 ?? '') . ' ' . $this->request->htmlDecode($model->address2 ?? '') . ', ' . $this->request->htmlDecode($model->zip_code ?? '') . ', ' . $this->request->htmlDecode($model->ville ?? '') . '(' . $this->request->htmlDecode($model->region ?? '') . ') - ' . $this->request->htmlDecode($model->pays ?? '');
                         if (isset($data['address_type'])) {

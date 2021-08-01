@@ -28,6 +28,16 @@ class Request extends HttpGlobals
         return substr($path, 0, $position);
     }
 
+    public function getPathReferer() : string
+    {
+        $path = $this->getServer('HTTP_REFERER') ?? '/';
+        $position = strpos($path, '?');
+        if ($position === false) {
+            return $path;
+        }
+        return substr($path, 0, $position);
+    }
+
     /**
      * Get Http Method
      * ==================================================================================
@@ -138,6 +148,11 @@ class Request extends HttpGlobals
         } else {
             return [(int)$this->get('start'), (int) $this->get('max'), (int)$this->get('id')];
         }
+    }
+
+    public function getFiles() : array
+    {
+        return parent::getFiles();
     }
 
     // public function getBody()

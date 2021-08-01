@@ -154,4 +154,28 @@ class AdminController extends Controller
         $this->view_instance->set_pageTitle('Orders Management');
         $this->view_instance->render('admin' . DS . 'orders' . DS . 'orders');
     }
+
+    public function settingsPage($type)
+    {
+        $page = array_pop($type);
+        $formAttr = [
+            'method' => 'post',
+            'formClass' => 'px-3 needs-validation',
+            'formCustomAttr' => 'novalidate'
+        ];
+        $this->view_instance->set_pageTitle('Settings');
+        $this->view_instance->form = $this->container->make(Form::class);
+        switch ($page) {
+                    case 'general':
+                        $formAttr['formID'] = 'add-general_settings-frm';
+                    break;
+                    case 'sliders':
+                    $formAttr['formID'] = 'add-sliders-frm';
+                    break;
+                    default:
+                    // code...
+                    break;
+        }
+        $this->view_instance->render('admin' . DS . 'settings' . DS . $page, ['frm' => $formAttr]);
+    }
 }

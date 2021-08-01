@@ -12,7 +12,7 @@ class HomeController extends Controller
     {
         $this->view_instance->set_pageTitle('Home');
         $this->view_instance->set_siteTitle('Home');
-        $this->view_instance->render('home' . DS . 'index');
+        $this->view_instance->render('home' . DS . 'index', ['slider' => $this->getSliders()->index_phone]);
     }
 
     //page product
@@ -54,6 +54,21 @@ class HomeController extends Controller
         $this->view_instance->set_pageTitle('Boutique');
         $this->view_instance->set_siteTitle('Boutique');
         $this->view_instance->render('home' . DS . 'boutique' . DS . 'boutique');
+    }
+
+    //Contact
+    public function contactPage()
+    {
+        $this->view_instance->set_pageTitle('Contact');
+        $this->view_instance->set_siteTitle('Contact');
+        $formAttr = [
+            'method' => 'post',
+            'formClass' => 'px-3 needs-validation',
+            'formCustomAttr' => 'novalidate',
+            'formID' => 'contact-frm'
+        ];
+        $this->view_instance->form = $this->container->make(Form::class);
+        $this->view_instance->render('home' . DS . 'contact' . DS . 'contact', ['frm' => $formAttr]);
     }
 
     //sitemap

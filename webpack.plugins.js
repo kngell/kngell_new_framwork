@@ -124,6 +124,10 @@ module.exports = {
                 ),
                 destination: "./public/assets/img/",
               },
+              {
+                source: path.join(__dirname, "src", "assets", "img", "sliders"),
+                destination: "./public/assets/img/",
+              },
             ],
           },
           // del: {

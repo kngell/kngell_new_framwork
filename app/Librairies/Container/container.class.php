@@ -179,7 +179,7 @@ class Container implements ContainerInterface
 
         $constructor = $reflector->getConstructor();
 
-        if (is_null($constructor)) {
+        if ($constructor === null) {
             $obj = $reflector->newInstance();
             return $this->objectWithContainer($reflector, $obj);
         }

@@ -1,0 +1,36 @@
+@use "corecss/variables" as *
+.contact-container
+    form
+        max-width: 31.25rem
+        margin: 0 auto
+        text-align: left
+        padding: 1.25rem 0
+        input,textarea,label
+            margin: 0 auto
+            color: $blue-standard
+        input,textarea
+            background: transparent
+            border: 0
+            border-bottom: 2px solid $blue-standard
+        button[type=submit]
+            background-color: #544447
+            padding: 15px 0
+            color: white
+            font-size: 18px
+            width: 100%
+            text-align: center
+            border-bottom: none
+            margin-top: 30px
+            cursor: pointer
+            transition: all .3s ease
+            &:hover
+                background-color: #fff
+                color: #1b1c1e
+        input,textarea
+            color: black
+            font-size: 18px
+            padding: 10px
+            &:focus
+                outline: 1 px solid $blue-standard
+                box-shadow: none
+

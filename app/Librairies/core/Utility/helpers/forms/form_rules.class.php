@@ -340,4 +340,42 @@ class Form_rules
             ],
         ];
     }
+
+    public static function general_settings()
+    {
+        return [
+            'setting_key' => [
+                'display' => 'Setting Key',
+                'required' => true,
+                'max' => 30,
+                'unique' => 'settings'
+            ],
+            'setting_name' => [
+                'display' => 'Setting Name',
+                'required' => true,
+                'max' => 30,
+            ],
+            'value' => [
+                'display' => 'Value',
+                'required' => true,
+            ],
+        ];
+    }
+
+    public static function sliders()
+    {
+        return [
+            'page_slider' => [
+                'display' => 'Page for slider',
+                'required' => true,
+                'max' => 30,
+                'unique' => 'sliders'
+            ],
+            'slider_title' => [
+                'display' => 'Sub title',
+                'required' => true,
+                'max' => 50,
+            ],
+        ];
+    }
 }

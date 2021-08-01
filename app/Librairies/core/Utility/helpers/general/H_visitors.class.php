@@ -25,6 +25,7 @@ class H_visitors
         if ($query && $query['status'] == 'success') {
             return $query;
         }
+        return $query['query'];
     }
 
     //Key format for API geoplugins

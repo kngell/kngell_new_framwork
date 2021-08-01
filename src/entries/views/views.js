@@ -49,6 +49,10 @@ import "views/backend/admin/company/partials/form.php";
 // Warehouses
 import "views/backend/admin/warehouse/allwarehouses.php";
 
+//Settings
+import "views/backend/admin/settings/general.php";
+import "views/backend/admin/settings/sliders.php";
+
 // Admin Orders
 import "views/backend/admin/orders/orders.php";
 //=======================================================================
@@ -113,3 +117,8 @@ import "views/client/users/payment/payment_success.php";
 import "views/client/users/checkout/checkout.php";
 import "views/client/users/checkout/partials/card_summary.php";
 import "views/client/users/checkout/partials/_checkout_contact_frm.php";
+//=======================================================================
+//Contact
+//=======================================================================
+import "views/client/home/contact/contact.php";
+import "views/client/home/contact/partials/_contact_form.php";

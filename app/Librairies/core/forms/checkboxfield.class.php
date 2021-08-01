@@ -3,9 +3,11 @@
 declare(strict_types=1);
 class CheckBoxField extends BaseField
 {
-    public function checkboxType()
+    public string $checkedField;
+
+    public function checkedField(string $chf)
     {
-        $this->type = self::TYPE_CHECKBOX;
+        $this->checkedField = $chf;
         return $this;
     }
 
@@ -17,10 +19,10 @@ class CheckBoxField extends BaseField
             $this->attribute,
             'on',
             $this->fieldclass ?? '',
-            $this->model->hasError($this->attribute) ? 'is-invalid' : '',
-            $this->fieldID ?? '',
+            $this->hasErrors(),
+            $this->fieldID ?? $this->attribute,
             $this->customAttribute,
-            $this->model->save_for_later == 'on' ? 'checked' : ''
+            $this->checked()
         );
     }
 
@@ -29,9 +31,17 @@ class CheckBoxField extends BaseField
         $template = file_get_contents(FILES . 'template' . DS . 'base' . DS . 'forms' . DS . 'inputcheckboxTemplate.php');
         $template = str_replace('{{wrapperClass}}', $this->FieldwrapperClass ?? '', $template);
         $template = str_replace('{{labelClass}}', $this->labelClass ?? '', $template);
-        $template = str_replace('{{inputID}}', $this->fieldID, $template);
+        $template = str_replace('{{inputID}}', $this->fieldID ?? $this->attribute, $template);
         $template = str_replace('{{spanClass}}', $this->spanClass ?? '', $template);
         $template = str_replace('{{label}}', $this->label ?? '', $template);
         return $template;
+    }
+
+    public function checked() : string
+    {
+        if (isset($this->model) && isset($this->checkedField)) {
+            return $this->model->{$this->checkedField} == 'on' ? 'checked' : '';
+        }
+        return '';
     }
 }

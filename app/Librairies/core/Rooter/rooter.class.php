@@ -78,6 +78,9 @@ class Rooter implements RooterInterface
     {
         $url = [];
         if (isset($urlroute) && !empty($urlroute)) {
+            if ($urlroute == '/') {
+                return $this->route = $urlroute;
+            }
             $url = explode('/', filter_var(rtrim($urlroute, '/'), FILTER_SANITIZE_URL));
             $route = isset($url[0]) ? strtolower($url[0]) : $this->route;
             unset($url[0]);
@@ -93,6 +96,7 @@ class Rooter implements RooterInterface
         $method = $this->request->getHttpmethod();
         $callback = $this->routes[$method][$path] ?? false;
         if ($callback == false) {
+            $path = strtolower($this->parseUrl($this->request->getPathReferer()));
             throw new NotFoundException();
         }
         if (is_string($callback)) {
@@ -103,14 +107,10 @@ class Rooter implements RooterInterface
             $controllerString = $this->controller = ucfirst($callback['controller']) . $this->controllerSuffix;
             $controllerMethod = $this->method = $callback['method'];
             $this->filePath = $this->getAccess();
+            $this->set_redirect($controllerString, $controllerMethod);
             $this->IsvalidController($controllerString);
             if (class_exists($controllerString)) {
-                $controllerObject = $this->container->make($controllerString)
-                ->iniParams($controllerString, $controllerMethod)
-                    ->set_request($this->request)->set_response($this->response)->set_session()
-                        ->set_path($this->filePath)
-                            ->set_token()
-                                ->set_money();
+                $controllerObject = $this->createController($controllerString, $controllerMethod);
                 $this->container->controller = $controllerObject;
                 $this->container->method = $controllerMethod;
                 foreach ($controllerObject->getMiddlewares() as $middleware) {
@@ -127,6 +127,15 @@ class Rooter implements RooterInterface
         }
     }
 
+    public function createController(string $controllerString, string $controllerMethod) :  Controller
+    {
+        return $this->container->make($controllerString)
+        ->iniParams($controllerString, $controllerMethod)
+            ->set_request($this->request)->set_response($this->response)->set_session()
+                    ->set_token()
+                        ->set_money();
+    }
+
     public function getAccess()
     {
         if (!GrantAccess::hasAccess($this->controller, $this->method)) {
@@ -135,21 +144,23 @@ class Rooter implements RooterInterface
             $controlerFile = YamlConfig::file('controller');
             switch ($this->controller) {
                 case in_array($this->controller, $controlerFile['backend']):
-                    return 'Backend' . DS;
+                    $path = 'Backend' . DS;
                 break;
                 case in_array($this->controller, $controlerFile['ajax']):
-                    return 'Ajax' . DS;
+                    $path = 'Ajax' . DS;
                 break;
                 case in_array($this->controller, $controlerFile['auth']):
-                    return 'Auth' . DS;
+                    $path = 'Auth' . DS;
                 break;
                 case in_array($this->controller, $controlerFile['asset']):
-                    return 'Asset' . DS;
+                    $path = 'Asset' . DS;
                 break;
                 default:
-                    return 'Client' . DS;
+                $path = 'Client' . DS;
                 break;
             }
+            $this->container->bind('ControllerPath', fn () => $path);
+            return $path;
         }
     }
 

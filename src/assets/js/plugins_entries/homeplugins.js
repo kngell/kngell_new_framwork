@@ -45,7 +45,7 @@ class HomePlugin {
     //=======================================================================
     let visitor = get_visitors_data().then((visitors_data) => {
       var data = {
-        url: "visitors/track",
+        url: "visitors",
         table: "visitors",
         ip: visitors_data.ip,
       };

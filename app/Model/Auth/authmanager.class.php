@@ -333,7 +333,7 @@ class AuthManager extends Model
     //=======================================================================
 
     //Before Save
-    public function beforeSave($params = [])
+    public function beforeSave($params = []) : array
     {
         if (property_exists($this, 'cpassword')) {
             unset($this->cpassword);
@@ -354,7 +354,7 @@ class AuthManager extends Model
         if (isset($this->name)) {
             unset($this->name);
         }
-        return true;
+        return $params;
     }
 
     //confirm Email

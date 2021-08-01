@@ -49,7 +49,7 @@ class THCategories
                             <td>' . $cat->photo . '</td>
                             <td>' . $catgorie . '</td>
                             <td>' . $cat->br_name . '</td>
-                            <td class="d-flex flex-row justify-content-center">
+                            <td class="action">
                             <form class="categorie-status" id="categorie-status' . $cat->catID . '"/>'
                                 . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'categorie-status' . $cat->catID)) . '
                                 <input type="hidden" name="catID" value="' . $cat->catID . '">

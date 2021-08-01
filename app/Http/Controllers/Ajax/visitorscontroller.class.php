@@ -21,7 +21,7 @@ class VisitorsController extends Controller
             $table = str_replace(' ', '', ucwords(str_replace('_', ' ', $data['table'])));
             $model = $this->container->make($table . 'Manager'::class);
             if ($output = $model->manageVisitors($data)) {
-                $this->jsonResponse(['result' => 'success', 'msg' => $output->get_results()]);
+                $this->jsonResponse(['result' => 'success', 'msg' => true]);
             }
         }
     }

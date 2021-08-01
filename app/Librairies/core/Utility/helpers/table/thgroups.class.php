@@ -44,7 +44,7 @@ class THGroups
                             <td>' . $item->name . '</td>
                             <td>' . $item->description . '</td>
                             <td>' . $group . '</td>
-                            <td class="d-flex flex-row justify-content-center">
+                            <td class="action">
                                 <form class="group-status" id="group-status' . $item->grID . '"/>'
                                     . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'group-status' . $item->grID)) . '
                                     <input type="hidden" name="grID" value="' . $item->grID . '">

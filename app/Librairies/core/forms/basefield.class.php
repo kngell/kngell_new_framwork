@@ -3,12 +3,13 @@
 declare(strict_types=1);
 abstract class BaseField implements FieldInterface
 {
-    public const TYPE_TEXT = 'text';
-    public const TYPE_EMAIL = 'email';
-    public const TYPE_NUMBER = 'number';
-    public const TYPE_PASSWORD = 'password';
-    public const TYPE_CHECKBOX = 'checkbox';
-    public const TYPE_RADIO = 'radio';
+    protected const TYPE_TEXT = 'text';
+    protected const TYPE_EMAIL = 'email';
+    protected const TYPE_NUMBER = 'number';
+    protected const TYPE_PASSWORD = 'password';
+    protected const TYPE_CHECKBOX = 'checkbox';
+    protected const TYPE_RADIO = 'radio';
+    protected const TYPE_HIDDEN = 'hidden';
     protected string $attribute;
     protected string $label;
     protected string $FieldwrapperClass;
@@ -19,8 +20,22 @@ abstract class BaseField implements FieldInterface
     protected string $customAttribute = '';
     protected string $spanClass;
     protected string $fieldValue;
+    protected string $labelUp;
+    protected bool $withLabel = false;
 
     protected Model $model;
+
+    public function hidden()
+    {
+        $this->type = self::TYPE_HIDDEN;
+        return $this;
+    }
+
+    public function checkboxType()
+    {
+        $this->type = self::TYPE_CHECKBOX;
+        return $this;
+    }
 
     public function __toString()
     {
@@ -37,9 +52,12 @@ abstract class BaseField implements FieldInterface
         return $this;
     }
 
-    public function setClass(string $tag, string $value) : void
+    public function setClass(array $args = []) : self
     {
-        $this->$tag = $value;
+        foreach ($args as $tag => $class) {
+            $this->$tag = $class;
+        }
+        return $this;
     }
 
     public function setModel(Model $model = null) : self
@@ -59,6 +77,9 @@ abstract class BaseField implements FieldInterface
         foreach ($this as $key => $value) {
             if (is_string($value)) {
                 $this->{$key} = '';
+            }
+            if (is_bool($value)) {
+                $this->{$key} = false;
             }
         }
         return $this;
@@ -94,7 +115,16 @@ abstract class BaseField implements FieldInterface
 
     public function Label(string $label) : self
     {
+        $this->withLabel = true;
         $this->label = $label;
+        return $this;
+    }
+
+    public function labelUp(string $label)
+    {
+        $this->withLabel = true;
+        $this->label = $label;
+        $this->labelUp = ' {{label}} %s';
         return $this;
     }
 
@@ -153,5 +183,39 @@ abstract class BaseField implements FieldInterface
             return $this->model->htmlDecode((string)$this->model->{$this->model->get_colID()});
         }
         return $this->fieldValue ?? '';
+    }
+
+    public function fieldAttributeValue() :string
+    {
+        if (isset($this->model)) {
+            return $this->model->htmlDecode($this->model->{$this->attribute});
+        }
+        return '';
+    }
+
+    public function hasErrors()
+    {
+        if (isset($this->model)) {
+            return $this->model->hasError($this->attribute) ? 'is-invalid' : '';
+        }
+        return '';
+    }
+
+    public function errors() : string
+    {
+        if (isset($this->model)) {
+            return (string)$this->model->getFirstError($this->attribute);
+        }
+        return '';
+    }
+
+    public function fieldLabelTemplate() : string
+    {
+        $template = file_get_contents(FILES . 'template' . DS . 'base' . DS . 'forms' . DS . 'inputLabelTemplate.php');
+        $template = str_replace('{{inputID}}', $this->fieldID ?? $this->attribute, $template);
+        $template = str_replace('{{classlabel}}', $this->labelClass ?? '', $template);
+        $template = str_replace('{{label}}', $this->label ?? '', $template);
+        $template = str_replace('{{req}}', $this->require ?? '', $template);
+        return $template;
     }
 }

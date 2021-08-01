@@ -54,6 +54,7 @@ class Application extends Container implements ApplicationInterface
         $this->singleton(MoneyManager::class, fn () => new MoneyManager);
         $this->singleton(PaymentGateway::class, fn () => new PaymentGateway);
         $this->singleton(ProductsManager::class, fn () => new ProductsManager);
+        $this->singleton(ImageManager::class, fn () => new ImageManager);
         $this->singleton(View::class, fn () => new View());
     }
 

@@ -43,7 +43,7 @@ class THBrand
                             <td>' . $item->br_name . '</td>
                             <td>' . $item->br_descr . '</td>
                             <td>' . '' . '</td>
-                            <td class="d-flex flex-row justify-content-center">
+                            <td class="action">
                                 <form class="brand-status" id="brand-status' . $item->brID . '"/>'
                                     . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'brand-status' . $item->brID)) . '
                                     <input type="hidden" name="brID" value="' . $item->brID . '">

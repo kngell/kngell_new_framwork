@@ -41,7 +41,7 @@ class THUnits
                             <th scope="row">' . $item->unID . '</th>
                             <td>' . $item->unit . '</td>
                             <td>' . $item->descr . '</td>
-                            <td class="d-flex flex-row justify-content-center">
+                            <td class="action">
                             <form class="units-status" id="units-status' . $item->unID . '"/>'
                                 . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'units-status' . $item->unID)) . '
                                 <input type="hidden" name="unID" value="' . $item->unID . '">

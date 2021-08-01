@@ -5,14 +5,21 @@
 <?php $this->start('body'); ?>
 <main id="main-site">
     <!-- Content -->
-    <section class="head-promotions" id=head-promotions>
+    <section class="head-promotions" id=head-promotions
+        style="background-image: url(<?=str_replace('\\', '/', implode($slider->p_media))?> )">
         <div class="container title">
-            <h5 class="first-title">NEW ARRIVALS</h5>
+            <h5 class="first-title"><?=strtoupper($slider->slider_subtitle)?>
+            </h5>
             <h1 class="second-title">
-                <sapn class="title-left">Best Price</sapn>&nbsp;<span class="title-right">this Year</span>
+                <?php $title = explode('|', $slider->slider_title);
+                $title = array_map('trim', $title);?>
+                <span class="title-left"><?=$title[0]?>
+                </span>&nbsp;<span class="title-right"><?=$title[1]?></span>
             </h1>
-            <p>Shomatics offers your very comfortable time <br>on walking and exercises</p>
-            <button>Shop Now</button>
+            <?php $text = explode('|', $slider->slider_text)?>
+            <p><?=$text[0]?> <br><?=$text[1]?>
+            </p>
+            <button><?=$slider->slider_btn_text?></button>
         </div>
     </section>
     <!-- Brand section --------------->

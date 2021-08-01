@@ -4,32 +4,31 @@ class H_upload
     //=======================================================================
     //Upload image
     //=======================================================================
-    public static function upload_img($path, $file)
+    public static function upload_img(array $path, array $file, ImageManager $im)
     {
         $targetDir = $path[1];
         //filename
         $filename = (pathinfo(basename($file['name']))['filename'] == 'image') ? self::rename_image($file) : basename($file['name']);
         $targetFilePath = $targetDir . DS . $filename;
         //upload file in the server
-        if (move_uploaded_file($file['tmp_name'], $path[0] . $targetFilePath)) {
-            self::syncronize_src_folder($path, $targetFilePath);
+        if (in_array($targetDir, ['sliders'])) {
+            $r = $im->init(img_name: $targetFilePath, source: $file['tmp_name'], destination: $path[0])->cropImage('', '635');
+        } else {
+            $r = $im->init(img_name: $targetFilePath, source: $file['tmp_name'], destination: $path[0])->resizeImage();
+        }
+        if ($r && self::syncronize_src_folder($targetFilePath, $path[0], $im)) {
             return $targetFilePath;
         }
         return 'error';
     }
 
     //synchronize image between src and public folder on dev mod
-    public static function syncronize_src_folder($path = [], $img = '')
+    public static function syncronize_src_folder(string $img = '', string $path, ImageManager $im) : bool
     {
-        if (isset($path) && isset($img)) {
-            $imgModel = new ImageManager($path[0], IMAGE_ROOT_SRC);
-            $img_infos = $imgModel->get_imagesInfos($img);
-            $new_img = $imgModel->resizeImage($img_infos, $img);
-            $imgModel->saveImage($img_infos, $new_img, $img);
-            $imgModel->destroyImage($new_img);
-            $imgModel = null;
-            return true;
+        if (isset($img)) {
+            return $im->init($img, $path . $img, IMAGE_ROOT_SRC)->resizeImage();
         }
+        return false;
     }
 
     //rename image
@@ -46,7 +45,7 @@ class H_upload
     {
         $paths = [];
         $status = [];
-        $imageManager = $container->singleton(ImageManager::class, fn () => new ImageManager())->make(ImageManager::class);
+        $imageManager = $container->make(ImageManager::class);
         if ($files) {
             foreach ($files as $file) {
                 $result = self::validate_and_upload_file($file, $model, $imageManager);
@@ -97,6 +96,7 @@ class H_upload
     public static function validate_and_upload_file($file, $model, $imgMgr)
     {
         $path_dir = self::get_path($model)[1];
+
         $arr_file = [
             'allowType' => ['JPG', 'PNG', 'JPEG', 'GIF', 'PDF', 'DOC', 'DOCX'],
             'filename' => basename($file['name']),
@@ -105,6 +105,7 @@ class H_upload
             'fileType' => strtoupper(pathinfo($path_dir . DS . basename($file['name']), PATHINFO_EXTENSION)),
             'size' => 10 * 1024 * 1024
         ];
+        $imgMgr->init($file['tmp_name'], '', IMAGE_ROOT . $path_dir);
         $status = [
             'name' => $file['name'],
             'type' => $file['type'],
@@ -128,7 +129,7 @@ class H_upload
             return $status;
         }
         // Validate length width
-        $img_infos = $imgMgr->get_imagesInfos($file['tmp_name']);
+        $img_infos = $imgMgr->get_infos();//get_imagesInfos($file['tmp_name']);
         if ($img_infos[0] > '1840' && $img_infos[1] > '860') {
             $status['msg'] = 'Invalid file size! Please change your file.';
             $arr_file = [];
@@ -164,7 +165,7 @@ class H_upload
                 return $status;
             }
         }
-        $path = self::upload_img(self::get_path($model), $file);
+        $path = self::upload_img(self::get_path($model), $file, $imgMgr);
         if ($path == 'error') {
             $arr_file = [];
             $path_dir = '';
@@ -215,26 +216,26 @@ class H_upload
     {
         $table = $model->get_tableName();
         $md = $model;
-        switch ($table) {
-            case 'realisations':
+        switch (true) {
+            case $table == 'realisations':
                 $md->brand = $path;
                 break;
-            case 'users':
+            case $table == 'users':
                 $md->profileImage = $path;
                 break;
-            case 'posts':
+            case $table == 'posts':
                 $md->postImg = $path;
                 break;
-            case 'candidatures':
+            case $table == 'candidatures':
                 $md->cv = $path;
                 break;
-            case 'formations_inscriptions':
+            case $table == 'formations_inscriptions':
                 $md->cv = $path;
                 break;
-            case 'post_file_url':
+            case $table == 'post_file_url':
                 $md->fileUrl = $path;
                 break;
-            case 'products':
+            case in_array($table, ['products', 'sliders']):
                 $md->p_media = $path;
                 break;
 
@@ -249,26 +250,26 @@ class H_upload
     public static function get_mediaKey($model)
     {
         $table = $model->get_tableName();
-        switch ($table) {
-            case 'realisations':
+        switch (true) {
+            case $table == 'realisations':
                 return 'brand';
                 break;
-            case 'users':
+            case $table == 'users':
                 return 'profileImage';
                 break;
-            case 'posts':
+            case $table == 'posts':
                 return 'postImg';
                 break;
-            case 'candidatures':
+            case $table == 'candidatures':
                 return 'cv';
                 break;
-            case 'formations_inscriptions':
+            case $table == 'formations_inscriptions':
                 return 'cv';
                 break;
-            case 'post_file_url':
+            case $table == 'post_file_url':
                 return 'fileUrl';
                 break;
-            case 'products':
+            case in_array($table, ['products', 'sliders']):
                 return 'p_media';
                 break;
             default:
@@ -300,6 +301,9 @@ class H_upload
             case 'products':
                 $path = [IMAGE_ROOT, 'products'];
                 break;
+            case 'sliders':
+                $path = [IMAGE_ROOT, 'sliders'];
+                break;
             default:
                 // code...
                 break;
@@ -310,23 +314,24 @@ class H_upload
     // Image field
     private static function modelImageField($model)
     {
-        switch ($model->get_tableName()) {
-            case 'realisations':
+        $table = $model->get_tableName();
+        switch (true) {
+            case $table == 'realisations':
                 return !empty($model->brand) ? $model->brand : false;
                 break;
-            case 'users':
+            case $table == 'users':
                 return !empty($model->profileImage) ? [$model->profileImage] : false;
                 break;
-            case 'candidatures':
+            case $table == 'candidatures':
                 return !empty($model->cv) ? $model->cv : false;
                 break;
-            case 'posts':
+            case $table == 'posts':
                 return !empty($model->postImg) ? $model->postImg : false;
                 break;
-            case 'post_file_url':
+            case $table == 'post_file_url':
                 return !empty($model->fileUrl) ? $model->fileUrl : $model->fileUrl;
                 break;
-            case 'products':
+            case in_array($table, ['products', 'sliders']):
                 return !empty($model->p_media) ? $model->p_media : false;
                 break;
 

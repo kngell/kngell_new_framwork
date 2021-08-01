@@ -40,7 +40,7 @@ abstract class AbstractModel implements ModelInterface
 
     public function get_defaultShippingClass()
     {
-        if (!isset($this->p_shipping_class) || is_null($this->p_shipping_class) || $this->p_shipping_class == '[]') {
+        if (!isset($this->p_shipping_class) || $this->p_shipping_class === null || $this->p_shipping_class == '[]') {
             $defaultShippingClass = $this->container->make(ShippingClassManager::class)->getAllItem(['where' => ['default_shipping_class' => ['value' => 0, 'operator' => '!=']]]);
             if ($defaultShippingClass->count() === 1) {
                 return current($defaultShippingClass->get_results());
@@ -104,7 +104,7 @@ abstract class AbstractModel implements ModelInterface
      * =========================================================================================================
      * @return void
      */
-    public function beforeSave(array $params = [])
+    public function beforeSave(array $params = []) : mixed
     {
         if (isset(AuthManager::$currentLoggedInUser->userID) && property_exists($this, 'userID')) {
             if (!isset($this->userID) || empty($this->userID) || $this->userID == null) {
@@ -148,9 +148,26 @@ abstract class AbstractModel implements ModelInterface
         return $this;
     }
 
-    public function afterFind(Object $r = null)
+    /**
+     * After Find
+     * ==========================================================================================================
+     * @param Object $m
+     * @return void
+     */
+    public function afterFind(DataMapper $m = null) : DataMapper
     {
-        return $r;
+        if ($m->count() === 1) {
+            $model = current($m->get_results());
+            $media_key = H_upload::get_mediaKey($model);
+            $model->$media_key = $model->$media_key !== null ? unserialize($model->$media_key) : ['products' . US . 'product-80x80.jpg'];
+            if (is_array($model->$media_key)) {
+                foreach ($model->$media_key as $key => $url) {
+                    $model->$media_key[$key] = IMG . $url;// ImageManager::asset_img($url);//
+                }
+            }
+            $m->get_results()[0] = $model;
+        }
+        return $m;
     }
 
     /**
@@ -475,7 +492,7 @@ abstract class AbstractModel implements ModelInterface
 
     public function getDate($date, $format = 'd-m-y'): string
     {
-        return !is_null($date) ? (new DateTime($date))->format($format) : '';
+        return $date !== null ? (new DateTime($date))->format($format) : '';
     }
 
     public function getLabel($attribute)

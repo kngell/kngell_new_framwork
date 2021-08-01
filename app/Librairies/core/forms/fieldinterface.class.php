@@ -20,11 +20,10 @@ interface FieldInterface
     /**
      * Set field global class
      * --------------------------------------------------------------------------------------------------
-     * @param string $tag
-     * @param string $value
-     * @return string
+     * @param array $args
+     * @return self
      */
-    public function setClass(string $tag, string $value) : void;
+    public function setClass(array $args = []) : self;
 
     /**
      * Set Field Attribute

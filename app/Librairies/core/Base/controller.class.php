@@ -9,6 +9,8 @@ class Controller
     protected View $view_instance;
     protected Token $token;
     protected MoneyManager $money;
+    protected Request $request;
+    protected Response $response;
 
     /**
      * @var BaseMiddleWare $middleware
@@ -104,18 +106,15 @@ class Controller
     /**
      * Get Viw
      * ==================================================================================================
-     * @param string $viewName
-     * @param array $data
      * @return View
      */
-    public function get_view(string $viewName = '', array $data = []) : View
+    public function get_view() : View
     {
-        $view = explode(DS, $viewName);
-        $files = H::search_file(VIEW . strtolower($this->filePath) . strtolower($view[0]), strtolower($view[1]) . '.php');
-        if ($files) {
-            return !isset($this->view_instance) ? $this->container->make(View::class)->initParams($viewName, $data, $this->filePath) : $this->view_instance;
+        if (!isset($this->view_instance)) {
+            $this->filePath = !isset($this->filePath) ? $this->container->make('ControllerPath') : $this->filePath;
+            return  $this->container->make(View::class)->initParams($this->filePath);
         }
-        return isset($this->view_instance) ? $this->view_instance : null;
+        return $this->view_instance;
     }
 
     /**
@@ -125,8 +124,9 @@ class Controller
      */
     protected function before()
     {
-        $this->view_instance = $this->get_view(substr($this->controller, 0, strpos($this->controller, 'Controller')) . DS . $this->method, []);
+        $this->view_instance = $this->get_view();
         $this->view_instance->token = $this->token;
+        $this->view_instance->settings = $this->getSettings();
         if ($this->filePath == 'Client' . DS) {
             $this->view_instance->set_siteTitle("K'nGELL Ingénierie Logistique");
             $this->view_instance->products = $this->container->make(ProductsManager::class)->get_Products($this->brand());
@@ -136,6 +136,38 @@ class Controller
             $this->view_instance->set_siteTitle("K'nGELL Administration");
             $this->view_instance->set_Layout('admin');
         }
+    }
+
+    public function getSettings()
+    {
+        $settings = $this->container->make(GeneralSettingsManager::class)->getAllItem(['return_mode' => 'class']);
+        $settingResult = new stdClass();
+        if ($settings->count() > 0) {
+            foreach ($settings->get_results() as $setting) {
+                $settingResult->{$setting->setting_key} = $setting->value ?? '';
+            }
+        }
+        return $settingResult;
+    }
+
+    public function getSliders()
+    {
+        $sliders = $this->container->make(SlidersManager::class)->getAllItem(['return_mode' => 'class']);
+        if ($sliders->count() > 0) {
+            $std = new stdClass();
+            $sliders = $sliders->get_results();
+            foreach ($sliders as $slider) {
+                $page = $slider->page_slider;
+                $image = $slider->p_media !== null ? unserialize($slider->p_media) : ['products' . US . 'product-80x80.jpg'];
+                foreach ($image as $key => $url) {
+                    $image[$key] = IMG . $url;
+                }
+                $slider->p_media = $image;
+                $std->$page = $slider;
+            }
+            return $std;
+        }
+        return false;
     }
 
     protected function after()
@@ -272,14 +304,12 @@ class Controller
 
     public function jsonResponse(array $resp)
     {
-        // header('Access-Control-Allow-Origin: http://localhost');
-        header('Access-Control-Allow-Origin: *');
-        header('Content-type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        header('Access-Control-Expose-Headers: Content-Length, X-JSON');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept, Accept-Language, X-Authorization');
-        header('Access-Control-Max-Age: 86400');
-        http_response_code(200);
+        $this->response->setHeader();
+        // header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        // header('Access-Control-Expose-Headers: Content-Length, X-JSON');
+        // header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept, Accept-Language, X-Authorization');
+        // header('Access-Control-Max-Age: 86400');
+        // http_response_code(200);
         echo json_encode($resp);
         exit;
     }

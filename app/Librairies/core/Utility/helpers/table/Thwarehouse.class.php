@@ -54,7 +54,7 @@ class THWarehouse
                 </form>
             </td>
        
-            <td class="d-flex flex-row justify-content-center">
+            <td class="action">
                 <form class="edit-warehouse-frm" id="edit-warehouse-frm' . $item->whID . '">
                     ' . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'edit-warehouse-frm' . $item->whID)) . '
                  <input type="hidden" name="whID" value="' . $item->whID . '">

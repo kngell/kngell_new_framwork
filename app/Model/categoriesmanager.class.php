@@ -111,7 +111,7 @@ class CategoriesManager extends Model
         }
     }
 
-    public function beforeSave($params = [])
+    public function beforeSave(array $params = []) :mixed
     {
         parent::beforeSave($params);
         // Manage chechboxes

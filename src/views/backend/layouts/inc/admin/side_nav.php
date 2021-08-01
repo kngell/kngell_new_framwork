@@ -94,7 +94,6 @@
                                 <a href="<?=PROOT . 'allunits'?>">All
                                     Units</a>
                             </li>
-
                             <li>
                                 <a href="<?=PROOT . 'adminproduct_details'?>">
                                     Details</a>
@@ -147,10 +146,29 @@
                             <i class="fad fa-shopping-cart fa-lg"></i>
                             <span>Orders Management</span>
                         </a>
+
                         <ul class="sidebar-second-level collapse list-unstyled" id="orders" data-parent="#left-sidebar">
                             <li>
                                 <a href="<?=PROOT . 'orders'?>">All
                                     Orders</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a href="#sidebar" data-bs-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle collapsed">
+                            <i class="fas fa-cogs fa-lg"></i>
+                            <span>Settings</span>
+                        </a>
+                        <ul class="sidebar-second-level collapse list-unstyled" id="sidebar"
+                            data-parent="#left-sidebar">
+                            <li>
+                                <a href="<?=PROOT . 'settings' . US . 'general'?>">General
+                                    Settings</a>
+                            </li>
+                            <li>
+                                <a href="<?=PROOT . 'settings' . US . 'sliders'?>">Sliders</a>
                             </li>
 
                         </ul>

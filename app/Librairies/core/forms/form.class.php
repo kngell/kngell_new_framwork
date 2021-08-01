@@ -8,14 +8,31 @@ class Form
     protected SelectField $select;
     protected CheckBoxField $checkbox;
     protected RadioField $radio;
+    protected ImageDragAndDropField $imageDD;
+    protected string $action = '';
+    protected string $method = '';
+    protected string $formID = '';
+    protected string $formClass = '';
+    protected string $formCustomAttr = '';
+    protected array $fieldCommonclass = [];
 
-    public function __construct(InputField $field, TextareaField $textarea, SelectField $select, CheckBoxField $checkbox, RadioField $radio)
+    public function __construct(InputField $field, TextareaField $textarea, SelectField $select, CheckBoxField $checkbox, RadioField $radio, ImageDragAndDropField $imageDD)
     {
         $this->field = $field;
         $this->textarea = $textarea;
         $this->select = $select;
         $this->checkbox = $checkbox;
         $this->radio = $radio;
+        $this->imageDD = $imageDD;
+    }
+
+    public function custumAttr(array $attrs = [])
+    {
+        foreach ($attrs as $key => $attr) {
+            $this->{$key} = $attr;
+        }
+
+        return $this;
     }
 
     public function setModel(Model $model = null) : self
@@ -28,15 +45,14 @@ class Form
         return $this;
     }
 
-    public function setClass(array $args = []) : self
+    public function setFieldClass(array $args = []) : self
     {
-        foreach ($args as $elmt => $class) {
-            $this->field->setClass($elmt, $class);
-            $this->select->setClass($elmt, $class);
-            $this->textarea->setClass($elmt, $class);
-            $this->checkbox->setClass($elmt, $class);
-            $this->radio->setClass($elmt, $class);
-        }
+        // $this->field->setClass($args);
+        // $this->select->setClass($args);
+        // $this->textarea->setClass($args);
+        // $this->checkbox->setClass($args);
+        // $this->radio->setClass($args);
+        $this->fieldCommonclass = $args;
         return $this;
     }
 
@@ -52,32 +68,62 @@ class Form
 
     public function getInputField()
     {
-        return $this->field;
+        return $this->field->setDefault()->setClass($this->fieldCommonclass);
     }
 
     public function getTextarea()
     {
-        return $this->textarea;
+        return $this->textarea->setDefault()->setClass($this->fieldCommonclass);
     }
 
     public function getSelect()
     {
-        return $this->select;
+        return $this->select->setDefault()->setClass($this->fieldCommonclass);
     }
 
     public function getCheckbox()
     {
-        return $this->checkbox;
+        return $this->checkbox->setDefault()->setClass($this->fieldCommonclass);
     }
 
     public function getRadio()
     {
-        return $this->radio;
+        return $this->radio->setDefault()->setClass($this->fieldCommonclass);
     }
 
-    public function begin(string $action = '', string $method = '')
+    public function getImageDD()
     {
-        return sprintf('<form action ="%s" method="%s">', $action, $method);
+        return $this->imageDD;
+    }
+
+    public function begin()
+    {
+        return sprintf(
+            '<form action ="%s" method="%s" class="%s" id="%s" %s>',
+            $this->action,
+            $this->method,
+            $this->formClass,
+            $this->formID,
+            $this->formCustomAttr
+        );
+    }
+
+    public function submit(int $submitBtnNumber = 1)
+    {
+        $button = '';
+        $submitType = 'submit';
+        for ($i = 0; $i < $submitBtnNumber ; $i++) {
+            if ($i > 0) {
+                $submitType = 'button';
+            }
+            if ($submitBtnNumber === 1) {
+                $text = 'Send';
+            } else {
+                $text = $i == 0 ? 'Cancel' : 'Send';
+            }
+            $button .= '<div class="action"><button type="' . $submitType . '" name="submitBtn" id="submitBtn' . $i . '" class="button">' . $text . '</button></div>';
+        }
+        return '<div class="mb-3">' . $button . '</div>';
     }
 
     public function end()
@@ -87,31 +133,31 @@ class Form
 
     public function input(string $attribbute)
     {
-        $this->field->setAttr($attribbute);
-        return $this->field;
+        return $this->field->setDefault()->setAttr($attribbute)->setClass($this->fieldCommonclass);
     }
 
     public function textarea(string $attribbute)
     {
-        $this->textarea->setAttr($attribbute);
-        return $this->textarea;
+        return $this->textarea->setDefault()->setAttr($attribbute)->setClass($this->fieldCommonclass);
     }
 
     public function select(string $attribbute)
     {
-        $this->select->setAttr($attribbute);
-        return $this->select;
+        return $this->select->setDefault()->setAttr($attribbute)->setClass($this->fieldCommonclass);
     }
 
     public function checkbox(string $attribbute)
     {
-        $this->checkbox->setAttr($attribbute);
-        return $this->checkbox;
+        return $this->checkbox->setDefault()->setAttr($attribbute)->setClass($this->fieldCommonclass)->checkboxType();
     }
 
     public function radio(string $attribbute)
     {
-        $this->radio->setAttr($attribbute);
-        return $this->radio;
+        return $this->radio->setDefault()->setAttr($attribbute)->setClass($this->fieldCommonclass);
+    }
+
+    public function imageDD()
+    {
+        return $this->imageDD;
     }
 }

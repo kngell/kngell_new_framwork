@@ -112,7 +112,7 @@ class Model extends AbstractModel
      * @param string $str
      * @return string
      */
-    public function htmlDecode(string $str) : string
+    public function htmlDecode(?string $str) : ?string
     {
         return !empty($str) ? htmlspecialchars_decode(html_entity_decode($str), ENT_QUOTES) : '';
     }

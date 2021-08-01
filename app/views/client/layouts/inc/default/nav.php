@@ -1,9 +1,14 @@
 <!-- Start Header -->
 <header id="header" class="fixed-top">
     <div class="strip d-flex justify-content-between px-4 py-1 bg-light">
+        <?php if (isset($this->settings) && !empty($this->settings)) :?>
         <p class="font-rale font-size-12 text-black-50 m-0">
-            Kngell, La Turbine. 32 boulevard du port. CS 20001. 95015 Cergy-Pontoise cedex.
+            <?=$this->settings->site_address?>
+            .
+        </p>&nbsp;
+        <p class="font-rale font-size-12 text-black-50 me-auto">Téléphone : <?=$this->settings->site_phone?>
         </p>
+        <?php endif;?>
         <div class="font-rale font-size-14 left-side">
             <?=$this->search_box?>
             <div class="connect">
@@ -20,8 +25,8 @@
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <?php $drop = GrantAccess::getMenu('menu_acl')['log_reg_menu']?>
                     <?php
-        foreach ($drop as $k => $v) :
-            $active = ($v == H::currentPage()) ? 'active' : ''; ?>
+                    foreach ($drop as $k => $v) :
+                    $active = ($v == H::currentPage()) ? 'active' : ''; ?>
                     <?php if ($k == 'separator') : ?>
                     <li role="separator" class="dropdown-divider"></li>
                     <?php else : ?>
@@ -49,8 +54,7 @@
     <!-- Primary navigation -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="<?= PROOT ?>home/index"><img src="/kngell/public/assets/img/logo1.png"
-                    alt="Logo"></a>
+            <a class="navbar-brand" href="<?= PROOT ?>"><img src="/kngell/public/assets/img/logo1.png" alt="Logo"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-menu"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="bar"><i class="far fa-bars"></i></span>
@@ -73,7 +77,8 @@
                         <a class="nav-link" href="#">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
+                        <a class="nav-link" href="<?=PROOT . 'contact'?>">Contact
+                            Us</a>
                     </li>
 
                 </ul>

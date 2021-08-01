@@ -21,7 +21,7 @@ class FormsController extends Controller
                 $pagination = $data['pagination'];
                 in_array($table, ['assoc', 'users', 'contacts']) ? $model->set_SoftDelete(true) : '';
                 $tableClass = 'TH' . $table;
-                $output = $this->container->make($tableClass)->{$table . 'Table'}(FH::getShowAllData($model, $data));
+                $output = $this->container->make($tableClass)->{lcfirst($table) . 'Table'}(FH::getShowAllData($model, $data));
                 if (isset($pagination) && $pagination) {
                     $output = TH::pagination($output, $model, $data);
                 }
@@ -73,8 +73,8 @@ class FormsController extends Controller
                 $model = $this->container->make($table . 'Manager'::class)->assign($data)->set_SoftDelete(true)->setselect2Data($data);
                 method_exists('Form_rules', $table) ? $model->validator($data, Form_rules::$table()) : '';
                 if ($model->validationPasses()) {
-                    $action = ($table == 'users' && isset($data['action'])) ? $data['action'] : '';
-                    $file = H_upload::upload_files($_FILES, $model, $this->container);
+                    $action = ($table == 'users' && isset($data['action'])) ? $data['action'] : null;
+                    $file = H_upload::upload_files($this->request->getFiles(), $model, $this->container);
                     if ($file['success']) {
                         $model = $file['msg'];
                         if ($resp = $model->manageCheckboxes($data)->save($data)) {
@@ -119,7 +119,7 @@ class FormsController extends Controller
             $data = $this->request->get();
             $table = str_replace(' ', '', ucwords(str_replace('_', ' ', $data['table'])));
             $model = $this->container->make($table . 'Manager'::class)->assign($data);
-            $file = H_upload::upload_files($_FILES, $model);
+            $file = H_upload::upload_files($this->request->getFiles(), $model);
             if ($file['success']) {
                 $model->save();
                 $this->jsonResponse(['result' => 'success', 'msg' => $model->fileUrl]);
@@ -212,7 +212,7 @@ class FormsController extends Controller
                     $model->id = $data[$colID];
                     method_exists('Form_rules', $table) ? $model->validator($data, Form_rules::$table()) : '';
                     if ($model->validationPasses()) {
-                        $file = H_upload::upload_files($_FILES, $model, $this->container);
+                        $file = H_upload::upload_files($this->request->getFiles(), $model, $this->container);
                         if ($file['success']) {
                             $model = $file['msg'];
                             $action = ($table == 'users' && isset($data['action'])) ? $data['action'] : '';

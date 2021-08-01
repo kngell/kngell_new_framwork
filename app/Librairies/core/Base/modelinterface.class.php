@@ -65,8 +65,8 @@ interface ModelInterface
     /**
      * Html Decode
      * --------------------------------------------------------------------------------------------------
-     * @param string $str
-     * @return string
+     * @param null|string $str
+     * @return string|null
      */
-    public function htmlDecode(string $str) : string;
+    public function htmlDecode(?string $str) : ?string;
 }

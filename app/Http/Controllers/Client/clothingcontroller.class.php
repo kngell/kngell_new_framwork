@@ -11,7 +11,7 @@ class ClothingController extends Controller
     {
         $this->view_instance->set_pageTitle('Clothing');
         $this->view_instance->set_siteTitle('Clothing');
-        $this->view_instance->render('clothing' . DS . 'clothing');
+        $this->view_instance->render('clothing' . DS . 'clothing', ['slider' => $this->getSliders()->index_clothing]);
     }
 
     // Product details custom

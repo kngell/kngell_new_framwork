@@ -89,5 +89,14 @@ module.exports = {
       import: ["css/custom/backend/admin/warehouse/warehouse.sass"],
       dependOn: "css/librairies/adminlib",
     },
+    //Settings
+    "css/custom/backend/admin/settings/general": {
+      import: ["css/custom/backend/admin/settings/general.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
+    "css/custom/backend/admin/settings/sliders": {
+      import: ["css/custom/backend/admin/settings/sliders.sass"],
+      dependOn: "css/librairies/adminlib",
+    },
   },
 };

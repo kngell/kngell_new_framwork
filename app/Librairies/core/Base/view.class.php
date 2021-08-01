@@ -51,10 +51,8 @@ class View
         $this->page_title = null;
     }
 
-    public function initParams(string $view_file = '', array $view_data = [], string $file_path = '') : self
+    public function initParams(string $file_path) : self
     {
-        $this->view_file = $view_file;
-        $this->view_data = $view_data;
         $this->ressources = json_decode(file_get_contents(APP . 'assets.json'));
         $this->file_path = $file_path;
         return $this;
@@ -70,11 +68,11 @@ class View
     {
         if (!empty($viewname)) { //$this->view_file != $viewname
             $this->view_file = preg_replace("/\s+/", '', $viewname);
-        }
-        if (file_exists(VIEW . strtolower($this->file_path) . $this->view_file . '.php')) {
-            $this->renderViewContent(VIEW . strtolower($this->file_path) . $this->view_file . '.php', $params);
-        } else {
-            Rooter::redirect('restricted' . DS . 'index');
+            if (file_exists(VIEW . strtolower($this->file_path) . $this->view_file . '.php')) {
+                $this->renderViewContent(VIEW . strtolower($this->file_path) . $this->view_file . '.php', $params);
+            } else {
+                Rooter::redirect('restricted' . DS . 'index');
+            }
         }
     }
 

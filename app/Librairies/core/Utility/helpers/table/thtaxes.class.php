@@ -41,7 +41,7 @@ class THTaxes
                             <td>' . $taxe->t_rate . '</td>
                             <td>' . $taxe->t_class . '</td>
                             <td>' . $taxe->categorie . '</td>
-                            <td class="d-flex flex-row justify-content-center">
+                            <td class="action">
                             <form class="taxe-status" id="taxe-status' . $taxe->tID . '"/>'
                                 . FH::csrfInput('csrftoken', $this->token->generate_token(8, 'taxe-status' . $taxe->tID)) . '
                                 <input type="hidden" name="tID" value="' . $taxe->tID . '">

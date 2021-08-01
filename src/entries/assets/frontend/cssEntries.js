@@ -49,6 +49,11 @@ module.exports = {
       import: ["css/custom/client/home/boutique/boutique.sass"],
       dependOn: "css/librairies/frontlib",
     },
+    //Ecommerce - Contact
+    "css/custom/client/home/contact/contact": {
+      import: ["css/custom/client/home/contact/contact.sass"],
+      dependOn: "css/librairies/frontlib",
+    },
     //=======================================================================
     //Users Management pages
     //=======================================================================
